@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_employee_view_inherited_sf" model="ir.ui.view">
+        <field name="name">hr.empployee</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <field name="bank_account_id" position="after">
+                <field name="pf_account"/>
+            </field>
+
+            <field name="pf_account" position="after">
+                <field name="uan" attrs="{'invisible': [('pf_account','=','1')]}"/>
+                <field name="blood_group"/>
+                <field name="form_filling_date" readonly="1"/>
+                <field name="pan_img" readonly='1'/>
+                <field name="pan_no"/>
+                <field name="aadhar_img" readonly='1'/>
+                <field name="aadhar_no"/>
+                <field name="mark_sheet" readonly='1'/>
+                <field name="graduation"/>
+                <field name="postgraduation"/>
+            </field>
+
+            <field name="coach_id" position="after">
+                <field name="read_only" />
+            </field>
+
+            <!-- Show the "Job Position" quick field as a searchable/creatable
+                 dropdown (hr.job) instead of the free-text job_title field. -->
+            <xpath expr="//h2/field[@name='job_title']" position="replace">
+                <field name="job_id" placeholder="Job Position"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <record id="res_users_view_form_onboarding" model="ir.ui.view">
+        <field name="name">res.users.form.inherit</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button string="Send Onbording invitation" type="object" name="action_onbording_process"
+                        attrs="{'invisible': [('state','=','active')]}"/>
+                <button string="Send Resignation invitation" type="object" name="action_resignation_process"/>
+            </xpath>
+        </field>
+    </record>
+
+ 
+    <record id="hr_employee_view_page_exit" model="ir.ui.view">
+        <field name="name">hr.employee</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='hr_settings']" position="after">
+                <page name="exit_data" string="Exit data" >
+                    <div id="o_work_employee_container">
+                        <div id="o_work_employee_main">
+                            <group>
+                                <group>
+                                    <field name="interview_date"/>
+                                    <field name="last_day"/>
+                                </group>
+                                <group>
+                                    <field name="job_title"/>
+                                    <field name="employe_period"/>
+                                </group>
+                                <group>
+                                    <field name="experence"/>
+                                    <field name="job_decription"/>
+                                </group>
+                                <group>
+                                    <field name="leaving"/>
+                                    <field name="experence"/>
+                                </group>
+                                <group>
+                                    <field name="working_withus"/>
+                                    <field name="advancement"/>
+                                </group>
+                                <group>
+                                    <field name="suggestions"/>
+                                    <field name="working_relationship"/>
+                                </group>
+                            </group>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <div style="font-size:18px; margin: 9px 0; text-align:left;">
+                                        <b>Rate your Manager on the following:</b>
+                                    </div>
+                            </div>
+                               <table border="1" style="width:100%;"
+                                       class="table rounded mb-0 bg-white o_portal_my_doc_table">
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Follow policies and procedures</a>
+                                        </td>
+                                        <td>
+                                            <field name="policies"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Treats employees in a fair and equal way</a>
+                                        </td>
+                                        <td>
+                                            <field name="fair"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Provides recognition for a job well done</a>
+                                        </td>
+                                        <td>
+                                            <field name="recognition"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Resolves complaints and problems</a>
+                                        </td>
+                                        <td>
+                                            <field name="complaints"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Gives needed information</a>
+                                        </td>
+                                        <td>
+                                            <field name="information"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Keeps employees busy</a>
+                                        </td>
+                                        <td>
+                                            <field name="busy"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Knows his/her job well</a>
+                                        </td>
+                                        <td>
+                                            <field name="jobwell"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Welcomes suggestions</a>
+                                        </td>
+                                        <td>
+                                            <field name="Welcomes"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Maintains discipline</a>
+                                        </td>
+                                        <td>
+                                            <field name="discipline"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="col-sm">
+                                    <div style="font-size:18px; margin: 9px 0; text-align:left;">
+                                        <b>What do you think of the following in your department?</b>
+                                    </div>
+                                </div>
+                                <table border="1" style="width:100%;"
+                                       class="table rounded mb-0 bg-white o_portal_my_doc_table">
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Cooperation/teamwork in the department</a>
+                                        </td>
+                                        <td>
+                                            <field name="department"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Cooperation with other departments</a>
+                                        </td>
+                                        <td>
+                                            <field name="cooperation"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Communications</a>
+                                        </td>
+                                        <td>
+                                            <field name="communications"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Working Conditions</a>
+                                        </td>
+                                        <td>
+                                            <field name="conditions"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Work Schedule</a>
+                                        </td>
+                                        <td>
+                                            <field name="schedule"/>
+                                        </td>
+                                    </tr>
+                                </table> 
+                            </div>
+                            <div class="col-sm">
+                                <div style="font-size:18px; margin: 9px 0; text-align:left;">
+                                    <b>How do you feel about the following?</b>
+                                </div>
+                            </div>
+                             <table border="1" style="width:100%;"
+                                       class="table rounded mb-0 bg-white o_portal_my_doc_table">
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Rate of Pay for your job</a>
+                                        </td>
+                                        <td>
+                                            <field name="jobpay"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Amount of paid leave accrual</a>
+                                        </td>
+                                        <td>
+                                            <field name="accural"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-weight:bold;" class="active">
+                                        <td>
+                                            <a>Working Culture</a>
+                                        </td>
+                                        <td>
+                                            <field name="culture"/>
+                                        </td>
+                                    </tr>
+                            </table>
+                            <group>
+                                <field name="suggession"/>
+                            </group>
+                        </div>
+                    </div>
+                </page>
+                <page name="equipment" string="Equipment">
+                    <group>
+                        <group>
+                            <field name="category"/>
+                            <field name="mouse"/>
+                            <field name="keyboard"/>
+                            <field name="headphone"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="hr_employee_view_page__exit" model="ir.ui.view">
+        <field name="name">hr.employee</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='exit_data']" position="attributes">
+	            <attribute name="attrs">{'invisible': [('read_only','=',False)]}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='equipment']" position="attributes">
+	            <attribute name="attrs">{'invisible': [('read_only','=',False)]}</attribute>
+            </xpath>
+            <field name="child_ids" position="attributes">
+                <attribute name="groups">hr.group_hr_manager</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="hr.menu_hr_department_kanban" model="ir.ui.menu">
+        <field name="groups_id" eval="[(3, ref('hr.group_hr_user'))]"/>
+    </record>
+    <record id="hr.menu_hr_department_kanban" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('hr.group_hr_manager'))]"/>
+    </record>
+
+    <record id="hr.menu_hr_employee" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('hr.group_hr_manager'))]"/>
+    </record>
+
+    <record id="hr_employee_public_view_page" model="ir.ui.view">
+        <field name="name">hr.employee.public</field>
+        <field name="model">hr.employee.public</field>
+        <field name="inherit_id" ref="hr.hr_employee_public_view_form"/>
+        <field name="arch" type="xml">
+            
+            <field name="child_ids" position="attributes">
+                <attribute name="groups">hr.group_hr_manager</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

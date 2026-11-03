@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="onboard_process_employee" model="ir.ui.view">
+        <field name="name">onboard.process.form.view</field>
+        <field name="model">onboard.process</field>
+          <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group>
+                        <field name="probability" widget="percentpie"/>
+                        <group>
+                            <field name="odoo_access" widget="toggle_button"/>
+                            <field name="it_department" widget="toggle_button"/>
+                            <field name="announcement" widget="toggle_button"/>
+                            <field name="verification" widget="toggle_button"/>
+                            <field name="food" widget="toggle_button"/>
+                            <field name="nda_sign" widget="toggle_button"/>
+                            <field name="letter" widget="toggle_button"/>
+                        </group>
+                        <group>
+                            <field name="employee_details" widget="toggle_button"/>
+                            <field name="jupiter" widget="toggle_button"/>
+                            <field name="pf" widget="toggle_button"/>
+                            <field name="whatsapp" widget="toggle_button"/>
+                            <field name="mentor" widget="toggle_button"/>
+                            <field name="welcome_kit" widget="toggle_button"/>
+                            <field name="linkedin" widget="toggle_button"/>
+                        </group>
+                    </group>                    
+                </sheet>
+            </form>
+       </field>
+    </record>
+
+    <record id="onboard_process_view_tree" model="ir.ui.view">
+        <field name="name">onboard.process.view.tree</field>
+        <field name="model">onboard.process</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="probability" widget='percentpie'/>
+            </tree> 
+        </field>
+    </record>
+    
+    <record id="action_onboard_process_employee" model="ir.actions.act_window">
+        <field name="name">Onboard Process</field>
+        <field name="res_model">onboard.process</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Ready to create a Onboard Process?
+          </p>
+          <p>
+            Let's create a Process.
+          </p>
+        </field>
+    </record>
+
+    <menuitem id="onboard_process_menu" parent="hr_recruitment.menu_hr_recruitment_root" action="action_onboard_process_employee" name="Onboard Process"
+    sequence="15" groups="hr_holidays.group_hr_holidays_manager"/>
+
+</odoo>

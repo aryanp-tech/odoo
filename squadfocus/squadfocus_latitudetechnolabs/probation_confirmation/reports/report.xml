@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="action_probation_confirmation" model="ir.actions.report">
+        <field name="name">Probation Confirmation Report</field>
+        <field name="model">probation.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">probation_confirmation.probation_confirmation_letter</field>
+        <field name="report_file">probation_confirmation.probation_confirmation_letter</field>
+        <field name="binding_model_id" ref="model_probation_employee"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="offer_letter.paperformat_euro_low_margin"/>
+    </record>
+
+    <template id="probation_confirmation_letter">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <header style="padding-top:5px;"> 
+                            <img width="1010px" height="225px" t-if="o.name.company_id.header_img" t-att-src="image_data_uri(o.name.company_id.header_img)" alt="Logo"/>
+                        </header>
+                        <center><h4 style="font-weight:bold; margin-left:8mm; margin-right:8mm;margin-top:10mm;font-size: 30px; ">Letter of Confirmation</h4></center>
+                        <p style="margin-left:7mm;font-size: 25px; margin-right:7mm;margin-top:15mm;">Dear Mr./Ms. <span t-field="o.name.name"/>,</p>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:15mm;font-size: 22px;">Following completion of your <span t-field="o.probation_period"/> month’s probation period at  <span t-field="o.name.company_id.name"/>,
+                             management has reviewed your performance and found the same to be satisfactory.</p>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:10mm;font-size:22px;">In view of the above, we are pleased to inform you that you have been confirmed to
+                            the position of  <span t-field="o.name.job_title"/> at  <span t-field="o.name.company_id.name"/> with effect from  <span t-field="o.review_to" style="font-weight:bold;"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;font-size: 22px;">All other terms and conditions of your appointment will remain the same. Please
+                            signify your acceptance of these terms and conditions by signing this letter.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;font-size: 22px;">In case you have any queries, do not hesitate to reach HR Department.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;font-size: 22px;">Wish you all the best for long association with the organisation ahead.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:20mm;font-size: 22px;">Sincerely,</p>
+                        <p style="margin-left:8mm; margin-right:8mm;font-size: 22px;"><span t-field="o.name.name"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm;font-size: 22px;"><span t-field="o.name.job_title"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm;font-size: 22px;"><span t-field="o.review_to"/></p>
+                         <p style="margin-left:8mm; margin-right:8mm;font-size:22px;">I accept the company's terms and conditions and confirms my taking up the position
+                            of <span t-field="o.name.job_title"/> from  <span t-field="o.review_to"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm;font-size: 22px;">Sign :</p>
+                        <p style="margin-left:8mm; margin-right:8mm;font-size: 22px;">Date:</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <record id="action_probation_extend" model="ir.actions.report">
+        <field name="name">Probation Confirmation Extend</field>
+        <field name="model">probation.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">probation_confirmation.probation_confirmation_extend</field>
+        <field name="report_file">probation_confirmation.probation_confirmation_extend</field>
+        <field name="binding_model_id" ref="model_probation_employee"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="offer_letter.paperformat_euro_low_margin"/>
+    </record>
+
+    <template id="probation_confirmation_extend">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <header style="padding-top:5px;"> 
+                            <img width="1010px" height="225px" t-if="o.name.company_id.header_img" t-att-src="image_data_uri(o.name.company_id.header_img)" alt="Logo"/>
+                        </header>
+                        <center><h4 style="font-weight:bold; margin-left:8mm; margin-right:8mm;margin-top:10mm;font-size: 30px;">Probation extension letter</h4></center>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:15mm;font-size: 25px;">Dear Mr./Ms. <span t-field="o.name.name"/>,</p>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:15mm;font-size: 22px;">With reference to completion of your <span t-field="o.probation_period"/> months’ probation, your performance
+                            assessment was carried out and has been shared with you by your Team Lead. As
+                            your performance not found satisfactory, your probation period is being extended for
+                            <span t-field="o.extend_period"/> months and will end on <span t-field="o.extend_date"/>.</p>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:10mm;font-size: 22px;">Management would like to keep on record that you need to focus and improve upon
+                            following areas.</p>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:5mm;font-size: 22px;"><span t-field="o.reason"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;font-size: 22px;">Your next performance review will be conducted and you will receive the report on
+                            or before <span t-field="o.extend_date"/>.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;font-size: 22px;">The terms and conditions of your appointment letter shall remain unaltered.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;font-size: 22px;">The company looks forward to your valuable contributions and we wish you the best
+                            for your future with us.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:20mm;font-size: 22px;">Feel free to contact HR Department for any queries.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;font-size: 22px;">Regards</p>
+                        <p style="margin-left:8mm; margin-right:8mm;font-size: 22px;">HR Department</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_termination_confirmation" model="ir.actions.report">
+        <field name="name">Termination Confirmation Report</field>
+        <field name="model">probation.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">probation_confirmation.termination_confirmation_letter</field>
+        <field name="report_file">probation_confirmation.termination_confirmation_letter</field>
+        <field name="binding_model_id" ref="model_probation_employee"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="termination_confirmation_letter">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <header style="padding-top:5px;"> 
+                            <img width="1010px" height="225px" t-if="o.name.company_id.header_img" t-att-src="image_data_uri(o.name.company_id.header_img)" alt="Logo"/>
+                        </header>
+                        <center><h4 style="font-weight:bold; margin-left:8mm; margin-right:8mm;margin-top:10mm">Letter of Confirmation</h4></center>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:15mm;">Dear Mr./Ms. <span t-field="o.name.name"/>,</p>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:15mm;">In reference to your appointment letter dated &lt;dated&gt; you were on six months’ probation and
+                            subsequently the probation extension letter issued to you on <span t-field="o.review_to"/> extending you probation for <span t-field="o.extend_period"/>
+                            more months due to low performance.</p>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:10mm;">In view of the above, we are pleased to inform you that you have been confirmed to
+                            the position of  <span t-field="o.name.job_title"/> at  <span t-field="o.name.company_id.name"/> with effect from  <span t-field="o.review_to" style="font-weight:bold;"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;">All other terms and conditions of your appointment will remain the same. Please
+                            signify your acceptance of these terms and conditions by signing this letter.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;">In case you have any queries, do not hesitate to reach HR Department.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;">Wish you all the best for long association with the organisation ahead.</p>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:20mm;">Sincerely,</p>
+                        <p style="margin-left:8mm; margin-right:8mm"><span t-field="o.name.name"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm"><span t-field="o.name.job_title"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm"><span t-field="o.review_to"/></p>
+                         <p style="margin-left:8mm; margin-right:8mm">I accept the company's terms and conditions and confirms my taking up the position
+                            of <span t-field="o.name.job_title"/> from  <span t-field="o.review_to"/></p>
+                        <p style="margin-left:8mm; margin-right:8mm">Sign :</p>
+                        <p style="margin-left:8mm; margin-right:8mm">Date:</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

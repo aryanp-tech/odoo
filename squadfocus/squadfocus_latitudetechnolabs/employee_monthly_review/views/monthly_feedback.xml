@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_monthly_feedback_form" model="ir.ui.view">
+            <field name="name">monthly.feedback.form</field>
+            <field name="model">monthly.feedback</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                        <button name="set_done" string="Done" class="oe_highlight" type="object" states="draft"/>
+                    </header>
+
+                    <sheet>
+                      
+                        
+                        
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_answer_feedback"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o"
+                                string="Answer">
+                            
+                                <!-- <field string="Answers" name="emp_count_survey" widget="statinfo"/> -->
+                            </button>
+                        </div>
+                    <group>
+                        <group>
+                            <field name="name" options="{'no_create': 1}"/>
+                            <!-- <field name='lead_id'/> -->
+                            <field name='create_date'/>
+                          </group>
+                        <group>
+                            <field name='employee_ids'>
+                                <tree>
+                                    <field name='name'/>
+                                    <field name='department_id'/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_monthly_feedback_tree" model="ir.ui.view">
+            <field name="name">monthly.feedback.tree</field>
+            <field name="model">monthly.feedback</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name='create_date'/>
+                    <field name='employee_ids'/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_monthly_feedback_filter" model="ir.ui.view">
+            <field name="name">monthly.feedback.search</field>
+            <field name="model">monthly.feedback</field>
+            <field name="arch" type="xml">
+                <search string="Employees">
+                    <field name="name"/>
+                    <!-- <filter string="Group by Week" name="group_by_week" domain="[]" context="{'group_by':'create_date:week'}"/>
+                    <filter string="Employee" name="group_by_employeename" domain="[]" context="{'group_by':'name'}"/> -->
+                </search>
+            </field>
+        </record>
+
+        <record id="action_monthly_feedback" model="ir.actions.act_window">
+            <field name="name">Monthly Feedback</field>
+            <field name="res_model">monthly.feedback</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a Feedback?
+              </p>
+              <p>
+                Let's create a Feedback.
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_monthly_feedback" parent="employee_feedback.menu_employee_feedback" action="action_monthly_feedback" name="Monthly Feedback"/>
+
+    </data>
+</odoo>

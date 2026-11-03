@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="module_tl_employee" model="res.groups">
+            <field name="name">TL stage</field>
+        </record>
+
+        <record model="ir.rule" id="tl_stage_admin_rule">
+            <field name="name">All Employees Record can Access</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="domain_force">[ (1, '=',1)]</field>
+            <field name="groups" eval="[(4, ref('weekly_review.module_tl_employee')),(4, ref('hr.group_hr_manager'))]"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<odoo>
+    <data noupdate="1">
+        <record id="send_email_request" model="mail.template">
+            <field name="name">mail send for request template</field>
+            <field name="model_id" ref="work_from_home.model_work_from_home"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="email_from">${object.employee_id.work_email}</field>
+            <field name="email_to">${object.employee_id.parent_id.work_email}</field>
+            <field name="subject">Employee request work from home</field>
+            <field name="body_html" type="xml">
+                <!-- <![CDATA[ -->
+                    <p>Hello ,</p>
+                        <p>The employee <strong>${object.employee_id.name}</strong> has taken work from home <strong>${object.number_of_days}</strong> days leave starting from <strong>${object.request_date_from}</strong> to <strong>${object.request_date_to}</strong>.</p>
+                        <p>Thank you!</p>
+                        <!-- ]]> -->
+            </field> 
+        </record>
+    </data>
+</odoo>

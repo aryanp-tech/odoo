@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<odoo>
+    <record id="form_work_from_home" model="ir.ui.view">
+        <field name="name">work.from.home.manager</field>
+        <field name="model">work.from.home</field>
+        <field name="priority">32</field>
+        <field name="arch" type="xml">
+            <form string="Work From Home Request">
+            <field name="can_reset" invisible="1"/>
+            <field name="can_approve" invisible="1"/>
+                <header>
+                    <button string="Approve" name="action_approve" type="object" attrs="{'invisible': [('state','=','validate')]}"/>
+                    <button string="Refuse" name="action_refuse" type="object"  attrs="{'invisible': [('state','=','refuse')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="confirm,validate"/>
+                </header>
+                <sheet>
+                    <h2>
+                        <field name="holiday_status_id" nolabel="1" />
+                    </h2>
+                    <group>
+                        <group>
+                        <label for="request_date_from" string="Dates"/>
+                        <div>
+                            <field name="date_from" invisible="1"/>
+                            <field name="date_to" invisible="1"/>
+                            <div class="o_row o_row_readonly o_hr_holidays_dates">
+                                <span class="oe_inline">
+                                    From
+                                </span>
+                                <field name="request_date_from" class="oe_inline" nolabel="1"
+                                    attrs="{'readonly': [('state', 'not in', ('draft', 'confirm'))],
+                                            'required': ['|', ('date_from', '=', False), ('date_to', '=', False)]
+                                            }"/>
+                                <span class="oe_inline">
+                                    To
+                                </span>
+                                <field name="request_date_to" class="oe_inline"
+                                    attrs="{
+                                        'readonly': [('state', 'not in', ('draft', 'confirm'))],
+                                        'required': ['|', ('date_from', '=', False), ('date_to', '=', False)]
+                                    }"/>
+                            </div>
+                        </div>
+                        <label for="number_of_days" string="Duration"/>
+                        <div>
+                            <div class="o_row">
+                                <field name="number_of_days" class="oe_inline"/>
+                                <span>Days</span>
+                            </div>
+                        </div>
+                            <field name="name" attrs="{'invisible': [('hide','!=',True)]}" />
+                            <field name="hide" invisible="1"/>
+                    </group>
+                    <group>
+                    <field name="holiday_type"/>
+                    <field name="employee_id" groups="hr_holidays.group_hr_holidays_user"/>
+                    <field name="department_id" groups="hr_holidays.group_hr_holidays_user"/>
+                </group>
+                    <group name="col_right">
+                        <field name="department_id" groups="hr_holidays.group_hr_holidays_user" invisible="1"/>
+                    </group>
+                </group>
+                </sheet>
+                <div class='oe_chatter'>
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_from_home_view_tree" model="ir.ui.view">
+        <field name="name">work.from.home.view.tree</field>
+        <field name="model">work.from.home</field>
+        <field name="arch" type="xml">
+            <tree string="Work From Home Requests" sample="1">
+                <field name="employee_id" widget="many2one_avatar_employee"/>
+                <field name="department_id"/>
+                <field name="request_date_from"/>
+                <field name="request_date_to"/>
+                <field name="number_of_days"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ('confirm','validate1')" decoration-success="state == 'validate'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_work_from_home" model="ir.ui.view">
+        <field name="name">work.from.home.search</field>
+        <field name="model">work.from.home</field>
+        <field name="arch" type="xml">
+            <search string="work from home">
+                <field name="employee_id"/>
+                <searchpanel>
+                    <field name="state" string="Status"/>
+                 </searchpanel>
+            </search>
+            
+        </field>
+    </record>
+
+    <record id="action_work_from_home" model="ir.actions.act_window">
+        <field name="name">Work From Home</field>
+        <field name="res_model">work.from.home</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_work_from_home"/>
+        <field name="context">{"search_default_Current":1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Ready to create a work from home request?
+            </p>
+            <p>
+            Let's create a work from home request.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="work_from_home_catagories" parent="hr_holidays.menu_hr_holidays_root" action="action_work_from_home" name="Work From Home"
+        sequence="2"/>
+    
+</odoo>

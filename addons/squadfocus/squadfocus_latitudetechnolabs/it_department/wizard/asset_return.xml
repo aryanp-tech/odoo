@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_equipment_return_form" model="ir.ui.view">
+            <field name="name">equipment.return.view.form</field>
+            <field name="model">equipment.return</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="equipment_ids" widget="many2many"/>
+                        </group>
+                        <footer>
+                            <button string="Return" name="equipment_return" type="object" class="btn-primary"/>
+                            <button string="Cancel" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_equipment_return" model="ir.actions.act_window">
+            <field name="name">Equipment Return</field>
+            <field name="res_model">equipment.return</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_equipment_return_form" />
+            <field name="target">new</field>
+        </record>
+        
+    </data>
+</odoo>

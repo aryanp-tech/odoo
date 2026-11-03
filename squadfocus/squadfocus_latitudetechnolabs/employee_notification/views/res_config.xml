@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_employee_config_settings_inherit_sf" model="ir.ui.view">
+        <field name="name">res.config.settings.inherit.sf</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div name="employee_rights_setting_container" position="after"> 
+                <h2>Default Leave Type</h2>
+                <div class="row mt16 o_settings_container" name="work_organization_setting_container">
+                    <div class="col-12 col-lg-6 o_setting_box" id="default_company_schedule_setting">
+                        <div class="o_setting_right_pane">
+                            <label for="leave_type"/>
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." role="img" aria-label="Values set here are company-specific." groups="base.group_multi_company"/>
+                            <div class="row">
+                                <div class="text-muted col-lg-8">
+                                    Set default Leave Type for absent or late checkin.
+                                </div>
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="leave_type" class="o_light_label"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+
+</odoo>

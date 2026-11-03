@@ -1,0 +1,6 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_quarterly_review,access_quarterly_review,model_quarterly_review,,1,1,1,1
+access_activity_review,access_activity_review,model_activity_review,,1,1,1,1
+access_project_review,access_project_review,model_project_review,,1,1,1,1
+access_disapoint_review,access_disapoint_review,model_disapoint_review,,1,1,1,1
+access_salary_details,access_salary_details,model_salary_details,,1,1,1,1

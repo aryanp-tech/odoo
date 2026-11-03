@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="job_detail_page" name="Partner Form">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="col-md-7">
+                       <form action="/job/submit" method="post" enctype="multipart/form-data">
+                       	<input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="form-group">
+                                <label for="name">First Name:</label>
+                                <input type="text" class="form-control" name="partner_name" id="partner_name"  placeholder="First Name" required="true" />
+                      		</div>
+                            <div class="form-group">
+                                <label for="name">Last Name:</label>
+                                <input type="text" class="form-control" name="last_name" id="last_name"  placeholder="Last Name" required="true"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email address:</label>
+                                <input type="email" class="form-control" name="email_from" 
+                                 id="email_from" required="true"  placeholder="Email"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Phone:</label>
+                                <input type="text" class="form-control" name="partner_phone" 
+                                id="partner_phone" required="true"  placeholder="Phone" />
+                            </div>
+                            <div class="form-group">
+                       
+                            <label for="name">Year of Experience:</label>
+
+                            <select name="year_of_exp" id="year_of_exp" class="form-control">
+                              <option value="fresher">fresher</option>
+                              <option value="6_month_and_above">6 Month and Above</option>
+                              <option value="1_year_and_above">1 Year and Above</option>
+                              <option value="2_year_and_above">2 year and Above</option>
+                            </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Current CTC:</label>
+                                <input type="number"  class="form-control" name="ctc_salary" id="ctc_salary"  placeholder="CTC salary" required="true"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Linkedin Profile:</label>
+                                <input type="text" class="form-control" name="linkedin_profile" id="linkedin_profile"  placeholder="Linkedin Profile" required="true"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">About Your Self:</label>
+                                <input type="text" class="form-control" name="description" id="description"  placeholder="About Your Self" required="true"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Resume Upload:</label>
+                                <input type="file" id="attachment" name="attachment" required="true"/>                                
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+              </div>
+          </t>
+    </template>
+    <template id="tmp_customer_form_success" name="Customer Form Successfully Submitted">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="col-md-12">
+                        <div class="alert alert-success">
+                            job application created successfully.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="emp_resignation_form" name="Partner Form">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="row justify-content-md-center" style="margin-top:30px; padding:20px;">
+                    <div class="col-md-12">
+                        <div style="font-size:26px; margin: 9px 0; text-align:center;">
+                            <b>Employee Exit Interview Form</b>
+                        </div>
+                        <form action="/employee/resignation/submit" class="onbording_employees" method="POST"
+                              enctype="multipart/form-data">
+                            <group>
+                                <group>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="form-group">
+                                                <label for="name">Employee Name:</label>
+                                                <input type="text" class="form-control" name="name" id="name"
+                                                       placeholder="Full Name" required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="interviedate">Date of Interview:</label>
+                                                <input type="date" class="form-control" name="interview_date"
+                                                       id="interview_date" required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="lastday">Last Day of Employment:</label>
+                                                <input type="date" class="form-control" name="last_day" id="last_day"
+                                                       required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="department">department:</label>
+                                                <input type="text" class="form-control" name="job_title" id="job_title"
+                                                       required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div style="font-size:18px; margin: 9px 0; text-align:left;">
+                                                <b>I would appreciate it if you would take a few minutes to respond to
+                                                    the questions below.
+                                                    All answers will be held in strict confidence. Thank you.
+                                                </b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="employeperiod">How long were you employed?</label>
+                                                <input type="text" class="form-control" name="employe_period"
+                                                       id="employe_period" required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="jobtitle">Job Designation?</label>
+                                                <input type="text" class="form-control" name="job_decription"
+                                                       id="job_decription"
+                                                       required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="leaving">Why are you leaving?</label>
+                                                <input type="text" class="form-control" name="leaving" id="leaving"
+                                                       required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <!-- <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/> -->
+                                            <div class="form-group">
+                                                <label for="experence">Would you describe your working relationship
+                                                    (with respect to both your particular job and your
+                                                    relationship with fellow workers) as pleasant or unpleasant? What
+                                                    did you like least about working here? What did you like about
+                                                    working here?
+                                                </label>
+                                                <input type="text" class="form-control" name="experence" id="experence"
+                                                       required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="form-group">
+                                                <label for="workingwithus">Do you feel that your particular job was
+                                                    important and significant in the overall operation of the
+                                                    business? Do you feel you were treated fairly while working with us
+                                                    ?
+                                                </label>
+                                                <input type="text" class="form-control" name="working_withus"
+                                                       id="working_withus" required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="form-group">
+                                                <label for="advancement">How did you feel about your chances for
+                                                    advancement?
+                                                </label>
+                                                <input type="text" class="form-control" name="advancement"
+                                                       id="advancement" required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="form-group">
+                                                <label for="suggestions">Are there any particular or working conditions
+                                                    that either led to your decision to resign or that
+                                                    you feel are detrimental to a satisfactory working relationship? If
+                                                    so, have you any suggestions on how to eliminate them?
+                                                </label>
+                                                <input type="text" class="form-control" name="suggestions"
+                                                       id="suggestions" required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="form-group">
+                                                <label for="workingrelationship">Are there any particular practices or
+                                                    working conditions that you feel are particularly beneficial to
+                                                    an effective working relationship and that should be maintained?
+                                                    What changes would have to take place for you to come back?
+                                                </label>
+                                                <input type="text" class="form-control" name="working_relationship"
+                                                       id="working_relationship" required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div style="font-size:18px; margin: 9px 0; text-align:left;">
+                                                <b>Rate your Manager on the following:</b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive border rounded border-top-0 #{classes if classes else ''}">
+                                        <table border="1" style="width:100%;"
+                                               class="table rounded mb-0 bg-white o_portal_my_doc_table">
+                                            <tr class="active">
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="col-sm">
+                                                            <label for="policies">Follow policies and procedures</label>
+                                                            <select name="policies" id="policies" class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="fair">Treats employees in a fair and equal way
+                                                            </label>
+                                                            <select name="fair" id="fair" class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="recognition">Provides recognition for a job well
+                                                                done
+                                                            </label>
+                                                            <select name="recognition" id="recognition"
+                                                                    class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm">
+                                                            <label for="complaints">Resolves complaints and problems
+                                                            </label>
+                                                            <select name="complaints" id="complaints"
+                                                                    class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="information">Gives needed information</label>
+                                                            <select name="information" id="information"
+                                                                    class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="busy">Keeps employees busy</label>
+                                                            <select name="busy" id="busy" class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm">
+                                                            <label for="jobwell">Knows his/her job well</label>
+                                                            <select name="jobwell" id="jobwell" class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="Welcomes">Welcomes suggestions</label>
+                                                            <select name="Welcomes" id="Welcomes" class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="discipline">Maintains discipline</label>
+                                                            <select name="discipline" id="discipline"
+                                                                    class="form-control">
+                                                                <option value="alwayse">Alwayse</option>
+                                                                <option value="sometime">Sometime</option>
+                                                                <option value="usually">Usually</option>
+                                                                <option value="never">Never</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div style="font-size:18px; margin: 9px 0; text-align:left;">
+                                                <b>What do you think of the following in your department?</b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive border rounded border-top-0 #{classes if classes else ''}">
+                                        <table border="1" style="width:100%;"
+                                               class="table rounded mb-0 bg-white o_portal_my_doc_table">
+                                            <tr class="active">
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="col-sm">
+                                                            <label for="department">Cooperation/teamwork in the
+                                                                department
+                                                            </label>
+                                                            <select name="department" id="department"
+                                                                    class="form-control">
+                                                                <option value="excellent">Excellent</option>
+                                                                <option value="good">Good</option>
+                                                                <option value="fair">Fair</option>
+                                                                <option value="poor">Poor</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="cooperation">Cooperation with other
+                                                                departments
+                                                            </label>
+                                                            <select name="cooperation" id="cooperation"
+                                                                    class="form-control">
+                                                                <option value="excellent">Excellent</option>
+                                                                <option value="good">Good</option>
+                                                                <option value="fair">Fair</option>
+                                                                <option value="poor">Poor</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="communications">Communications</label>
+                                                            <select name="communications" id="communications"
+                                                                    class="form-control">
+                                                                <option value="excellent">Excellent</option>
+                                                                <option value="good">Good</option>
+                                                                <option value="fair">Fair</option>
+                                                                <option value="poor">Poor</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm">
+                                                            <label for="conditions">Working Conditions</label>
+                                                            <select name="conditions" id="conditions"
+                                                                    class="form-control">
+                                                                <option value="excellent">Excellent</option>
+                                                                <option value="good">Good</option>
+                                                                <option value="fair">Fair</option>
+                                                                <option value="poor">Poor</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="schedule">Work Schedule</label>
+                                                            <select name="schedule" id="schedule" class="form-control">
+                                                                <option value="excellent">Excellent</option>
+                                                                <option value="good">Good</option>
+                                                                <option value="fair">Fair</option>
+                                                                <option value="poor">Poor</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div style="font-size:18px; margin: 9px 0; text-align:left;">
+                                                <b>How do you feel about the following?</b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive border rounded border-top-0 #{classes if classes else ''}">
+                                        <table border="1" style="width:100%;"
+                                               class="table rounded mb-0 bg-white o_portal_my_doc_table">
+                                            <tr class="active">
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="col-sm">
+                                                            <label for="jobpay">Rate of Pay for your job</label>
+                                                            <select name="jobpay" id="jobpay" class="form-control">
+                                                                <option value="excellent">Excellent</option>
+                                                                <option value="good">Good</option>
+                                                                <option value="fair">Fair</option>
+                                                                <option value="poor">Poor</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="accural">Amount of paid leave accrual</label>
+                                                            <select name="accural" id="accural" class="form-control">
+                                                                <option value="excellent">Excellent</option>
+                                                                <option value="good">Good</option>
+                                                                <option value="fair">Fair</option>
+                                                                <option value="poor">Poor</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm">
+                                                            <label for="culture">Working Culture</label>
+                                                            <select name="culture" id="culture" class="form-control">
+                                                                <option value="excellent">Excellent</option>
+                                                                <option value="good">Good</option>
+                                                                <option value="fair">Fair</option>
+                                                                <option value="poor">Poor</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div style="font-size:20px; margin: 9px 0; text-align:left;">
+                                                <b>ACKNOWLEDGEMENT OF CORPORATE COMPLIANCE RESPONSIBILITIES</b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div style="font-size:18px; margin: 9px 0; text-align:left;">
+                                                <b>I have no knowledge of any violation of the law or any corporate
+                                                    policies or standards of conduct by me or any other employees while
+                                                    I have been employed here at Latitude Technolabs Pvt Ltd. If I
+                                                    recall any suspected violations in the future, I will immediately
+                                                    report them to the Compliance Officer.
+                                                </b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="form-group">
+                                                <label for="name">Would you care to make any other comments?</label>
+                                                <input type="text" class="form-control" name="suggession"
+                                                       id="suggession"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </group>
+                            </group>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="tmp_employee_regi_success" name="Resignation Form Successfully Submitted">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="col-md-12">
+                        <div class="alert alert-success">
+                            Your Resignation from submit successfully.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="emp_companyproperty_form" name="Partner Form">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="row justify-content-md-center" style="margin-top:30px; padding:20px;">
+                    <div class="col-md-12">
+                        <div style="font-size:26px; margin: 9px 0; text-align:center;">
+                            <b>Employee Exit Interview Form</b>
+                        </div>
+                        <form action="/employee/companyproperty/submit" class="onbording_employees" method="POST"
+                              enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="culture">Equipment Category:</label>
+                                    <select name="category" id="category" class="form-control">
+                                        <option value="laptop">Laptop</option>
+                                        <option value="desktop">Desktop</option>
+                                        <option value="mackmini">Mac Mini</option>
+                                        <option value="imac">I Mac</option>
+                                        <option value="laptopanddesktop">Laptop And Desktop</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="name">Do You Have A Mouse?</label>
+                                    <input type="checkbox" class="control" name="mouse" id="mouse" widget="toggle"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="name">Do You Have A Keyboard?</label>
+                                    <input type="checkbox" class="control" name="keyboard" id="keyboard"
+                                           widget="toggle"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="name">Do You Have A Headphone?</label>
+                                    <input type="checkbox" class="control" name="headphone" id="headphone"
+                                           widget="toggle"/>
+                                </div>
+                            </div>
+                            <a> hello how arew you</a>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- <template id="tmp_employee_companyproperty_success" name="Employee Company Property Form">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="col-md-12">
+                        <div class="alert alert-success">
+                            Your Company Property from submit successfully.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template> -->
+</odoo>
+

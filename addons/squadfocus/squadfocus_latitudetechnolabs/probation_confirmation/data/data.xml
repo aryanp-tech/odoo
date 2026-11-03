@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="probation_mail_template_survey" model="mail.template">
+        <field name="name">Probation feedback by manager</field>
+        <field name="model_id" ref="model_probation_employee"/>
+        <field name="email_from">${}</field>
+        <field name="email_to">${object.manager_id.work_email}</field>
+        <field name="subject"> Probation Period Feedback Requset for ${object.name.name}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html"><![CDATA[
+            <p>Hello ${object.manager_id.name},</p>
+            <p>Please provide your feedback on the probation period for ${object.name.name}.</p>
+            <p>Survey Link: <a href="${object.survey_url}">${object.survey_url}</a></p>
+            <p>Best regards,</p>
+        ]]></field>
+    </record>
+</odoo>

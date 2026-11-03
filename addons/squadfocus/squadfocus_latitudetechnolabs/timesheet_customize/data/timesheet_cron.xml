@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<odoo>
+    <record id="send_mail_crone" model="ir.cron">
+            <field name="name">Send mail: Timesheet Not Submit</field>
+              <field name="model_id" ref="model_account_analytic_line"/>
+              <field name="state">code</field>
+              <field name="code">model._send_mail_cron()</field>
+              <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:00:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+    </record>
+
+    <record id="send_mail_crone_employee" model="ir.cron">
+            <field name="name">Send mail: Employee Timesheet Not Submit</field>
+              <field name="model_id" ref="model_account_analytic_line"/>
+              <field name="state">code</field>
+              <field name="code">model._send_mail_employee_cron()</field>
+              <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 10:00:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+              
+    </record>
+    <record id="ir_cron_missing_timesheet_hr" model="ir.cron">
+        <field name="name">Missing Timesheet Reminder (HR)</field>
+        <field name="model_id" ref="model_account_analytic_line"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_missing_timesheet_hr()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall">False</field>
+        <field name="active">True</field>
+        <!-- <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 16:30:00')" /> -->
+        <field name="nextcall"
+       eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d') + ' 16:30:00'"/>
+
+    </record>
+
+</odoo>

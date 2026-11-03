@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_employee_voting_form" model="ir.ui.view">
+            <field name="name">employee.voting.form</field>
+            <field name="model">employee.voting</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        <button name="vote_submit" string="Submit" type="object"
+                                class="btn-primary" attrs="{'invisible': [('state', '=', 'submit')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,submit"/>
+                    </header>
+                    <sheet>
+                    <group>
+                        <group>
+                            <field name="name" options="{'no_create': 1}"/>
+                            <field name='description'/>
+                          </group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_employee_voting_tree" model="ir.ui.view">
+            <field name="name">employee.voting.tree</field>
+            <field name="model">employee.voting</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name='description'/>
+                    <field name="user_id"/>
+                    <field name="create_date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_employee_voting_filter" model="ir.ui.view">
+            <field name="name">employee.voting.search</field>
+            <field name="model">employee.voting</field>
+            <field name="arch" type="xml">
+                <search string="Assets">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <filter string="Group by Week" name="group_by_week" domain="[]" context="{'group_by':'create_date:month'}"/>
+                    <filter string="Employee" name="group_by_employeename" domain="[]" context="{'group_by':'name'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_employee_voting" model="ir.actions.act_window">
+            <field name="name">Employee Voting</field>
+            <field name="res_model">employee.voting</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a Asset?
+              </p>
+              <p>
+                Let's create a Asset.
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_employee_voting"  action="action_employee_voting" name="Employee Voting"/>
+
+    </data>
+</odoo>

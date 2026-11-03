@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_employee_accural_date" model="ir.ui.view">
+            <field name="name">hr.employee</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='joining_date']" position="after">
+                    <label for="probabtion_time"/>
+                    <div class="o_row" name="div_km_home_work">
+                        <field name="probabtion_time" groups="hr.group_hr_user"/>
+                        <span>Months</span>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='job_id']" position="after">
+                    <button name="accural_leave_for_on_probation_emp" string="Accural leave allocation" type="object"/>
+                </xpath>
+             </field> 
+    </record>
+
+    <record id="hr_employee_category_probabtion" model="ir.ui.view">
+            <field name="name">hr.employee.category</field>
+            <field name="model">hr.employee.category</field>
+            <field name="inherit_id" ref="hr.view_employee_category_list"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="on_probabtion"/>
+                </xpath>
+             </field> 
+    </record>
+
+    <record id="hr_employee_accural" model="ir.ui.view">
+            <field name="name">hr.leave.allocation</field>
+            <field name="model">hr.leave.allocation</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='allocation_type']" position="after">
+                    <field name="date_start" groups="hr.group_hr_user" attrs="{'invisible': [('allocation_type', '=', 'accrual')]}"/>
+                </xpath> 
+             </field> 
+    </record>
+
+    <record id="hr_employee_accural" model="ir.ui.view">
+            <field name="name">hr.leave.type</field>
+            <field name="model">hr.leave.type</field>
+            <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='calendar']" position="after">
+                    <group>
+                        <group name="duration" string="duration">
+                            <field name="restic_level"/>
+                            <label for="leave_request_before" string="Leave Request"/>
+                            <div>
+                                <field name="leave_request_before" class="oe_inline"/>
+                                <span>days</span>
+                            </div>
+                        </group>
+                    </group>
+                </xpath> 
+            </field>
+    </record>
+
+    <record id="hr_leave_tree_view_inherit" model="ir.ui.view">
+        <field name="name">hr.leave.inherit.tree</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
+        <field name="arch" type="xml">
+            <header>
+                
+                <button string="Approve" name="action_approve_manager" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('can_approve', '=', False), ('state', '!=', 'confirm')]}"/>
+                
+            </header>
+         </field> 
+</record>
+</odoo>

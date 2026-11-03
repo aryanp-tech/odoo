@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<odoo>
+    <record id="form_hr_policy_form_view" model="ir.ui.view">
+        <field name="name">hr.policy.form.view</field>
+        <field name="model">hr.policy</field>
+        <field name="priority">32</field>
+        <field name="arch" type="xml">
+            <form string="Hr Policy">
+                <sheet>
+                    <h2>
+                        <field name="name" nolabel="1" />
+                    </h2>
+                    <field name='policy'/>
+                    <group><field name='is_acknowledged' /></group>
+                    <group attrs="{'invisible': [('is_acknowledged', '=', True)]}" col="1">
+                        <h2>By acknowledging, I confirm that I have reviewed all the policy information provided above and agree to the terms and conditions.
+                    </h2></group>
+                    <button name="action_acknowledge"
+                        string="Acknowledge"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('is_acknowledged', '=', True)]}"/>
+
+                <field name="acknowledgement_ids" context="{'default_policy_id': active_id}" groups="hr_holidays.group_hr_holidays_manager">
+                    <tree>
+                        <field name="employee_id"/>
+                        <field name="acknowledged_date"/>
+                    </tree>
+                </field>
+                       
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_policy_view_tree" model="ir.ui.view">
+        <field name="name">hr.policy.view.tree</field>
+        <field name="model">hr.policy</field>
+        <field name="arch" type="xml">
+            <tree string="Hr Policy">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hr_policy" model="ir.actions.act_window">
+        <field name="name">Hr Policy </field>
+        <field name="res_model">hr.policy</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="hr_policy_catagories" action="action_hr_policy" name="Hr Policy"
+        sequence="6"/>
+    
+</odoo>

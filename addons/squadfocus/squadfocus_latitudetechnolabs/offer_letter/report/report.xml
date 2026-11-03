@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="paperformat_euro_low_margin" model="report.paperformat">
+        <field name="name">A4</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+    </record>
+
+    <record id="action_employee_offer_letter" model="ir.actions.report">
+        <field name="name">Offer Letter</field>
+        <field name="model">hr.send.letter</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">offer_letter.report_employee_offer_letter</field>
+        <field name="report_file">offer_letter.report_employee_offer_letter</field>
+        <field name="binding_model_id" ref="model_hr_send_letter"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="offer_letter.paperformat_euro_low_margin"/>
+    </record>
+
+
+    <template id="report_employee_offer_letter">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <header style="padding-top:5px;"> 
+                            <!-- <img  src="./offer_letter/static/description/img.png" alt="image is not load"/> -->
+                            <img width="1010px" height="225px" t-if="o.company_id.header_img" t-att-src="image_data_uri(o.company_id.header_img)" alt="Logo"/>
+                        </header>
+                            <p style="margin-left:7mm; margin-right:7mm">Date:-<span t-field="o.date" style="font-weight:bold;"/></p>
+                            <center><h4>OFFER AND APPOINTMENT LETTER</h4></center>
+                            <p style="margin-left:7mm; margin-right:7mm" >Dear <span t-field="o.name" style="font-weight:bold;"/>,</p>
+                            <p style="margin-left:7mm; margin-right:7mm">Thank you for discussing an opportunity to be a part of the Company.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">Based on our discussions, we are pleased to offer you full time position in <span t-field="o.company_id.name" style="font-weight:bold;"/> on the terms and conditions set forth below.</p>
+                            <h4 style="font-weight:bold; margin-left:7mm;margin-right:7mm">Position</h4>
+                            <t t-set="pay_period_label" t-value="{'monthly': 'Monthly', 'quarterly': 'Quarterly', 'yearly': 'Yearly'}.get(o.pay_period, 'Monthly')"/>
+                            <p style="margin-left:7mm; margin-right:7mm">You will be employed as a <span t-field="o.job_title" style="font-weight:bold;"/> at <span t-field="o.company_id" style="font-weight:bold;"/>. with Salary of <span t-field="o.salary" style="font-weight:bold;"/> pm<t t-if="o.bonus &gt; 0 or o.incentive &gt; 0">, <t t-if="o.bonus &gt; 0">Bonus of <span t-field="o.bonus" style="font-weight:bold;"/></t><t t-if="o.bonus &gt; 0 and o.incentive &gt; 0"> and </t><t t-if="o.incentive &gt; 0">Incentive of <span t-field="o.incentive" style="font-weight:bold;"/></t> will be paid <t t-esc="pay_period_label"/></t>. Your Joining Date in our company is  <span t-field="o.joining_date" style="font-weight:bold;"/>.You will be reporting to <span t-field="o.parent_id" style="font-weight:bold;"/>. In addition to your usual duties, you will also perform, observe and conform to such directions and instructions assigned or communicated to you by the Company. As a member of an organization that practices flexibility and continuous improvement in work processes and practices, the Company may from time to time change your duties and responsibilities in its sole discretion.</p>
+                            <h4 style="font-weight:bold; margin-left:7mm; margin-right:7mm">Location</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">1. The Company reserves the right to transfer you at any time to any other place in India or abroad, and/or to a branch office, subsidiary, affiliate company, department or establishment of the Company, whether inexistence on the date of this letter or established or acquired later, provided that the terms and conditions of your employment set forth herein are not adversely affected by such transfer. The Company further reserves the right, subject to applicable laws, to transfer your employment to any other company or legal entity, as part of any transfer of relevant business of the Company or as part of any restructuring or amalgamation orre-organization plan implemented bythe Company or by which the Company isbound.</p>
+                            <h4 style="font-weight:bold;margin-left:7mm; margin-right:7mm">Leave</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">You will be entitled to 18 (Eighteen) days of earned leave for each completed year of continuous service with the Company. Earned leave is pro-rated based on days of employment in a year (i.e., 1 Jan to 31 Dec). All sick leaves taken by you, if requested bythe Company, are to be supported byacceptable medical evidence.</p>
+                            <h4 style="font-weight:bold; margin-left:7mm; margin-right:7mm">Probation</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">1. Your appointment is effective from the date of joining duty at the location specified above. You will be on probation for a period of 6 (six) months from the date of joining duty, which may be extended by the Company in its sole discretion for such further period/periods as it may deem fit. If you successfully complete the probation period, either initial or extended as the case may be, the Company may in its sole discretion confirm your services. You will be deemed to be on probation until you receive the letter of confirmation in writing from the Company and to that extent your probation would be deemed to be extended by the Company.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">2. During the probation period, either party may terminate the employment with the Company by giving one month notice in writing (or paying equivalent basic salary in lieu thereof) and without assigning any reasons therefore; provided that if the notice of termination is served by you, the Company may at its option relieve you from the date as the Company may deem fit even before expiration of the notice period without incurring anyobligations to payany amounts for the unexpired notice period.</p>
+                            <p style="page-break-after:always;"/>
+                            <h4 style="font-weight:bold; margin-left:7mm; margin-right:7mm">Termination of Employment</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">1. Upon confirmation of your services following the probation period, either party may terminate employment with the Company at any time by giving one month’s notice in writing (or by paying equivalent Basic Salary in lieu thereof) and without assigning any reasons therefore. Notwithstanding the foregoing, if you (i) engage in misconduct related to the Company or your employment, including but not limitedtoanybreachofthetermsofthisappointmentletterandtheProprietaryInformationAgreement,or(ii) are convicted for any criminal offence during the tenure of your service with the Company by a court of law, the Company may terminate your employment immediately, without notice and without payment of additional salary. The termination will not affect the rights and remedies that the Company may have under any laws, rules and regulations for the time being in force.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">2. The Company reserves the right to pay or recover the relevant amounts in lieu of notice. In the event you serve notice of termination, the Company may at its option, relieve you from the date as the Company may deem fit even before expiration of the notice period without incurring any obligations to pay any amounts for the unexpired notice period.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">3. In the event you serve notice of termination and you are in the middle of an assignment, the Company may require you to complete all operative parts of the assignment, as determined by the Company, before agreeing to relieve you from the services, even if such completion extends beyond the notice period. In such a case, the Company will pay you salary on then existing terms and conditions up to the date of relieving you from the Company.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">Upon termination of your employment, you will immediately return to the Company any and all documents, manuals, data, records, confidential information, intellectual property, material, equipment and other property belonging to the Company that may be entrusted to and/or placed in your possession by virtue of and/or during the course of your employment with the Company, without making any copies thereof and/or extracts there-from. You will also deliver to the Company immediately all notes, analysis, summaries and working papers relating thereto. The Company will settle your dues, if any, and issue a relieving letter to you only upon your compliance with the terms of this clause under Termination of Employment section.</p>
+                            <h4 style="font-weight:bold; margin-left:7mm; margin-right:7mm">Proprietary Information Agreement</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">1. Your employment with the Company is conditional upon you accepting and signing the Company’s Non-Solicitation Agreement shared separately. It is essential that you carefully read and understand all of your obligations and restrictions contained in the enclosed Agreement before signing your acceptance to this appointment letter.</p>
+                            <h4 style="font-weight:bold; margin-left:7mm; margin-right:7mm">Obligations of Employee</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">1. You will abide by all Company’s rules, regulations, policies and procedures framed by the Company from time to time and applicable to your position, which rules, regulations, policies and procedures shall be deemed to be a part of this appointment letter as if they are specifically incorporated in this appointment letter, including but not limited to those set forth in any applicable employee handbook. Such rules, regulations may include without limitation matters of attendance, conduct, behavior, discipline, working hours, leave, holidays and other applicable benefits. You will take steps to be aware of the Company's rules, regulations, policies and procedures and ignorance of any of them shall not excuse any contravention of the terms of this appointment letter.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">2. During the period of your employment with the Company, you:</p>
+                            <p style="margin-left:7mm; margin-right:7mm">-> Will exclusively serve the Company;</p>
+                            <p style="margin-left:7mm; margin-right:7mm">-> Will not engage or become interested, directly or indirectly, without prior written consent of the Company in that behalf, with or without remuneration, in any trade, business, occupation, employment, service or calling whatsoever nor will undertake any activities which are or will be contrary to or conflict with interests of the Company and/or your duties and obligations hereunder;and</p>
+                            <p style="margin-left:7mm; margin-right:7mm">-> Shall perform your duties and responsibilities with diligence and devotion and shall direct your best efforts to promote the interests of the Company and its operations and all the activities to the extent permitted by law.</p>
+                            <p style="page-break-after:always;"/>
+                            <h4 style="font-weight:bold; margin-left:7mm; margin-right:7mm">Notice Pay Reimbursement</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">1. Also, by signing this letter, you agree to abide by the terms of this Offer and Appointment Letter including but not limited to be liable for any costs that may be incurred by Company as an inference of the legal action that is required for your failure to comply with sections above.</p>
+                            <h4 style="font-weight:bold; margin-left:7mm; margin-right:7mm">Miscellaneous</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">1. This offer and appointment letter is governed by the laws of India. It is agreed that any disputes of whatsoever nature between you and the Company will be subject to the jurisdiction of the courts in Ahmedabad, India whether they be civil courts, labour courts, industrial tribunals, or any other courts or authority or what so ever nature.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">2. You will keep the Company informed of your latest postal address at all times and intimate in writing in case of change of address. Any communication sent to you by the Company on your last known address will be deemed to have been duly served notwithstanding the fact that you have changed youraddress.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">3. The Company reserves its right to terminate the services, after giving a due notice of 60 days or salary in lieu thereof, on account of any redundancy or non-performance in the services on account of continued ill- health which causes the services to lapse for more than 60 days in arow.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">4. Subject to earlier termination of your employment in accordance with this appointment letter, you shall retire from services of the Company on the last day of the month of your [58th]birthday.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">5. You may note that any and all taxes including those taxes which arise from any payments, benefits, etc. received by you from the Company in the course of employment will be borne by you and the Company assumes no responsibility for your personal tax affairs or your liability of such payments and benefits. The Company may deduct or withhold any amounts prior to effecting any payments to you in terms of this appointment letter, in accordance with any provisions of applicable law, rules or regulations as may be in force from time to time, in accordance with applicable law.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">6. If any provision of this offer and appointment letter is invalid or prohibited under the applicable law, such invalidity will not affect the validity of other provisions contained herein. Any invalid or prohibited provision shall be replaced by a provision which reflects the original intention of the Company to the extent permissible by the applicable laws.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">7. This offer and appointment letter and its attachments, including but not limited to the Non-soliciatation Agreement, constitutes the entire understanding relating to your employment with the Company and supersedes all prior offers, statements or representations, written or oral, with respect to your   employment by the Company.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">8. The terms of this offer and appointment letter are strictly confidential between you and the Company and any breach of this confidence will be viewed with utmost seriousness and amount to misconduct.</p>
+                            <p style="page-break-after:always;"/>
+                            <h4 style="font-weight:bold; margin-left:7mm; margin-right:7mm">ACKNOWLEDGEMENT</h4>
+                            <p style="margin-left:7mm; margin-right:7mm">If the terms and conditions of this offer and appointment letter along with its attachments are acceptable to you, please confirm your acceptance by signing and returning this letter. This Offer and Appointment Letter shall be accepted or rejected by you within 5 working days of the date of this Offer Letter. In the event, you do not indicate your acceptance within said 5 working days period, this Offer and Appointment Letter shall be deemed to have been rejected and stands withdrawn upon the expiry of the said 5 working days period. Further, if the terms and conditions are acceptable, you shall join services of the Company no later than <span t-field="o.joining_date" style="font-weight:bold;"/> or as may be mutually agreed by your HR Representative (or recruiter) and yourself in writing, failing which, notwithstanding your acceptance of this appointment letter, the Company's offer to you and this appointment letter shall be deemed to be withdrawn and be of no effect and consequences.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">Yours sincerely,</p>
+                            <p style="margin-left:7mm; margin-right:7mm">________________</p>
+                            <p style="margin-left:7mm; margin-right:7mm">I confirm that I have read, understood and accept the terms of this offer and appointment letter and its attachments, including but not limited to the attachments herein.</p>
+                            <p style="margin-left:7mm; margin-right:7mm">Regards,</p>
+                            <p style="margin-left:7mm; margin-right:7mm">Mr. Jay Vasdewani</p>
+                            <!-- <img style="margin-left:7mm; margin-right:7mm" src="/offer_letter/static/description/img_1.png" alt="image is not load" class="o_setting_left_pane"/> -->
+                            <img style="margin-left:7mm; margin-right:7mm"  t-if="o.company_id.sign" t-att-src="image_data_uri(o.company_id.sign)" alt="Sign"/>
+                            <p style="margin-left:7mm; margin-right:7mm">Director</p>
+                            <p style="margin-left:7mm; margin-right:7mm"><span t-field="o.company_id.name"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+     <record id="paperformat_euro_low_marg_in" model="report.paperformat">
+        <field name="name">A4</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+    </record>
+
+    <record id="action_expirence_letter" model="ir.actions.report">
+        <field name="name">Print Experience Letter</field>
+        <field name="model">hr.expirence.letter</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">offer_letter.hr_expirence_letter</field>
+        <field name="report_file">offer_letter.hr_expirence_letter</field>
+        <field name="binding_model_id" ref="model_hr_expirence_letter"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="offer_letter.paperformat_euro_low_marg_in"/>
+    </record>
+
+
+    <template id="hr_expirence_letter">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <header style="padding-top:5px;"> 
+                            <img width="1010px" height="225px" t-if="o.company_id.header_img" t-att-src="image_data_uri(o.company_id.header_img)" alt="Logo"/>
+                        </header>
+                        <p style="margin-left:7mm; margin-right:7mm">Date:-<span t-field="o.download_date" style="font-weight:bold;"/></p>
+                        <center><h4 style="font-weight:bold; margin-left:8mm; margin-right:8mm;margin-top:10mm">Experience Certificate</h4></center>
+                        <p style="margin-left:7mm; margin-right:7mm;margin-top:15mm;">This is to certify that <span t-field="o.name" style="font-weight:bold;"/> was working at <b><span t-field="o.company_id.name"/></b> from <span t-field="o.start_date" style="font-weight:bold;"/> to <span t-field="o.end_date" style="font-weight:bold;"/> and was designated as a <span t-field="o.designation" style="font-weight:bold;"/> at the time of leaving the organization.</p>
+                        <t t-if="o.gender == 'his'">
+                            <p style="margin-left:7mm; margin-right:7mm;margin-top:20mm;">During his tenure, we found him a sincere and honest in his duties and responsible, dedicated employee with a professional attitude and very good job knowledge. As in our organization, He has always been supportive and available to his superior and subordinates.</p>
+                            <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;">We wish him all the best for future endeavors.</p>
+                            <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;">The company has no dues towards him.</p>
+                        </t>
+                        <t t-else="">
+                            <p style="margin-left:7mm; margin-right:7mm;margin-top:20mm;">During her tenure, we found her a sincere and honest in her duties and responsible, dedicated employee with a professional attitude and very good job knowledge. As in our organization, She has always been supportive and available to her superior and subordinates.</p>
+                            <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;">We wish her all the best for future endeavors.</p>
+                            <p style="margin-left:8mm; margin-right:8mm;margin-top:10mm;">The company has no dues towards her.</p>
+                        </t>
+                        <p style="margin-left:8mm; margin-right:8mm;margin-top:50mm;">Regards,</p>
+                        <p style="margin-left:8mm; margin-right:8mm">Mr. Jay Vasdewani</p>
+                        <img style="margin-left:8mm; margin-right:8mm"  t-if="o.company_id.sign" t-att-src="image_data_uri(o.company_id.sign)" alt="Sign"/>                       
+                         <p style="margin-left:8mm; margin-right:8mm">Director</p>
+                        <p style="margin-left:8mm; margin-right:8mm"><span t-field="o.company_id"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

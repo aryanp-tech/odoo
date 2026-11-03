@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="tmp_employee_form" name="Partner Form">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="row justify-content-md-center" style="margin-top:30px; padding:20px;">
+                    <div class="col-md-12">
+                        <div style="font-size:26px; margin: 9px 0; text-align:center;">
+                            <b>Basic Onboarding Information(Latitude Technolabs Pvt Ltd)</b>
+                        </div>
+                        <form action="/employee/form/submit" class = "onbording_employees" method="POST" enctype="multipart/form-data">
+                            <group>
+                                <group>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="form-group">
+                                                <label for="name">Full Name:</label>
+                                                <input type="text" class="form-control" name="name" id="name"  placeholder="Full Name" required="true" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="dob">DOB:</label>
+                                                <input type="date" class="form-control" name="birthday" id="birthday" required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="form_filling_date">Date of Form Filling:</label>
+                                                <input type="date" class="form-control" name="form_filling_date" id="form_filling_date" required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="phone">Phone NO.:</label>
+                                                <input type="integer" class="form-control" pattern="[0-9]{10}" name="mobile_phone" id="mobile_phone" required="true" placeholder="Phone No."/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="Gender">Gender:</label>
+                                                <select name="gender" id="gender" class="form-control">
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="emergency">Emergency Contact Person's Name.:</label>
+                                                <input type="text" class="form-control" name="emergency" id="emergency"  placeholder="Emergency Contact Name" required="true" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="phone" >Emergency Phone NO.:</label>
+                                                <input type="integer" class="form-control" pattern="[0-9]{10}" name="emergency_contact" id="emergency_contact" required="true" placeholder="Phone No."/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="study_field">Highest Education:</label>
+                                                <select name="study_field" id="study_field" class="form-control" onchange="toggleEducationField()">
+                                                <option value="BCA">BCA</option>
+                                                <option value="MCA">MCA</option>
+                                                <option value="BSC IT">BSC IT</option>
+                                                <option value="MSC IT">MSC IT</option>
+                                                <option value="B Tech - IT">B Tech - IT</option>
+                                                <option value="B Tech - Other">B Tech - Other</option>
+                                                <option value="BE - IT">BE - IT</option>
+                                                <option value="BE - Other">BE - Other</option>
+                                                <option value="Diploma - CS">Diploma - CS</option>
+                                                <option value="PG Diploma - CS">PG Diploma - CS</option>
+                                                <option value="Diploma - Other">Diploma - Other</option>
+                                                <option value="PG Diploma - Other">PG Diploma - Other</option>
+                                                <option value="Graduate - Other">Graduate - Other</option>
+                                                <option value="Post Graduate - Other">Post Graduate - Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm" id="education_field_container" style="display: none;">
+                                            <div class="form-group">
+                                                <label for="other_education" >Specify Your Education:</label>
+                                                <input type="text" class="form-control" name="other_education" id="other_education" placeholder="Specify Your Education."/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="blood"> Blood Group:</label>
+                                                <select name="blood" id="blood" class="form-control">
+                                                    <option value="a_p">A+</option>
+                                                    <option value="a_n">A-</option>
+                                                    <option value="b_p">B+</option>
+                                                    <option value="b_n">B-</option>
+                                                    <option value="o_p">O+</option>
+                                                    <option value="o_n">O-</option>
+                                                    <option value="ab_p">AB+</option>
+                                                    <option value="ab_n">AB-</option>
+                                                   
+                                                </select>                                            
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="job_title">Current Job Title:</label>
+                                                <select name="job_title" id="job_title" class="form-control">
+                                                    <option value="Trainee React.js Developer">Trainee React.js Developer</option>
+                                                    <option value="React.js Developer">React.js Developer</option>
+                                                    <option value="Sr React.js Developer">Sr React.js Developer</option>
+                                                    <option value="TL - React.js Developer">TL - React.js Developer</option>
+
+                                                    <option value="Trainee PHP Developer">Trainee PHP Developer</option>
+                                                    <option value="PHP Developer">PHP Developer</option>
+                                                    <option value="Sr PHP Developer">Sr PHP Developer</option>
+                                                    <option value="TL - PHP Developer">TL - PHP Developer</option>
+
+                                                    <option value="Trainee Wordpress Developer">Trainee Wordpress Developer</option>
+                                                    <option value="Wordpress Developer">Wordpress Developer</option>
+                                                    <option value="Sr Wordpress Developer">Sr Wordpress Developer</option>
+                                                    <option value="TL - Wordpress Developer">TL - Wordpress Developer</option>
+
+                                                    <option value="Trainee iOS Developer">Trainee iOS Developer</option>
+                                                    <option value="iOS Developer">iOS Developer</option>
+                                                    <option value="Sr iOS Developer">Sr iOS Developer</option>
+                                                    <option value="TL - iOS Developer">TL - iOS Developer</option>
+
+                                                    <option value="Trainee Android Developer">Trainee Android Developer</option>
+                                                    <option value="Android Developer">Android Developer</option>
+                                                    <option value="Sr Android Developer">Sr Android Developer</option>
+                                                    <option value="TL - Android Developer">TL - Android Developer</option>
+
+                                                    <option value="Trainee QA Tester">Trainee QA Tester </option>
+                                                    <option value="QA Tester">QA Tester</option>
+                                                    <option value="Sr QA Tester">Sr QA Tester</option>
+                                                    <option value="TL - QA Tester">TL - QA Tester</option>
+
+                                                    <option value="Trainee Node.js Developer">Trainee Node.js Developer</option>
+                                                    <option value="Node.js Developer">Node.js Developer</option>
+                                                    <option value="Sr Node.js Developer">Sr Node.js Developer</option>
+                                                    <option value="TL - Node.js Developer">TL - Node.js Developer</option>
+
+                                                    <option value="Trainee Python Developer">Trainee Python Developer</option>
+                                                    <option value="Python Developer">Python Developer</option>
+                                                    <option value="Sr Python Developer">Sr Python Developer</option>
+                                                    <option value="TL - Python Developer">TL - Python Developer</option>
+
+                                                    <option value="Trainee Talent Acquisition">Trainee Talent Acquisition </option>
+                                                    <option value="Talent Acquisition">Talent Acquisition</option>
+                                                    <option value="Sr Talent Acquisition">Sr Talent Acquisition</option>
+                                                    <option value="TL - Talent Acquisition">TL - Talent Acquisition</option>
+
+                                                    <option value="Trainee Human Resource">Trainee Human Resource </option>
+                                                    <option value="Human Resource">Human Resource</option>
+                                                    <option value="Sr Human Resource">Sr Human Resource</option>
+                                                    <option value="TL - Human Resource">TL - Human Resource</option>
+
+                                                    <option value="Trainee Business Development">Trainee Business Development </option>
+                                                    <option value="Business Development">Business Development </option>
+                                                    <option value="Sr Business Development">Sr Business Development </option>
+                                                    <option value="TL - Business Development">TL - Business Development </option>
+
+                                                    <option value="Trainee IT Administration">Trainee IT Administration</option>
+                                                    <option value="IT Administration">IT Administration</option>
+                                                    <option value="Sr IT Administration">Sr IT Administration</option>
+                                                    <option value="TL - IT Administration">TL - IT Administration</option>
+
+                                                    <option value="Trainee Content Writer">Trainee Content Writer</option>
+                                                    <option value="Content Writer">Content Writer</option>
+                                                    <option value="Sr Content Writer">Sr Content Writer</option>
+                                                    <option value="TL - Content Writer">TL - Content Writer</option>
+
+                                                    <option value="Trainee Devops Engineer">Trainee Devops Engineer</option>
+                                                    <option value="Devops Engineer">Devops Engineer</option>
+                                                    <option value="Sr Devops Engineer">Sr Devops Engineer</option>
+                                                    <option value="TL - Devops Engineer">TL - Devops Engineer</option>
+
+                                                    <option value="Trainee SEO">Trainee SEO</option>
+                                                    <option value="SEO">SEO</option>
+                                                    <option value="Sr SEO">Sr SEO</option>
+                                                    <option value="TL - SEO">TL - SEO</option>
+
+                                                    <option value="Trainee Digital Marketing Executive">Trainee Digital Marketing Executive</option>
+                                                    <option value="Digital Marketing Executive">Digital Marketing Executive</option>
+                                                    <option value="Sr Digital Marketing Executive">Sr Digital Marketing Executive</option>
+                                                    <option value="TL - Digital Marketing Executive">TL - Digital Marketing Executive</option>
+
+                                                    <option value="Trainee Graphic Designer">Trainee Graphic Designer</option>
+                                                    <option value="Jr Graphic Designer">Jr Graphic Designer</option>
+                                                    <option value="Sr Graphic Designer">Sr Graphic Designer</option>
+                                                    <option value="Graphic Designer">Graphic Designer</option>
+
+                                                    <option value="Trainee SEO">Trainee React Native</option>
+                                                    <option value="Jr React Native">Jr React Native</option>
+                                                    <option value="Sr React Native">Sr React Native</option>
+                                                    <option value="React Native">React Native</option>
+
+                                                    <option value="Trainee SEO">Trainee UI UX </option>
+                                                    <option value="Jr UI UX">Jr UI UX</option>
+                                                    <option value="Sr UI UX">Sr UI UX</option>
+                                                    <option value="UI UX">UI UX</option>
+
+                                                    <option value="Technical Consultant">Technical Consultant</option>
+                                                    <option value="Functional Consultant">Functional Consultant</option>
+                                                    <option value="Sr Technical Consultant">Sr Technical Consultant</option>
+                                                    <option value="Sr Functional Consultant">Sr Functional Consultant </option>
+                                                    </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </group>
+                                <group>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group pf_account_div">
+                                                <label for="pf">Do you have EPF account?</label>
+                                                <input type="checkbox" class="control" name="pf_account" id="pf_account" widget="toggle" placeholder="PF No."/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="AC no." id="uan_val">UAN NO.:</label>
+                                                <input type="text" class="control_uan" name="uan" pattern="[0-9]{12}" id="uan"  placeholder="uan No."/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">Photo Upload:</label>
+                                                <input type="file" id="attachment" name="attachment" required="true" class="file" multiple="true" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true"/>                                
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">10th Marksheet:</label>
+                                                <input type="file" id="attachment3" name="attachment3" required="true"  class="file" multiple="true" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true"/>                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">Aadhar Card Upload:</label>
+                                                <input type="file" id="attachment2" name="attachment2" required="true"  class="file" multiple="true" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true"/>                                
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">Aadhar Card no:</label>
+                                                <input type="integer" class="form-control" pattern="[0-9]{12}" name="aadhar_no" id="aadhar_no" required="true" placeholder="Aadhar No."/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">Pan Card Upload:</label>
+                                                <input type="file" id="attachment1" name="attachment1" class="file" multiple="true" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true"/>                                
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">Pan Card No:</label>
+                                                <input type="integer" class="form-control" name="pan_no" id="pan_no" placeholder="Pan Card No."/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">12th Marksheet:</label>
+                                                <input type="file" id="attachment5" name="attachment5"  class="file" multiple="true" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true"/>                                
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">Graduation or Post Graduation Certificate/Diploma Certificate:</label>
+                                                <input type="file" id="attachment4" name="attachment4"  class="file" multiple="true" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true"/>                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        
+                                        <div class="col-sm">
+                                            <div class="form-group">
+                                                <label for="name">Graduation or Post Graduation Marksheet/Diploma Final Marksheet:</label>
+                                                <input type="file" id="attachment6" name="attachment6"  class="file" multiple="true" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true"/>                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </group>
+                            </group>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+              </div>
+          </t>
+    </template>
+
+    <template id="tmp_employee_form_success" name="employee Form Successfully Submitted">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="col-md-12">
+                        <div class="alert alert-success">
+                            Your Onbording from submit successfully.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

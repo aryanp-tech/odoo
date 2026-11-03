@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<odoo>
+    <record id="form_probation_employee_form_view" model="ir.ui.view">
+        <field name="name">probation.employee.form.view</field>
+        <field name="model">probation.employee</field>
+        <field name="priority">32</field>
+        <field name="arch" type="xml">
+            <form string="Probation Employee">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,mail,meeting,done,extend,rejected"/>
+                    <button name="action_reject" string="Rejected" class="oe_highlight" type="object" states="meeting"/>
+                    <button name="meeting_done" groups="oh_appraisal.group_appraisal_manager" string="Meeting Done" class="oe_highlight" type="object" states="mail"/>
+                    <button name="action_set_draft" groups="oh_appraisal.group_appraisal_manager" string="Set to Draft" class="oe_highlight" type="object" states="rejected"/>
+                    <button name="action_sent_mail" groups="oh_appraisal.group_appraisal_manager" string="Send Mail to Manager" class="oe_highlight" type="object" states="draft,extend"/>
+                    <button name="action_done" string="Done" class="oe_highlight" type="object" states="meeting"/>
+                    <button name="probation_extend" string="Probation Extend" class="oe_highlight" groups="oh_appraisal.group_appraisal_manager" type="object" states="meeting"/>
+                    <button name="terminate_wizard" string="Terminate" class="oe_highlight" attrs="{'invisible': [('is_extend', '=', False)]}" groups="oh_appraisal.group_appraisal_manager" type="object" states="meeting" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_survey_answers"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o">
+                            <field string="Answers" name="prob_count_survey" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <h2>
+                        <field name="name" required="1" options="{'no_create': 1}"/>
+                    </h2>
+                    <group>
+                        <group>
+                            <field name="manager_id"/>
+                            <field name="job_title" required="1"/>
+                            <field name="department"/>
+                            <field name="joining_date" required="1"/>
+                            <field name="review_from" required="1"/>
+                            <field name="review_to" required="1"/>
+                        </group>
+                        <group>
+                            <field name="survey_id" required="1"/>
+                            <field name="extend_date" attrs="{'invisible': [('is_extend', '=', False)]}"/>
+                            <field name="probation_period" required="1"/>
+                            <field name="confirmed_by" readonly="1"/>
+                            <field name="reason" readonly="1" attrs="{'invisible': [('is_extend', '=', False)]}"/>
+                            <field name="extend_period" readonly="1" attrs="{'invisible': [('is_extend', '=', False)]}"/>
+                            <field name="is_extend" invisible="1"/>
+                            <field name="terminate_reason" readonly="1" attrs="{'invisible': [('is_terminate', '=', False)]}"/>
+                            <field name="last_work_date" readonly="1" attrs="{'invisible': [('is_terminate', '=', False)]}"/>
+                            <field name="is_terminate" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="probation_employee_view_tree" model="ir.ui.view">
+        <field name="name">probation.employee.view.tree</field>
+        <field name="model">probation.employee</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Probation List">
+                <field name="name"/>
+                <field name="manager_id"/>
+                <field name="survey_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_probation_employees" model="ir.actions.act_window">
+        <field name="name">Probation Employees</field>
+        <field name="res_model">probation.employee</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="probation_employees_menu_catagories" parent="oh_appraisal.menu_hr_appraisal_root" action="action_probation_employees" name="Probation Confirmation"
+        sequence="100"/>
+    
+
+    <record id="view_confirmation_probation_wizard_form" model="ir.ui.view">
+        <field name="name">probationconfirmation.wizard.form</field>
+        <field name="model">probation.confirmation</field>
+        <field name="arch" type="xml">
+            <form string="Confirmation">
+                <field name="message" widget="textarea"/>
+                <footer>
+                    <button string="Confirm" type="object" name="confirm_action" class="btn-primary"/>
+                    <button string="Cancel" type="object" name="cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_extend_probation_wizard_form" model="ir.ui.view">
+        <field name="name">probation.extend.wizard.form</field>
+        <field name="model">probation.extend</field>
+        <field name="arch" type="xml">
+            <form string="Extend">
+                <sheet>
+                    <group>
+                        <field name="extend_to" required="1"/>
+                        <field name="extend_period" required="1"/>
+                        <field name="reason" required="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Confirm" type="object" name="extend_action" class="btn-primary"/>
+                    <button string="Cancel" type="object" name="cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <record id="view_termination_confirmation_wizard_form" model="ir.ui.view">
+        <field name="name">termination.confirmation.wizard.form</field>
+        <field name="model">termination.confirmation</field>
+        <field name="arch" type="xml">
+            <form string="Termination">
+                <sheet>
+                    <group>
+                        <field name="reason" required="1"/>
+                        <field name="terminate_date" required="1"/>
+                        <field name="last_working_date" required="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Confirm" type="object" name="termination_action" class="btn-primary"/>
+                    <button string="Cancel" type="object" name="cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

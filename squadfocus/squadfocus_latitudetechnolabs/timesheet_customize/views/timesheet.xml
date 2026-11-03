@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="timesheet_view_form_user" model="ir.ui.view">
+            <field name="name">account.analytic.line.tree.with.user</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="before">
+                    <button name="send_email" class="btn-primary" string="Send Timesheet" type="object"/>
+                </xpath> 
+                 <field name="unit_amount" position="after">
+                    <field name="upload_file" filename="file_name" widget="binary"/>
+                </field> 
+             </field> 
+        </record>
+</odoo>
+

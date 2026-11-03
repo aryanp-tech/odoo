@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_attendance_view_form_sf" model="ir.ui.view">
+        <field name="name">hr.attendance.form</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+          <field name="arch" type="xml">
+
+            <xpath expr="//group" position="after">
+                <group>
+                    <group string="Check In" >
+                        <field name="geo_ip"/>
+                        <!-- <field name="geo_address"/>
+                        <field name="geo_country"/> -->
+                    </group>
+
+                    <group string="Check Out" >
+                        <field name="checkout_ip"/>
+                        <!-- <field name="checkout_address"/>
+                        <field name="checkout_country"/> -->
+                    </group>
+                </group>    
+            </xpath>
+       </field>
+    </record>
+
+
+    <record id="hr_attendance_view_tree_sf" model="ir.ui.view">
+        <field name="name">hr.attendance.tree</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <!-- Root tree: highlight leave rows in green, auto-absent rows in red -->
+            <tree position="attributes">
+                <attribute name="decoration-success">is_leave == True and is_auto_absent == False</attribute>
+                <attribute name="decoration-danger">is_auto_absent == True</attribute>
+            </tree>
+            <field name="worked_hours" position="after">
+                <field name="geo_ip"/>
+                <!-- <field name="geo_address" optional="show"/> -->
+                <field name="checkout_ip"/>
+                <!-- <field name="checkout_address" optional="show"/> -->
+                <field name="is_leave"   invisible="1"/>
+                <field name="is_auto_absent" invisible="1"/>
+                <field name="leave_type_display" string="Leave Type" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

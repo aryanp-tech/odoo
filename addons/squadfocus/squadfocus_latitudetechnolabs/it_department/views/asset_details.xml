@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_asset_details_form" model="ir.ui.view">
+            <field name="name">asset.details.form</field>
+            <field name="model">asset.details</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        <button name="assign_asset" string="Assign Asset" type="object"
+                                class="btn-primary" attrs="{'invisible': [('state', '=', 'assigned')]}"/>
+                        <button name="return_asset" string="Return Asset" type="object"
+                        class="btn-primary" attrs="{'invisible': [('state', 'in', ['draft','returned'])]}"/>
+                        <button name="assign_partial" string="Partial Assign Asset" type="object"
+                        class="btn-primary" attrs="{'invisible': ['|',('state', '=', 'draft'),('prod_edit', '=', False)]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,assigned,returned"/>
+                    </header>
+                    <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name='department'/>
+                            <field name="work_location"/>
+                            <field name="assign_date"/>
+                            <field name="is_laptop" invisible='1'/>
+                            <field name="is_mouse" invisible='1'/>
+                            <field name="is_keyboard" invisible='1'/>
+                            <field name="is_headphone" invisible='1'/>
+                            <field name="is_screen" invisible='1'/>
+                            <field name="is_cpu" invisible='1'/>
+                            <field name="is_extra_equipment" invisible='1'/>
+                            <field name="desk"  attrs="{'invisible': [('work_location','!=','wfo')]}"/>
+                            <field name="prod_edit" invisible='1'/>
+                            <label for="laptop" string="Laptop"/>
+                            <div>
+                                <div class="o_row o_row_readonly o_hr_holidays_dates">
+                                    <field name="laptop" widget="boolean_toggle"/>
+                                    <span class="oe_inline"
+                                        attrs="{'invisible': [('laptop', '=', False)]}">
+                                        <field name="laptop_equip"  widget="many2one" options="{'no_create': 1}"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <label for="mouse" string="Mouse"/>
+                            <div>
+                                <div class="o_row o_row_readonly o_hr_holidays_dates">
+                                    <field name="mouse" widget="boolean_toggle"/>
+                                    <span class="oe_inline"
+                                        attrs="{'invisible': [('mouse', '=', False)]}">
+                                        <field name="mouse_equip"  widget="many2one" options="{'no_create': 1}"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <label for="keyboard" string="Keyboard"/>
+                            <div>
+                                <div class="o_row o_row_readonly">
+                                    <field name="keyboard" widget="boolean_toggle"/>
+                                    <span class="oe_inline"
+                                        attrs="{'invisible': [('keyboard', '=', False)]}">
+                                        <field name="keyboard_equip"  widget="many2one" options="{'no_create': 1}"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <label for="headphone" string="Headphone"/>
+                            <div>
+                                <div class="o_row o_row_readonly ">
+                                    <field name="headphone" widget="boolean_toggle"/>
+                                    <span class="oe_inline"
+                                        attrs="{'invisible': [('headphone', '=', False)]}">
+                                        <field name="headphone_equip"  widget="many2one" options="{'no_create': 1}"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <label for="screen" string="screen"/>
+                            <div>
+                                <div class="o_row o_row_readonly ">
+                                    <field name="screen" widget="boolean_toggle"/>
+                                    <span class="oe_inline"
+                                        attrs="{'invisible': [('screen', '=', False)]}">
+                                        <field name="screen_equip"  widget="many2one" options="{'no_create': 1}"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <label for="cpu" string="CPU"/>
+                            <div>
+                                <div class="o_row o_row_readonly">
+                                    <field name="cpu" widget="boolean_toggle"/>
+                                    <span class="oe_inline"
+                                        attrs="{'invisible': [('cpu', '=', False)]}">
+                                        <field name="cpu_equip" widget="many2one" options="{'no_create': 1}"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <label for="webcam" string="WebCam"/>
+                            <div>
+                                <div class="o_row o_row_readonly">
+                                    <field name="webcam" widget="boolean_toggle"/>
+                                    <span class="oe_inline"
+                                        attrs="{'invisible': [('webcam', '=', False)]}">
+                                        <field name="webcam_equip" widget="many2one" options="{'no_create': 1}"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <field name='extra_equipment' widget="many2many_tags"  options="{'no_create': 1}"/>
+                            <field name="is_reason" invisible="1"/>
+                            <field name="reason" attrs="{'invisible': [('is_reason', '=', False)]}"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class='oe_chatter'>
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_asset_details_tree" model="ir.ui.view">
+            <field name="name">asset.details.tree</field>
+            <field name="model">asset.details</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name='department'/>
+                    <field name="work_location"/>
+                    <field name="state"/>
+                    <field name="laptop_equip"/>
+                    <field name="mouse_equip"/>
+                    <field name="keyboard_equip"/>
+                    <field name="headphone_equip"/>
+                    <field name="screen_equip"/>
+                    <field name="cpu_equip"/>
+                    <field name="reason"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_asset_details_filter" model="ir.ui.view">
+            <field name="name">asset.details.search</field>
+            <field name="model">asset.details</field>
+            <field name="arch" type="xml">
+                <search string="Assets">
+                    <field name="name"/>
+                    <field name='department'/>
+                    <field name="work_location"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_asset_details" model="ir.actions.act_window">
+            <field name="name">Employee Asset Details</field>
+            <field name="res_model">asset.details</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a Asset?
+              </p>
+              <p>
+                Let's create a Asset.
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_asset_details"  action="action_asset_details" name="IT Department" 
+        groups="it_department.module_it_officer,it_department.module_it_admin"/>
+
+    </data>
+</odoo>

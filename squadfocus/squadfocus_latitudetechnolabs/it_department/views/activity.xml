@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_equipment_activity_details_form" model="ir.ui.view">
+            <field name="name">equipment.activity.form</field>
+            <field name="model">equipment.activity</field>
+            <field name="arch" type="xml">
+                <form string="Equipment Activity" create="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name='equipment'/>
+
+                                <field name="employee_id"/>
+                                <field name="job_title"/>
+                                <field name="assign_date" />
+                                <field name="responsible"/>
+                                <label for="prod_from" string="Product From"/>
+                                <div class="o_row o_row_readonly">
+                                    <field name="prod_from"/>
+                                    <span class="oe_inline">
+                                        <field name="from_employee" attrs="{'invisible': [('prod_from', '!=', 'employee')]}"/>
+                                    </span>
+                                </div>
+                                <label for="prod_to" string="Product To"/>
+                                <div class="o_row o_row_readonly">
+                                    <field name="prod_to"/>
+                                    <span class="oe_inline">
+                                        <field name="to_employee" attrs="{'invisible': [('prod_to', '!=', 'employee')]}"/>
+                                    </span>
+                                </div>
+                                <field name="reason"/>
+                                <field name="quantity"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_equipment_activity_details_tree" model="ir.ui.view">
+            <field name="name">equipment.activity.tree</field>
+            <field name="model">equipment.activity</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1" create="false">
+                    <field name="name"/>
+                    <field name='equipment'/>
+                    <field name="prod_from"/>
+                    <field name="from_employee"/>
+                    <field name="prod_to"/>
+                    <field name="to_employee"/>
+                    <field name="serial_no"/>
+                    <field name="employee_id"/>
+                    <field name="job_title"/>
+                    <field name="assign_date" />
+                    <field name="responsible"/>
+                    <field name="reason"/>
+                    <field name="quantity"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_equipment_activity_details_filter" model="ir.ui.view">
+            <field name="name">equipment.activity.search</field>
+            <field name="model">equipment.activity</field>
+            <field name="arch" type="xml">
+                <search string="Jobs">
+                    <field name="name"/>         
+                    <field name="equipment"/>
+                    <field name="employee_id"/>
+                    <field name="reason"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_equipment_activity_details" model="ir.actions.act_window">
+            <field name="name">Activity Log</field>
+            <field name="res_model">equipment.activity</field>
+            <field name="view_mode">tree,form</field>
+           
+        </record>
+        <menuitem id="equipment_activity_detaills_menu" parent="it_department.menu_asset_details" action="action_equipment_activity_details" name="Activity Log"
+        sequence="20"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,7 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_asset_details,access_asset_details,model_asset_details,,1,1,1,0
+access_equipment_details,access_equipment_details,model_equipment_details,,1,1,1,1
+access_equipment_activity,access_equipment_activity,model_equipment_activity,,1,1,1,0
+access_equipment_stock,access_equipment_stock,model_equipment_stock,,1,1,1,1
+access_equipment_category,access_equipment_category,model_equipment_category,,1,1,1,1
+access_equipment_return,access_equipment_return,model_equipment_return,,1,1,1,1

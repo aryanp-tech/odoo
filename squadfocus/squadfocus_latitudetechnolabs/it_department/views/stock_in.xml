@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_equipment_stock_details_form" model="ir.ui.view">
+            <field name="name">equipment.stock.form</field>
+            <field name="model">equipment.stock</field>
+            <field name="arch" type="xml">
+                <form string="Product Stock">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="tag_code"  attrs="{'invisible': [('on_name', '=', 'others')]}"/>
+                                <field name="tag_no" attrs="{'invisible': [('on_name', '=', 'others')]}"/>
+                                <label for="prod_from" string="Product From"/>
+                                <div class="o_row o_row_readonly">
+                                    <field name="prod_from"/>
+                                    <span class="oe_inline">
+                                        <field name="vendor_id" attrs="{'invisible': [('prod_from', '!=', 'vendor')]}"/>
+                                        <field name="from_employee" attrs="{'invisible': [('prod_from', '!=', 'employee')]}"/>
+                                    </span>
+                                </div>
+                                <label for="prod_to" string="Product To"/>
+                                <div class="o_row o_row_readonly">
+                                    <field name="prod_to"/>
+                                    <span class="oe_inline">
+                                        <field name="vendor_id" attrs="{'invisible': [('prod_to', '!=', 'vendor')]}"/>
+                                        <field name="to_employee" attrs="{'invisible': [('prod_to', '!=', 'employee')]}"/>
+                                    </span>
+                                </div>
+                                <field name='category'/>
+                                <field name="quantity"  attrs="{'invisible': [('on_name', 'in', ['laptop','mouse','keyboard','cpu','screen','headphone'])]}"/>
+                                <field name="purchase_date" />
+                                <field name="serial_no"/>
+                                <field name="responsible"/>
+                                <field name="ticket_no"/>
+                                <field name="on_name" invisible='1'/>
+                                <field name="ram" attrs="{'invisible': [('on_name', 'not in', ['laptop','Laptop','LAPTOP','cpu','Cpu','CPU'])]}"/>
+                                <field name="rom" attrs="{'invisible': [('on_name', 'not in', ['laptop','Laptop','LAPTOP','cpu','Cpu','CPU'])]}"/>
+                                <field name="processor" attrs="{'invisible': [('on_name', 'not in', ['laptop','Laptop','LAPTOP','cpu','Cpu','CPU'])]}"/>
+                                <field name="remark"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class='oe_chatter'>
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_equipment_stock_details_tree" model="ir.ui.view">
+            <field name="name">equipment.stock.tree</field>
+            <field name="model">equipment.stock</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name='category'/>
+                    <field name="vendor_id"/>
+                    <field name="quantity"/>
+                    <field name="purchase_date" />
+                    <field name="serial_no"/>
+    
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_equipment_stock_details_filter" model="ir.ui.view">
+            <field name="name">equipment.stock.search</field>
+            <field name="model">equipment.stock</field>
+            <field name="arch" type="xml">
+                <search string="Jobs">
+                    <field name="name"/>  
+                    <field name="category"/>
+                    <field name="serial_no"/>
+                    <field name="ticket_no"/>       
+                </search>
+            </field>
+        </record>
+
+        <record id="action_equipment_stock_details" model="ir.actions.act_window">
+            <field name="name">Stock In</field>
+            <field name="res_model">equipment.stock</field>
+            <field name="view_mode">tree,form</field>
+           
+        </record>
+        <menuitem id="equipment_stock_in_menu" parent="it_department.menu_asset_details" action="action_equipment_stock_details" name="Stock In"
+        sequence="25"/>
+
+    </data>
+</odoo>

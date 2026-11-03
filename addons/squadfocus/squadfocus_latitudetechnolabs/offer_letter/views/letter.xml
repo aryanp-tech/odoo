@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!-- Offer Letter  -->
+        <record id="view_hr__send_letter_form" model="ir.ui.view">
+            <field name="name">hr.letter.send.form</field>
+            <field name="model">hr.send.letter</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        <button name="send_offer_letter" string="Send Offer Letter" type="object"
+                                class="btn-primary"/>
+                    </header>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name='email'/>
+                            <field name="pay_period" widget="radio" options="{'horizontal': true}"/>
+                            <field name="salary"/>
+                            <field name="bonus"/>
+                            <field name="incentive"/>
+                            <field name="job_title"/>
+                            <field name="date"/>
+                            <field name="company_id"/>
+                            <field name="parent_id"/>
+                            <field name="joining_date"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hr_send_letter_tree" model="ir.ui.view">
+            <field name="name">hr.letter.send.tree</field>
+            <field name="model">hr.send.letter</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name="job_title"/>
+                    <field name="date"/>
+                    <field name="company_id"/>
+                    <field name="parent_id"/>
+                    <field name="joining_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_send_letter_filter" model="ir.ui.view">
+            <field name="name">hr.letter.send.search</field>
+            <field name="model">hr.send.letter</field>
+            <field name="arch" type="xml">
+                <search string="Jobs">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_hr_send_letter" model="ir.actions.act_window">
+            <field name="name">letter</field>
+            <field name="res_model">hr.send.letter</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_send_letter_filter"/>
+            <field name="context">{"search_default_Current":1}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a letter?
+              </p>
+              <p>
+                Let's create a letter.
+              </p>
+            </field>
+        </record>
+        <menuitem id="letter_catagories" parent="hr_recruitment.menu_hr_recruitment_root" action="action_hr_send_letter" name="Send Offer Letter"
+        sequence="15"/>
+
+        <record id="hr_employee_form" model="ir.ui.view">
+        <field name="name">hr.employee.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='hr_settings']//field[@name='job_id']" position="after">
+                <field name="last_day"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_company_inherit_form" model="ir.ui.view">
+        <field name="name">res.company.inherit.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='website']" position="after">
+                <field name="sign" widget='image'/>
+                <field name="header_img" widget='image'/>
+            </xpath>
+        </field>
+    </record>
+
+<!-- Experience letter Form view -->
+
+    <record id="view_hr_experience_letter_form" model="ir.ui.view">
+        <field name="name">hr.expirence.letter.form</field>
+        <field name="model">hr.expirence.letter</field>
+        <field name="arch" type="xml">
+            <form string="Job">
+                <header>
+                    <button name="send_experience_letter" string="Send Exp Letter" type="object"
+                            class="btn-primary"/>
+                </header>
+                <group>
+                    <group>
+                        <field name="name"/> 
+                        <field name="gender"/>
+                        <field name="designation"/>
+                        <field name="email"/>                 
+                        <field name="company_id"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="download_date"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_send_experience_letter_tree" model="ir.ui.view">
+        <field name="name">hr.expirence.letter.send.tree</field>
+        <field name="model">hr.expirence.letter</field>
+        <field name="arch" type="xml">
+            <tree string="Job" sample="1">
+                <field name="name"/>
+                <field name="designation"/>
+                <field name="email"/>
+                <field name="company_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="download_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_send_experience_letter_filter" model="ir.ui.view">
+        <field name="name">hr.expirence.letter.send.search</field>
+        <field name="model">hr.expirence.letter</field>
+        <field name="arch" type="xml">
+            <search string="Jobs">
+                <field name="name"/>
+                <field name="designation"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_send_experience_letter" model="ir.actions.act_window">
+        <field name="name">Experience Letter</field>
+        <field name="res_model">hr.expirence.letter</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_send_experience_letter_filter"/>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Ready to create a letter?
+          </p>
+          <p>
+            Let's create a letter.
+          </p>
+        </field>
+    </record>
+    <menuitem id="experience_letter_catagories" parent="hr_recruitment.menu_hr_recruitment_root" action="action_hr_send_experience_letter" name="Send Exp Letter"
+    sequence="15"/>
+
+
+    </data>
+</odoo>

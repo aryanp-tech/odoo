@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_employee_ticket_form" model="ir.ui.view">
+            <field name="name">employee.ticket.form</field>
+            <field name="model">employee.ticket</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        <button name="issue_solve" string="Issue Solved" type="object"
+                                class="btn-primary" attrs="{'invisible': [('state', 'in', ['solve'])]}" groups="hr.group_hr_manager"/>
+                        <button name="reassign_issue" string="Reassign Issue" type="object"
+                                class="btn-primary" attrs="{'invisible': [('state', 'in', ['solve'])]}" groups="hr.group_hr_manager,it_department.module_it_admin"/>
+                        <field name="state" widget="statusbar" statusbar_visible="submit,solve"/>
+                    </header>
+                    <sheet>
+                    <group>
+                        <field name='topic' required="1"/>
+                        <field name='reassign_to' groups="hr.group_hr_manager"/>
+                        <field name='issue' widget='html' required="1"/>
+                        <field name='description' widget='image'/>
+                        <field name="create_date"/>
+                        <field name="user_id"/>
+                        <field name="solve_date"/>
+                        <field name="reassign_date" readonly="1"/>
+                    </group>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_employee_ticket_tree" model="ir.ui.view">
+            <field name="name">employee.ticket.tree</field>
+            <field name="model">employee.ticket</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name='issue'/>
+                    <field name="user_id"/>
+                    <field name="create_date"/>
+                    <field name="state"/>
+                    <field name="solve_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_employee_ticket_filter" model="ir.ui.view">
+            <field name="name">employee.ticket.search</field>
+            <field name="model">employee.ticket</field>
+            <field name="arch" type="xml">
+                <search string="Server">
+                    <field name="user_id"/>
+                    <!-- <filter string="Employee" name="group_by_employee_name" domain="[]" context="{'group_by':'name'}"/> -->
+                    <filter string="Stage" name="group_by_stage" domain="[]" context="{'group_by':'state'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_employee_ticket" model="ir.actions.act_window">
+            <field name="name">Tickets</field>
+            <field name="res_model">employee.ticket</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a Issue?
+              </p>
+              <p>
+                Let's create a Server Issue.
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_server_issue"  action="action_employee_ticket" name="Tickets"/>
+
+    </data>
+    
+</odoo>
+ 

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<odoo>
+    <data noupdate="1">
+       
+        <record id="send_email_offer_letter" model="mail.template">
+            <field name="name">Offer Letter Template</field>
+            <field name="model_id" ref="offer_letter.model_hr_send_letter"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="email_from">${}</field>
+            <field name="email_to">${}</field>
+            <field name="subject">Regarding Offer Letter</field>
+            <field name="body_html">
+            <![CDATA[
+            <p>Dear ${object.name},
+            <br/>
+            Hope you are doing well!
+            <br/>
+            Congratulations on your offer from ${object.company_id.name}!
+             We are delighted to offer you the position of a ${object.job_title}
+             with an anticipated start date of ${object.joining_date}.
+ 
+                As discussed, please find attached your detailed offer letter.<br/>
+            </p>
+            Regards,<br/>
+            ]]></field>
+        </record>
+
+        <record id="send_email_experience_letter" model="mail.template">
+            <field name="name">Experience Letter Template</field>
+            <field name="model_id" ref="offer_letter.model_hr_expirence_letter"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="email_from">${}</field>
+            <field name="email_to">${}</field>
+            <field name="subject">Regarding Experience Letter</field>
+            <field name="body_html">
+            <![CDATA[
+            <p>Dear ${object.name.name},</p>
+            <br/>
+            Hope you are doing well!
+            <br/>
+            <p>Please find below attached your Experience cum relieving Letter,
+                Let me know if you have any queries,
+                </p>
+            <br/>
+            <p>Best of luck for your future endeavors!</p>
+            ]]></field>
+        </record>
+    </data>
+</odoo>

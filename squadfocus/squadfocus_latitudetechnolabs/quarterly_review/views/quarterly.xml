@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_quarterly_review_form" model="ir.ui.view">
+            <field name="name">quarterly.review.form</field>
+            <field name="model">quarterly.review</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        <button name="set_draft" string="Draft" type="object"
+                                class="btn-primary" groups="hr.group_hr_manager" attrs="{'invisible': [('state', '=','draft')]}"/>
+                        <button name="send_employee" string="Send To Employee" type="object"
+                        class="btn-primary" attrs="{'invisible': [('state', 'in',['submit','sent','done','submit_manager'])]}"/>
+                        <button name="submit_form" string="Submit" type="object" confirm="Are you sure to submit this form ?"
+                                class="btn-primary" attrs="{'invisible': [('state', 'in',['submit','draft','done','submit_manager'])]}"/>
+                        <button name="set_done" string="Set Done" type="object" groups="hr.group_hr_manager" confirm="Are you sure to submit this form ?"
+                                class="btn-primary" attrs="{'invisible': [('state', 'in',['sent','draft','done'])]}"/>
+                        <button name="set_manager_submit" string="Manager Submit" confirm="Are you sure to submit this form ?" type="object" class="btn-primary" attrs="{'invisible': [('state', 'in',['sent','draft','done','submit_manager'])]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,sent,submit,submit_manager,done"/>
+                    </header>
+                    <sheet>
+                        <div name="button_box" class="oe_button_box">
+                            <span class="o_stat_text">
+                                    
+                                <button name="action_salary_details" groups="quarterly_review.group_quarterly_review_super_admin" type="object" string="Salary Details" class="oe_stat_button"/>
+                            </span>
+                        </div>
+                    <group>
+                        <group>
+                            <field name="name" options="{'no_create':1}"/>
+                            <field name='designation'/>
+                            <field name='employee_no'/>
+                            <field name='quarter_name'/>  
+                            <field name='quarter_start_date'/>  
+                            <field name='quarter_end_date'/>          
+                            <field name='create_quarter_date'/>     
+                            <field name='mail_send_date'/>                
+                          </group>
+                        <group>
+                            <field name="department"/>
+                            <field name="location"/>
+                            <field name="manager_id" options="{'no_create': 1}" groups="hr.group_hr_manager" widget="many2many_tags"/>
+                            <field name="is_submit" invisible="1"/>
+                            <field name='submit_date'/> 
+                            <field name='complete_date'/> 
+                            <field name="final_rating" attrs="{'invisible': [('sub_quarter_ids', '=',[])]}"/>
+                            <field name="total_manager_rating" attrs="{'invisible': ['|','|',('state', 'in',['draft','sent','submit']),('submit_date', '=',False),('sub_quarter_ids', '!=',[])]}"/>
+                            <field name="sub_quarter_ids" invisible="1"/>
+                            <field name="department"/>
+                        </group>
+                    </group>
+                    <notebook> 
+                        <page string="IKRAs (Individual Key Result Areas)">
+                            <div class="oe_edit_only">
+                                <p>Employee to summarize the major responsibilities and expectations from the job function.</p>
+                                </div>
+                            <field name="activity_id" widget="one2many"/>
+                            <group name="activity" col="12" class="mt-2 mt-md-0">
+                                <group colspan="8">
+                                    <field name="activity_comment" string="Manager's comment" nolabel="1" placeholder="Manager's Comment" attrs="{'invisible': [('state', 'in',['draft','sent'])]}"/>
+                                    <field name="sub_quarter_ids" groups="hr.group_hr_manager">
+                                        <tree>
+                                          <field name="name"/>
+                                          <field name="manager_id" widget="many2many_tags"/>
+                                          <field name="total_manager_rating"/>
+                                          <!-- <field name="final_rating"/> -->
+                                        </tree>
+                                    </field>
+                                </group>
+                            </group>                        
+                        </page>
+                        <page string="Major Accomplishments and Results">
+                            <div class="oe_edit_only">
+                                <p>Employee to lists major accomplishments in order of priority and evaluates the results achieved in meeting these goals.</p>
+                                </div>
+                            <field name="project_id">
+                                <tree>
+                                    <field name="project_id"/>
+                                    <field name="accomplishment"/>
+                                    <field name="action"/>
+                                    <field name="support"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Disappointment(s)">
+                            <div class="oe_edit_only">
+                                <p>Employee lists some of his/her disappointments and missed opportunities during the performance year. Its impact and what other factors could have
+                                    led to a more positive outcome (including actions on the part of the Company as well as his/her own individual performance)</p>
+                            </div>    
+                            <field name="disappoint_id">
+                                <tree>
+                                    <field name="disappointment"/>
+                                    <field name="action"/>
+                                    <field name="self_rating"/>
+                                </tree>
+                            </field>                    
+                        </page>
+                        <page string="Performance Feedback">
+                            <div>
+                                <p>
+                                    Employee and Manager has to rate each parameter on 5 point scale, where
+                                </p>
+                                <h6>5 is Exceeds Expectations , 4 is Meet Expectations, 3 is Need follow-up, 2 is Improvements Needed and 1 is Poor performance.</h6>
+                            </div>
+                            <group name="section_four" col="12" class="mt-2 mt-md-0">
+                                <group  colspan="12">                                                                
+                                    <field name="reliability" string="Reliability and Consistency of Performance"/>
+                                    <div>
+                                        <p>Dependability. Completes work in a timely manner without any follow-up.</p>
+                                    </div>
+                                    <field name="reliability_manager" string="Manager's Rating" attrs="{'invisible': [('state', 'in',['draft','sent'])]}"/>
+                                </group>
+
+                                <group  colspan="12">                                                                       
+                                    <field name="performance" string="Performance Under Pressure"/>
+                                    <div>
+                                        <p>Maintains consistency of work and quality of work under time. Pressures and/or large volumes of work.</p>
+                                    </div>
+                                    <field name="performance_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+
+                                <group  colspan="12">
+                                    <field name="job_knowledge" string="Job Knowledge"/>
+                                    <div>
+                                        <p>Demonstrates knowledge of requirements, skills, software and methodology involved in completing a job.
+                                            Attempts to keep current with necessary skills to maintain/increase productivity</p>
+                                    </div>
+                                    <field name="job_knowledge_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+
+                                <group  colspan="12">
+                                    <field name="adaptability" string="Adaptability/Flexibility in Responding to Change:"/>
+                                    <div>
+                                        <p>Adapts behaviour to accommodate changes in the workplace such as shifting of work priorities,
+                                            technology, changes in working relationships, etc.</p>
+                                    </div>
+                                    <field name="adaptability_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+
+                                <group  colspan="12">
+                                    <field name="quality_work" string="Quality of Work"/>
+                                    <div>
+                                        <p>Overall assessment of completeness, freedom from errors, etc.</p>
+                                    </div>
+                                    <field name="quality_work_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+
+                                <group  colspan="12">
+                                    <field name="quantity_work" string="Quantity of Work"/>
+                                    <div>
+                                        <p>Overall assessment of volume of work, timeliness, adherence to deadlines, number of activities handled,
+                                            etc.</p>
+                                    </div>
+                                    <field name="quantity_work_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+
+                                <group  colspan="12">
+                                    <field name="responsive" string="Responsive to Clients"/>
+                                    <div>
+                                        <p>Knowledge results in clients receiving information on a timely basis.</p>
+                                    </div>
+                                    <field name="responsive_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+
+                                <group  colspan="12">
+                                    <field name="communication" string="Communication Skills"/>
+                                    <div>
+                                        <p>Demonstrates both good written and oral communication skills</p>
+                                    </div>
+                                    <field name="communication_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+                                <group  colspan="12" class="mt-5">
+                                    <field name="confidentiality" string="Confidentiality and Security Sensitivity"/>
+                                    <div>
+                                        <p>Handles confidential information appropriately and exercises care in safeguarding proprietary and personal
+                                            information.</p>
+                                            
+                                    </div>
+                                    <field name="confidentiality_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+                                <group  colspan="12">
+                                    <field name="attendance" string="Attendance and Punctuality"/>
+                                    <div>
+                                        <p>Maintains discipline and is regular in attending duties on time and is regular in submitting is required
+                                            information timely.</p>
+                                    </div>
+                                    <field name="attendance_manager" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Rating"/>
+                                </group>
+                                <group  colspan="12">
+                                    <field name="overal_comments" string="Employee's Overall Comment"/>
+                                    
+                                    <field name="manager_overal_comments" attrs="{'invisible': [('state', 'in',['draft','sent'])]}" string="Manager's Overal Comment"/>
+                                </group>
+                               
+                            </group>
+                        </page>
+                        
+                    </notebook>
+                </sheet>
+                <div class='oe_chatter'>
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_quarterly_review_tree" model="ir.ui.view">
+            <field name="name">quarterly.review.tree</field>
+            <field name="model">quarterly.review</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name='designation'/>
+                    <field name="manager_id" widget="many2many_tags" groups="hr.group_hr_manager"/>
+                    <field name="state"/>
+                    <field name="create_quarter_date"/>
+                    <field name='mail_send_date'/> 
+                    <field name='submit_date'/> 
+                    <field name='complete_date'/> 
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_quarterly_review" model="ir.actions.act_window">
+            <field name="name">Quarterly Review</field>
+            <field name="res_model">quarterly.review</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a Issue?
+              </p>
+              <p>
+                Let's create a Quarterly review.
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_quarterly_review"  action="action_quarterly_review" name="Quarterly Review"/>
+
+        <record id="action_send_mail_employee" model="ir.actions.server">
+            <field name="name">Send Mail to Employee</field>
+            <field name="model_id" ref="model_quarterly_review"/>
+            <field name="binding_model_id" ref="model_quarterly_review"/>
+            <field name="state">code</field>
+            <field name="code">records.send_employee()</field>
+        </record>
+        <record id="action_export_quarterly_review_excel" model="ir.actions.server">
+            <field name="name">Export Review Excel Report</field>
+            <field name="model_id" ref="model_quarterly_review"/>
+            <field name="binding_model_id" ref="model_quarterly_review"/>
+            <field name="state">code</field>
+            <field name="code">action = records.action_export_quarterly_review_excel()</field>
+        </record>
+        <record id="view_activity_review_form" model="ir.ui.view">
+            <field name="name">activity.review.form</field>
+            <field name="model">activity.review</field>
+            <field name="arch" type="xml">
+                <form string="Activity Review">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="quarter_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_projecct_review_form" model="ir.ui.view">
+            <field name="name">project.review.form</field>
+            <field name="model">project.review</field>
+            <field name="arch" type="xml">
+                <form string="Project Review">
+                    <sheet>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="state" invisible="1"/>
+                            <field name="accomplishment"/>
+                            <field name="action"/>
+                            <field name="support"/>
+                            <field name="self_rating"/>
+                            <field name="manager_rating" attrs="{'invisible': [('state', '=','draft')]}"/>
+                            <field name="manager_comment" attrs="{'invisible': [('state', '=','draft')]}"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_dissapoint_review_form" model="ir.ui.view">
+            <field name="name">dissapoint.review.form</field>
+            <field name="model">disapoint.review</field>
+            <field name="arch" type="xml">
+                <form string="Dissapoint Review">
+                    <sheet>
+                        <group>
+                            <field name="quarter_id" invisible="1"/>
+                            <field name="state" invisible="1"/>
+                            <field name="disappointment"/>
+                            <field name="action"/>
+                            <field name="self_rating"/>
+                            <field name="manager_rating" attrs="{'invisible': [('state', '=','draft')]}"/>
+                            <field name="manager_comment" attrs="{'invisible': [('state', '=','draft')]}"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- <record id="action_export_quarterly_review_excel" model="ir.actions.server">
+            <field name="name">Export Quarterly Review Excel</field>
+            <field name="model_id" ref="model_quarterly_review"/>
+            <field name="binding_model_id" ref="model_quarterly_review"/>
+            <field name="state">code</field>
+            <field name="code">records.action_export_quarterly_review_excel()</field>
+          
+        </record> -->
+        
+    </data>
+</odoo>
+ 

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_answer_feedback_form" model="ir.ui.view">
+            <field name="name">answer.feedback.form</field>
+            <field name="model">answer.feedback</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                        <button name="set_done" string="Done" class="oe_highlight" type="object" states="draft"/>
+                    </header>
+                    <sheet>
+                    <group>
+                        <group>
+                            <field name="name" options="{'no_create': 1}"/>
+                            <field name='parent_id'/>
+                          </group>
+                        <!-- <group> -->
+                            <field name='feedback'/>
+                        <!-- </group> -->
+                    </group>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_answer_feedback_tree" model="ir.ui.view">
+            <field name="name">answer.feedback.tree</field>
+            <field name="model">answer.feedback</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name='feedback'/>
+                    <field name='state'/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_answer_feedback_filter" model="ir.ui.view">
+            <field name="name">answer.feedback.search</field>
+            <field name="model">answer.feedback</field>
+            <field name="arch" type="xml">
+                <search string="Employees">
+                    <field name="name"/>
+                    <!-- <filter string="Group by Week" name="group_by_week" domain="[]" context="{'group_by':'create_date:week'}"/>
+                    <filter string="Employee" name="group_by_employeename" domain="[]" context="{'group_by':'name'}"/> -->
+                </search>
+            </field>
+        </record>
+
+        <record id="action_answer_feedback" model="ir.actions.act_window">
+            <field name="name">Monthly Feedback Answer</field>
+            <field name="res_model">answer.feedback</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a Feedback?
+              </p>
+              <p>
+                Let's create a Feedback.
+              </p>
+            </field>
+        </record>
+        <!-- <menuitem id="menu_monthly_feedback"  action="action_monthly_feedback" name="Monthly Feedback"/> -->
+
+    </data>
+</odoo>

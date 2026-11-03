@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="employee_voting_category" model="ir.module.category">
+            <field name="name">Employee Voting</field>
+            <field name="sequence">99</field>
+        </record>
+
+        <record id="group_employee_voting_user" model="res.groups">
+            <field name="name">Employee Voting User</field>
+            <field name="category_id" ref="employee_voting.employee_voting_category"/>
+            <field name="comment">Group for users who can access employee voting but with limited permissions.</field>
+        </record>
+
+        <record id="group_employee_voting_admin" model="res.groups">
+            <field name="name">Employee Voting Admin</field>
+            <field name="category_id" ref="employee_voting.employee_voting_category"/>
+            <field name="implied_ids" eval="[(4, ref('employee_voting.group_employee_voting_user'))]"/>
+            <field name="comment">Group for administrators who can access all features of employee voting.</field>
+        </record>
+        
+        <record id="employee_voting_rule_user" model="ir.rule">
+            <field name="name">Employee Voting Rule for Users</field>
+            <field name="model_id" ref="model_employee_voting"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('employee_voting.group_employee_voting_user'))]"/>
+        </record>
+
+        <record id="employee_voting_rule_admin" model="ir.rule">
+            <field name="name">Employee Voting Rule for Admins</field>
+            <field name="model_id" ref="model_employee_voting"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('employee_voting.group_employee_voting_admin'))]"/>
+        </record>
+        
+    </data>
+</odoo>

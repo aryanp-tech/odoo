@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_offer_letter,access_offer_letter,model_hr_send_letter,hr.group_hr_manager,1,1,1,1
+access_offer_letter,access_offer_letter,model_hr_expirence_letter,hr.group_hr_manager,1,1,1,1
+access_hr_send_letter,access_hr_send_letter,model_hr_send_letter,base.group_user,1,1,1,1
+access_hr_expirence_letter,access_hr_expirence_letter,model_hr_expirence_letter,,1,1,1,1

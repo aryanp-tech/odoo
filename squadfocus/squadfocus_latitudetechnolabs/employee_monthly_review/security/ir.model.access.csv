@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_monthly_feedback,access_monthly_feedback,model_monthly_feedback,,1,1,1,1
+access_answer_feedback,access_answer_feedback,model_answer_feedback,,1,1,1,1

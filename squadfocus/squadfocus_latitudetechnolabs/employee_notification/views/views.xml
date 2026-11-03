@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        
+    <record id="resource_calendar_form_inherit_employee_notification" model="ir.ui.view">
+        <field name="name">resource.calendar.form.inherit</field>
+        <field name="model">resource.calendar</field>
+        <field name="inherit_id" ref="resource.resource_calendar_form"/>
+          <field name="arch" type="xml">
+            <xpath expr="//group[@name='resource_details']/group" position="after">
+                <group>
+                    <field name="no_checkin_cron_id"/>
+                    <field name="manager_id"/>
+                    <field name="hr_leave_type_id"/>
+                    <field name="working_hour_start"/>
+                    <field name="end_time"/>
+                </group>
+            </xpath>
+       </field>
+    </record>
+    <record id="payroll_hr_employee_view_form" model="ir.ui.view">
+        <field name="name">payroll.hr.employee.view.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+                <xpath expr="//field[@name='coach_id']" position="after">
+                        <field name="probabtion"/>
+                        <field name="probability" widget="percentpie"/>
+                        <field name="mentor_id"/>
+                        <field name="lead_id"/>
+                </xpath>
+        </field>
+    </record>
+    <record id="probability_hr_employee_view_kanban" model="ir.ui.view">
+        <field name="name">probability.hr.employee.view.kanban</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.hr_kanban_view_employees"/>
+        <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('o_kanban_record_top')]" position="after">
+                        <field name="probability" widget="percentpie"/>
+                </xpath>
+        </field>
+    </record>
+    <record id="_employee_broad_factor" model="ir.ui.view">
+           <field name="name">employee.broad.factor</field>
+           <field name="model">hr.leave.type</field>
+           <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
+           <field name="arch" type="xml">
+               <xpath expr="//field[@name='request_unit']" position="after">
+                   <field name="day"/>
+               </xpath>
+           </field>
+    </record>
+</odoo>

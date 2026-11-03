@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_server_issue_form" model="ir.ui.view">
+            <field name="name">server.issue.form</field>
+            <field name="model">server.issue</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        <button name="reassign_issue" string="Reassign Issue" type="object"
+                                class="btn-primary" attrs="{'invisible': ['|',('state', 'in', ['solve','reassign']),('reassign_to', '=', False)]}" groups="server_issues.group_server_issue_admin"/>
+                        <button name="issue_solve" string="Issue Solved" type="object"
+                                class="btn-primary" attrs="{'invisible': [('state', '=', 'solve')]}" groups="server_issues.group_server_issue_admin"/>
+                        <field name="state" widget="statusbar" statusbar_visible="submit,reassign,solve"/>
+                    </header>
+                    <sheet>
+                    <group>
+                        <group>
+                            <field name="name" options="{'no_create': 1}"/>
+                            <field name="reassign_to" options="{'no_create': 1}" groups="server_issues.group_server_issue_admin"/>
+                            <field name='issue'/>
+                            <field name='project_id'/>
+                            <field name="priority"/>
+                            <field name='ip_address'/>
+                            <field name='error' widget='image'/>
+                          </group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="user_id"/>
+                            <field name="solve_date"/>
+                            <field name="solve_by"/>
+                            <field name="reassign_date"/>
+                            <field name="is_reassign" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook> 
+                        <page string="Issue Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_server_issue_tree" model="ir.ui.view">
+            <field name="name">server.issue.tree</field>
+            <field name="model">server.issue</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name='issue'/>
+                    <field name="project_id"/>
+                    <field name="user_id"/>
+                    <field name="create_date"/>
+                    <field name="state"/>
+                    <field name="solve_date"/>
+                    <field name="solve_by"/>
+                    <field name="priority" widget="priority"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_server_issue_filter" model="ir.ui.view">
+            <field name="name">server.issue.search</field>
+            <field name="model">server.issue</field>
+            <field name="arch" type="xml">
+                <search string="Server">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <filter string="Employee" name="group_by_employee_name" domain="[]" context="{'group_by':'name'}"/>
+                    <filter string="Stage" name="group_by_stage" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Project" name="group_by_project" domain="[]" context="{'group_by':'project_id'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_server_issue" model="ir.actions.act_window">
+            <field name="name">Server Issue</field>
+            <field name="res_model">server.issue</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a Issue?
+              </p>
+              <p>
+                Let's create a Server Issue.
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_server_issue"  action="action_server_issue" name="Server Issue"/>
+
+    </data>
+</odoo>
+ 

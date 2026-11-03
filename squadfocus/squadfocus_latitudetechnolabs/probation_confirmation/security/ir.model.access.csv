@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_probation_employee,access.probation_employee,model_probation_employee,,1,1,1,1
+access_probation_confirmation,access.probation_confirmation,model_probation_confirmation,,1,1,1,1
+access_probation_extend,access.probation_extend,model_probation_extend,,1,1,1,1

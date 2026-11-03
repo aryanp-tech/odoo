@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<odoo>
+    <data noupdate="1">
+        
+
+        <record id="employee_send_is_absent_mail" model="ir.cron">
+            <field name="name">Send mail for Absent </field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_send_absent_emails()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:35:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+          </record>
+
+          <record id="employee_send_mail_update_profile" model="ir.cron">
+            <field name="name">Send mail For Update Profile </field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_update_profile()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:35:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+          </record>
+
+          <record id="employee_profile_update_mail" model="mail.template">
+            <field name="name">Profile Update Reminder</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="email_from">${user.email_formatted | safe}</field>
+            <field name="email_to">${user.email_formatted | safe}</field>
+            <field name="subject">Employee still not checked in</field>
+            <field name="body_html">
+            <![CDATA[
+            <p>Dear Following
+            <br/>
+            <br/>
+            Good job, this is our first e-mail template!<br/>
+            </p>
+            Regards,<br/>
+            ]]></field>
+        </record>
+
+        <record id="email_not_checkin" model="mail.template">
+            <field name="name">No check in template</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="email_from">${user.email_formatted | safe}</field>
+            <field name="email_to">${user.email_formatted | safe}</field>
+            <field name="subject">Employee still not checked in</field>
+            <field name="body_html">
+            <![CDATA[
+            <p>Dear Following
+            <br/>
+            <br/>
+            Good job, this is our first e-mail template!<br/>
+            </p>
+            Regards,<br/>
+            ]]></field>
+        </record>
+
+        <record id="email_not_checkin_remainder" model="mail.template">
+          <field name="name">Check in Remainder</field>
+          <field name="model_id" ref="base.model_res_users"/>
+          <field name="auto_delete" eval="False"/>
+          <field name="email_from">${}</field>
+          <field name="email_to">${}</field>
+          <field name="subject">Check in Remainder</field>
+          <field name="body_html">
+          <![CDATA[
+          <p>Dear Following
+          <br/>
+          <br/>
+          Good job, this is our first e-mail template!<br/>
+          </p>
+          Regards,<br/>
+          ]]></field>
+      </record>
+
+        <record id="email_is_absent" model="mail.template">
+            <field name="name">Email Template For Absent</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="email_from">${user.email_formatted | safe}</field>
+            <field name="email_to">${}</field>
+            <field name="subject">Employees are Absent on Today</field>
+            <field name="body_html">
+            <![CDATA[
+            <p>Dear Following
+            <br/>
+            <br/>
+            Good job, this is our first e-mail template!<br/>
+            </p>
+            Regards,<br/>
+            ]]></field>
+        </record>
+
+        <record id="email_work_from_home" model="mail.template">
+          <field name="name">Email Template For Work From Home</field>
+          <field name="model_id" ref="base.model_res_users"/>
+          <field name="auto_delete" eval="False"/>
+          <field name="email_from">${user.email_formatted | safe}</field>
+          <field name="email_to">${}</field>
+          <field name="subject">Employees are Work From Home on Today</field>
+          <field name="body_html">
+          <![CDATA[
+          <p>Dear Following
+          <br/>
+          <br/>
+          Good job, this is our first e-mail template!<br/>
+          </p>
+          Regards,<br/>
+          ]]></field>
+      </record>
+
+
+        <record id="employee_send_remainder_not_checkin_mail" model="ir.cron">
+            <field name="name">Send mail for check in Remainder</field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_not_checkin_remainder()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+        </record>
+
+        <record id="employee_leaves_taken_mail" model="ir.cron">
+            <field name="name">Send mail for leaves taken </field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_send_leaves_taken_email()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() + timedelta(days=30)).strftime('%Y-%m-%d 11:15:00')"/>
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>months</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+        </record>
+
+        <record id="employee_leaves_not_taken_mail" model="ir.cron">
+            <field name="name">Send mail for earned leaves </field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.earned_leave_mail()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() + timedelta(days=30)).strftime('%Y-%m-%d 11:15:00')"/>
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>months</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+        </record>
+
+        <record id="employee_leave_next_seven_day" model="ir.cron">
+            <field name="name">Send mail for Employee leave in next seven </field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.employee_leave()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:30:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+          </record>
+
+          <record id="employee_not_checkin_as_absent" model="ir.cron">
+            <field name="name">Employee Not Checkin As Absent</field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_not_checkin_as_absent()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +  timedelta(days=1)).strftime('%Y-%m-%d 11:25:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+          </record>
+
+          <record id="employee_early_checkout_as_absent" model="ir.cron">
+            <field name="name">Employee Not Checkout As Absent</field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_check_early_checkout()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +  timedelta(days=1)).strftime('%Y-%m-%d 11:25:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+          </record>
+
+          <record id="employee_leave_manager_mail" model="ir.cron">
+            <field name="name">Employee Leave Request for Manager</field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_absent_send_manager()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +  timedelta(days=1)).strftime('%Y-%m-%d 10:03:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+          </record>
+
+          <record id="employee_upcoming_leave" model="ir.cron">
+            <field name="name">Upcoming Employee Leave</field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_upcoming_employee_leave()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +  timedelta(days=1)).strftime('%Y-%m-%d 11:00:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+          </record>
+
+          <record id="employee_send_remainder_checkout_mail" model="ir.cron">
+            <field name="name">Send mail for check out </field>
+              <field name="model_id" ref="model_hr_employee"/>
+              <field name="state">code</field>
+              <field name="code">model.cron_checkout_remainder()</field>
+              <field name="user_id" ref="base.user_root"/>
+              <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+              <field name='interval_number'>1</field>
+              <field name='interval_type'>days</field>
+              <field name="numbercall">-1</field>
+              <field name="doall" eval="False"/>
+        </record>
+
+        <record id="employee_checkout_mail_admin" model="ir.cron">
+          <field name="name">Send Missed check out Mail</field>
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="state">code</field>
+            <field name="code">model.missed_checkout_inform()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="nextcall" eval="(DateTime.now() +timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+            <field name='interval_number'>1</field>
+            <field name='interval_type'>days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+      <record id="employee_working_total_hours" model="ir.cron">
+        <field name="name">Weekly Total working hours</field>
+          <field name="model_id" ref="model_hr_employee"/>
+          <field name="state">code</field>
+          <field name="code">model.total_working_hours()</field>
+          <field name="user_id" ref="base.user_root"/>
+          <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+          <field name='interval_number'>1</field>
+          <field name='interval_type'>weeks</field>
+          <field name="numbercall">-1</field>
+          <field name="doall" eval="False"/>
+    </record>
+        
+    <record id="action_download_wfh_request" model="ir.actions.server">
+      <field name="name">Download WFH</field>
+      <field name="model_id" ref="hr.model_hr_employee"/>
+     <field name="binding_model_id" ref="hr.model_hr_employee" />
+      <field name="state">code</field>
+      <field name="code">action = records.download_wfh_report()</field>
+  </record>
+  
+    <record id="email_not_checkin_email_create" model="mail.template">
+      <field name="name">Check in LOP create Email</field>
+      <field name="model_id" ref="base.model_res_users"/>
+      <field name="auto_delete" eval="False"/>
+      <field name="email_from">${}</field>
+      <field name="email_to">${}</field>
+      <field name="subject">Not Check-in Lop Created </field>
+      <field name="body_html">
+      <![CDATA[
+      <p>Dear Following
+      <br/>
+      <br/>
+      Good job, this is our first e-mail template!<br/>
+      </p>
+      Regards,<br/>
+      ]]></field>
+    </record>
+
+    <record id="employee_send_lop_created_mail" model="ir.cron">
+      <field name="name">Send mail for Lop created for late check in </field>
+        <field name="model_id" ref="model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_checkin_lop_created()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+    </record>
+
+    <record id="employee_compensatory_leave_delete" model="ir.cron">
+      <field name="name">Compensatory Leave Delete </field>
+        <field name="model_id" ref="model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model.compensatory_leave_check()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+    </record>
+
+    <record id="employee_compensatory_leave_create" model="ir.cron">
+      <field name="name">Compensatory Leave Create </field>
+        <field name="model_id" ref="model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model.compensatory_leave_create_auto()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+      </record>
+      <record id="employee_manager_assign_mail" model="ir.cron">
+        <field name="name">Send mail for Assign Manager</field>
+          <field name="model_id" ref="model_hr_employee"/>
+          <field name="state">code</field>
+          <field name="code">model.cron_manager_assign_inform()</field>
+          <field name="user_id" ref="base.user_root"/>
+          <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+          <field name='interval_number'>1</field>
+          <field name='interval_type'>weeks</field>
+          <field name="numbercall">-1</field>
+          <field name="doall" eval="False"/>
+    </record>
+    <record id="email_infrom_assign_manager" model="mail.template">
+      <field name="name">Manager Assign EMail</field>
+      <field name="model_id" ref="base.model_res_users"/>
+      <field name="auto_delete" eval="False"/>
+      <field name="email_from">${}</field>
+      <field name="email_to">${}</field>
+      <field name="subject">Manager Assign Email </field>
+      <field name="body_html">
+      <![CDATA[
+      <p>Dear Following
+      <br/>
+      <br/>
+      Good job, this is our first e-mail template!<br/>
+      </p>
+      Regards,<br/>
+      ]]></field>
+    </record>
+    <record id="email_infrom_manager_assign" model="mail.template">
+      <field name="name">Manager Assign EMail To Hr</field>
+      <field name="model_id" ref="base.model_res_users"/>
+      <field name="auto_delete" eval="False"/>
+      <field name="email_from">${}</field>
+      <field name="email_to">${}</field>
+      <field name="subject">Manager Assign Email </field>
+      <field name="body_html">
+      <![CDATA[
+      <p>Dear Following
+      <br/>
+      <br/>
+      Good job, this is our first e-mail template!<br/>
+      </p>
+      Regards,<br/>
+      ]]></field>
+    </record>
+
+      <record id="employee_allocate_leave" model="ir.cron">
+        <field name="name">Allocate Casual And Sick Leave</field>
+          <field name="model_id" ref="model_hr_employee"/>
+          <field name="state">code</field>
+          <field name="code">model.allocate_cl_sl_leaves()</field>
+          <field name="user_id" ref="base.user_root"/>
+          <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:15:00')" />
+          <field name='interval_number'>1</field>
+          <field name='interval_type'>weeks</field>
+          <field name="numbercall">-1</field>
+          <field name="doall" eval="False"/>
+    </record>
+    <record id="cron_first_half_warning" model="ir.cron">
+        <field name="name">Attendance First Half Warning</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_first_half_attendance_warning()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <!-- <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 6:30:00')" /> -->
+        <field name="nextcall"
+          eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d') + ' 06:30:00'"/>
+
+    </record>
+
+    <record id="cron_second_half_warning" model="ir.cron">
+        <field name="name">Attendance Second Half Warning</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_second_half_attendance_warning()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <!-- <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 11:30:00')" /> -->
+       <field name="nextcall"
+       eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d') + ' 11:30:00'"/>
+ 
+    </record>
+
+    <record id="cron_final_attendance_report" model="ir.cron">
+        <field name="name">Attendance Final Report</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_attendance_final_report()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <!-- <field name="nextcall" eval="(DateTime.now() +     timedelta(days=1)).strftime('%Y-%m-%d 14:30:00')" /> -->
+        <field name="nextcall"
+       eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d') + ' 14:30:00'"/>
+
+    </record>
+
+
+    </data>
+</odoo>

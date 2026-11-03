@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_work_from_home,access_work_from_home,model_work_from_home,base.group_user,1,1,1,1
+access_public_holidays_user,access_public_holidays_user,model_public_holidays,hr.group_hr_user,1,0,0,0
+access_public_holidays_admin,access_public_holidays_admin,model_public_holidays,hr.group_hr_manager,1,1,1,1
+access_public_holidays_line,access_public_holidays_line,model_public_holidays_line,,1,1,1,1

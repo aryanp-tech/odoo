@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_applicant_view_inherited_sf" model="ir.ui.view">
+        <field name="name">hr applicant view.form</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+        <field name="arch" type="xml">
+        	<field name="partner_name" position="after">
+        		<label for="last_name" class="oe_edit_only"/>
+                <field name="last_name"/>
+            </field>
+
+            <field name="company_id" position="after">
+        		<field name="year_of_exp"/>
+        		<field name="linkedin_profile"/>
+                <field name="attachment_url" widget="url"/>
+            </field>
+
+            <field name="availability" position ="after">
+        		<field name="ctc_salary"/>
+            </field>
+        </field>
+    </record>
+
+  
+</odoo>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="employee_resource_form_view" model="ir.ui.view">
+        <field name="name">employee.resource.form.view</field>
+        <field name="model">employee.resource</field>
+          <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group>
+                    <group>
+                        <field name="department"/>
+                        <field name="gross_salary"/>
+                        <field name="next_appraisal"/>
+                        <field name="is_dedicate" widget="boolean_toggle"/>
+                        <field name="project"/>
+                    </group>      
+                    <group>
+                        <field name="company_name" attrs="{'invisible': [('is_dedicate', '=', False)]}"/>
+                        <field name="price" attrs="{'invisible': [('is_dedicate', '=', False)]}"/>
+                        <field name="start_date" attrs="{'invisible': [('is_dedicate', '=', False)]}"/>
+                        <field name="end_date" attrs="{'invisible': [('is_dedicate', '=', False)]}"/>
+                        <field name="work_order" attrs="{'invisible': [('is_dedicate', '=', False)]}"/>
+                    </group>  
+                </group>            
+                </sheet>
+            </form>
+       </field>
+    </record>
+
+    <record id="employee_resource_view_tree" model="ir.ui.view">
+        <field name="name">employee.resource.view.tree</field>
+        <field name="model">employee.resource</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="department"/>
+                <field name="gross_salary"/>
+                <field name="next_appraisal"/>
+                <field name="is_dedicate"/>
+                <field name="project"/>
+                <field name="company_name"/>
+                <field name="price"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="work_order"/>
+            </tree> 
+        </field>
+    </record>
+    
+    <record id="action_employee_resource" model="ir.actions.act_window">
+        <field name="name">Employee Resources</field>
+        <field name="res_model">employee.resource</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Ready to create a Onboard Process?
+          </p>
+          <p>
+            Let's create a Process.
+          </p>
+        </field>
+    </record>
+
+    <menuitem id="employee_resource_menu" action="action_employee_resource" name="Employee Resource"
+    sequence="15" groups="oh_appraisal.group_appraisal_manager"/>
+
+</odoo>

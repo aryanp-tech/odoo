@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_salary_details_form" model="ir.ui.view">
+            <field name="name">salary.details.form</field>
+            <field name="model">salary.details</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <header>
+                        
+                    </header>
+                    <sheet>
+                    <group>
+                        <group>
+                            <field name="name" options="{'no_create': 1}"/>
+                            <field name='joining_date'/>
+                            <field name='from_date'/>
+                            <field name='to_date'/>
+                            <field name='quarter'  readonly="1"/>
+                            <field name='cur_salary'/>
+                            <field name="increment_percentage"/>
+                            <field name='total_increment' />
+                          </group>
+                        <group>
+                            <field name="pli_percentage"/>
+                            <field name="total_pli"/>
+                            <field name="yearly_pli"/>
+                            <field name="pli_1st"/>
+                            <field name="pli_2nd"/>
+                            <field name="pli_3rd"/>
+                            <field name="final_amount" readonly="0"/>
+                            
+                        </group>
+                    </group>
+                  
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_salary_details_tree" model="ir.ui.view">
+            <field name="name">salary.details.tree</field>
+            <field name="model">salary.details</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1">
+                    <field name="name"/>
+                    <field name='joining_date'/>
+                    <field name="cur_salary"/>
+                    <field name="increment_percentage"/>
+                    <field name="total_increment"/>
+                    <field name="final_amount"/>
+
+                </tree>
+            </field>
+        </record>
+
+       
+
+        <record id="action_salary_details" model="ir.actions.act_window">
+            <field name="name">Salary Details</field>
+            <field name="res_model">salary.details</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Ready to create a Issue?
+              </p>
+              <p>
+                Let's create a Server Issue.
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_salary_details" parent="quarterly_review.menu_quarterly_review" groups="quarterly_review.group_quarterly_review_super_admin" action="action_salary_details" name="Salary Details"/>
+
+    </data>
+</odoo>
+ 

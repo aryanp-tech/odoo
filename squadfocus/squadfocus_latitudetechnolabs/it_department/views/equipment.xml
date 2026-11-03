@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_equipment_details_form" model="ir.ui.view">
+            <field name="name">equipment.details.form</field>
+            <field name="model">equipment.details</field>
+            <field name="arch" type="xml">
+                <form string="Equipment " create="false">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="not_available,available,rejected"/>
+                        <button name="set_reject" string="Rejected" class="oe_highlight" type="object" states="available"/>
+                        <button name="set_available" string="Available" class="oe_highlight" type="object" states="rejected"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="category"/>
+                                <field name='details'/>
+                                <label for="tagging_name" string="Latitude Tagging No"/>
+                                <div>
+                                <div class="o_row o_row_readonly o_hr_holidays_dates">
+                                    <field name="tagging_name"/>
+                                    <span class="oe_inline">
+                                        <field name="tag_no"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <field name="comp_name"/>
+                            <field name="serial_no"/>
+                            <field name="processor" />
+                            <field name="ram"/>
+                            <field name="rom"/>
+                            <field name="use_by"  attrs="{'invisible': [('use_by', '=', False)]}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_equipment_details_tree" model="ir.ui.view">
+            <field name="name">equipment.details.tree</field>
+            <field name="model">equipment.details</field>
+            <field name="arch" type="xml">
+                <tree string="Job" sample="1"  create="false" decoration-success="state == 'available'"  decoration-danger="state=='rejected'"  decoration-info="state=='not_available'">
+                    <field name="category"/>
+                    <field name="name"/>
+                    <field name="comp_name"/>
+                    <field name="serial_no"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_equipment_details_filter" model="ir.ui.view">
+            <field name="name">equipment.details.search</field>
+            <field name="model">equipment.details</field>
+            <field name="arch" type="xml">
+                <search string="Jobs">
+                    <field name="name"/>
+                    <field name="category"/>
+                    <field name="serial_no"/>
+                    <field name="use_by"/>
+                    <field name="comp_name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_equipment_details" model="ir.actions.act_window">
+            <field name="name">Equipment Details</field>
+            <field name="res_model">equipment.details</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <menuitem id="equipment_detaills_menu" parent="it_department.menu_asset_details" action="action_equipment_details" name="Product Details"
+        sequence="15" groups="it_department.module_it_admin"/>
+
+    </data>
+</odoo>

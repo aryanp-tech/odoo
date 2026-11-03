@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_onboard_process,access_onboard_process,model_onboard_process,,1,1,1,1
+access_missed_attendance,access_missed_attendance,model_missed_attendance,,1,1,1,1
