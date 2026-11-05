@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SquadFocus HRMS — Enterprise Figma Dashboards for All 9 Roles</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #F8FAFC; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+    .shadow-2xs { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03); }
+    @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
+    .pulse-dot { animation: pulseDot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  </style>
+</head>
+<body class="flex min-h-screen bg-[#F8FAFC] text-slate-800 antialiased font-sans selection:bg-purple-100 selection:text-purple-900">
+
+  <!-- ========================================================================= -->
+  <!-- 1. LEFT SIDEBAR (CLEAN ENTERPRISE ERP NAVIGATION) -->
+  <!-- ========================================================================= -->
+  <aside class="w-64 bg-white border-r border-slate-200/90 flex flex-col shrink-0 select-none shadow-2xs z-30 h-screen sticky top-0">
+    
+    <!-- Brand Header -->
+    <div class="h-14 px-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#714B67] to-indigo-600 text-white flex items-center justify-center font-black text-xs shadow-2xs">
+          LT
+        </div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <span class="font-extrabold text-sm tracking-tight text-slate-900">SquadFocus</span>
+            <span class="text-[9px] font-bold bg-purple-50 text-[#714B67] border border-purple-200 px-1 py-0.2 rounded">
+              v18
+            </span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-medium leading-none mt-0.5">Latitude Technolabs</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Persona Switcher Card -->
+    <div class="p-3 border-b border-slate-100 bg-slate-50/70">
+      <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+        <span>Active Role Persona</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+      </div>
+
+      <div class="relative">
+        <select id="sidebarRoleSelector" onchange="switchRole(this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none hover:border-purple-300 focus:border-[#714B67] transition cursor-pointer shadow-2xs">
+          <option value="super_admin">1. Super Admin</option>
+          <option value="hr_admin">2. HR Administrator</option>
+          <option value="hr_officer">3. HR Officer</option>
+          <option value="manager">4. Manager / Team Leader</option>
+          <option value="employee">5. Employee (ESS)</option>
+          <option value="it_admin">6. IT Administrator</option>
+          <option value="it_officer">7. IT Officer</option>
+          <option value="recruiter">8. Recruiter / BDE</option>
+          <option value="project_manager">9. Project Manager</option>
+        </select>
+      </div>
+
+      <div class="mt-2 flex items-center space-x-2 px-1">
+        <img id="sidebar-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" class="w-6 h-6 rounded-full object-cover ring-1 ring-purple-200">
+        <div class="truncate">
+          <span id="sidebar-user-name" class="text-xs font-bold text-slate-800 block truncate leading-tight">Aryan Patel</span>
+          <span id="sidebar-user-title" class="text-[10px] text-slate-500 truncate block">CTO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Items -->
+    <div class="flex-1 overflow-y-auto px-2.5 py-3 space-y-1">
+      <div class="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">Core Modules</div>
+      
+      <button class="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold bg-purple-50 text-[#714B67] shadow-2xs border border-purple-100">
+        <span class="flex items-center space-x-2.5">
+          <span>📊</span>
+          <span>Dashboard</span>
+        </span>
+        <span class="w-1.5 h-1.5 rounded-full bg-[#714B67]"></span>
+      </button>
+
+      <button onclick="alert('Module: Employees 360')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100/80 transition">
+        <span class="flex items-center space-x-2.5"><span>👥</span><span>Employees (360)</span></span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-slate-100 text-slate-500">150</span>
+      </button>
+
+      <button onclick="alert('Module: Attendances')" class="w-full flex items-center space-x-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100/80 transition">
+        <span>⏱️</span><span>Attendances (ZK)</span>
+      </button>
+
+      <button onclick="alert('Module: Leaves & Time Off')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100/80 transition">
+        <span class="flex items-center space-x-2.5"><span>🌴</span><span>Leaves & Time Off</span></span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-amber-100 text-amber-800">4</span>
+      </button>
+
+      <button onclick="alert('Module: Timesheets')" class="w-full flex items-center space-x-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100/80 transition">
+        <span>⏰</span><span>Timesheets</span>
+      </button>
+
+      <button onclick="alert('Module: Appraisal & PMS')" class="w-full flex items-center space-x-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100/80 transition">
+        <span>🎯</span><span>Appraisal & PMS</span>
+      </button>
+
+      <button onclick="alert('Module: Asset Custody')" class="w-full flex items-center space-x-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100/80 transition">
+        <span>💻</span><span>Custody (Assets)</span>
+      </button>
+
+      <button onclick="alert('Module: Announcements')" class="w-full flex items-center space-x-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100/80 transition">
+        <span>📢</span><span>Announcements</span>
+      </button>
+
+      <button onclick="alert('Module: Settings')" class="w-full flex items-center space-x-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100/80 transition">
+        <span>⚙️</span><span>Settings</span>
+      </button>
+    </div>
+
+    <!-- Status Footer -->
+    <div class="p-3 border-t border-slate-100 bg-slate-50/70 text-[11px] text-slate-500 flex items-center justify-between">
+      <div class="flex items-center space-x-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span class="font-semibold text-slate-700">ZK 4370 Synced</span>
+      </div>
+      <span class="font-mono text-[10px] text-slate-400">v18.0.4</span>
+    </div>
+
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 2. MAIN WORKSPACE CONTENT -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Topbar -->
+    <header class="h-14 bg-white border-b border-slate-200 px-6 flex items-center justify-between shrink-0 sticky top-0 z-40 shadow-xs">
+      
+      <!-- Breadcrumb -->
+      <div class="flex items-center space-x-2 text-xs font-bold text-slate-800">
+        <span class="text-slate-400">SquadFocus</span>
+        <span class="text-slate-300">/</span>
+        <span class="text-slate-400">Dashboard</span>
+        <span class="text-slate-300">/</span>
+        <span id="top-breadcrumb-role" class="text-slate-900 font-black">Super Admin</span>
+      </div>
+
+      <!-- Center Search -->
+      <div class="hidden md:flex flex-1 max-w-sm mx-6">
+        <div class="w-full relative">
+          <input type="text" placeholder="Search (Ctrl+K)..." class="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white focus:border-indigo-500 border border-slate-200 rounded-xl text-xs px-3 py-1.5 pl-8 text-slate-800 placeholder-slate-400 outline-none transition shadow-2xs">
+          <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400 text-xs">🔍</span>
+        </div>
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center space-x-2 text-xs">
+        <button onclick="toggleFigmaCanvasView()" id="btn-figma-canvas" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer shadow-2xs bg-white hover:bg-slate-50 text-slate-700 border-slate-200">
+          <span id="btn-canvas-text">Figma Multi-Board</span>
+        </button>
+
+        <button onclick="openExportModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 text-[#714B67] border border-purple-200 transition cursor-pointer shadow-2xs">
+          <span>✨ Export Figma</span>
+        </button>
+
+        <div class="hidden sm:flex items-center space-x-1.5 px-2.5 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-xl font-bold font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+          <span id="top-timer">03:42:18</span>
+        </div>
+
+        <div class="flex items-center space-x-2 pl-2 border-l border-slate-200">
+          <img id="top-avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-purple-100" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200">
+          <div class="text-left hidden lg:block">
+            <div id="top-name" class="font-bold text-slate-900 text-xs leading-none">Aryan Patel</div>
+            <div id="top-title" class="text-[10px] text-slate-400 font-medium mt-0.5">CTO</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sub-Bar: Quick Persona Switcher Pills -->
+    <div class="bg-white border-b border-slate-200/80 px-6 py-2 overflow-x-auto select-none shadow-2xs shrink-0">
+      <div class="flex items-center space-x-1.5 min-w-max" id="persona-tabs">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 p-5 lg:p-7 max-w-7xl mx-auto w-full space-y-5">
+      
+      <!-- VIEW A: MULTI-BOARD FIGMA CANVAS (ALL 9 ROLES) -->
+      <div id="view-figma-canvas" class="hidden space-y-5">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="bg-indigo-100 text-indigo-800 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full">Figma Multi-Board</span>
+            <h2 class="text-base font-bold text-slate-900 mt-1">All 9 Individual Role Dashboards</h2>
+            <p class="text-xs text-slate-500">Click any artboard to view its clean, focused operational view.</p>
+          </div>
+          <button onclick="openExportModal()" class="px-4 py-2 bg-[#714B67] text-white text-xs font-bold rounded-xl shadow-2xs">Export Figma Assets</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="figma-cards-grid">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- VIEW B: CLEAN SINGLE ROLE DASHBOARD -->
+      <div id="view-single-dashboard" class="space-y-5">
+        
+        <!-- Role Header Card -->
+        <div class="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-0.5">
+            <div class="flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span id="role-category" class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Executive</span>
+              <span class="text-slate-300">•</span>
+              <span id="role-badge" class="text-xs font-bold text-[#714B67] bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">Role 1 of 9</span>
+            </div>
+            <h1 id="role-heading" class="text-xl font-black text-slate-900 tracking-tight">Super Admin</h1>
+            <p id="role-subtitle" class="text-xs text-slate-500 max-w-2xl leading-relaxed">Enterprise governance and metrics</p>
+          </div>
+
+          <div class="flex items-center space-x-2.5 bg-slate-50 p-2 rounded-xl border border-slate-200/80 shrink-0">
+            <img id="role-avatar" src="" class="w-9 h-9 rounded-full object-cover ring-2 ring-white">
+            <div class="text-left text-xs">
+              <div id="role-user-name" class="font-bold text-slate-900 leading-tight">Aryan Patel</div>
+              <div id="role-user-title" class="text-[10px] text-slate-500 leading-tight">CTO</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Clean Metric Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5" id="kpi-cards-container">
+          <!-- Injected by JS -->
+        </div>
+
+        <!-- Content Grid (2 Columns: Left 65%, Right 35%) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          
+          <!-- Left: Announcement + 2 Clean Varied Charts + Approvals -->
+          <div class="lg:col-span-2 space-y-5">
+            <div id="announcement-container"></div>
+            
+            <!-- Exactly 2 clean, complementary charts (Area + Donut/Bar) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="charts-container"></div>
+
+            <!-- Pending Approvals -->
+            <div class="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-2xs">
+              <div class="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
+                <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">📋 Pending Approvals Queue</span>
+                <span id="approvals-count" class="text-xs font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">2 Pending</span>
+              </div>
+              <div class="space-y-2.5" id="pending-approvals-container"></div>
+            </div>
+          </div>
+
+          <!-- Right: Attendance Punch + Quick Actions -->
+          <div class="space-y-5">
+            
+            <!-- Attendance Punch Widget -->
+            <div class="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col justify-between">
+              <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">⏱️ Attendance & Punch</span>
+                <span id="punch-status-badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200">
+                  <span class="w-1.5 h-1.5 rounded-full mr-1.5 bg-emerald-500 pulse-dot"></span>
+                  <span>On Duty</span>
+                </span>
+              </div>
+
+              <div class="my-3.5 text-center bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1" id="punch-subtext">Checked In at 09:15 AM</div>
+                <div class="text-3xl font-black font-mono tracking-tight text-slate-900" id="widget-timer">03:42:18</div>
+                <div class="mt-2.5">
+                  <div class="flex justify-between text-[10px] font-semibold text-slate-500 mb-1">
+                    <span>Shift Progress (8h)</span>
+                    <span class="font-bold text-slate-700">46%</span>
+                  </div>
+                  <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                    <div class="bg-emerald-500 h-full rounded-full" style="width: 46%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="togglePunchWidget()" id="btn-punch-toggle" class="w-full py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center transition-all bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer">
+                <span>Punch Out for Break</span>
+              </button>
+
+              <div class="flex items-center justify-between text-[11px] text-slate-500 pt-2.5">
+                <span>● Port 4370 Connected</span>
+                <span>Latitude HQ</span>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-2xs">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">⚡ Quick Actions</h3>
+                <span class="text-[10px] font-semibold text-slate-400">Shortcuts</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2" id="quick-actions-container"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- FIGMA EXPORT MODAL -->
+  <div id="figma-export-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl p-5 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+        <h3 class="font-bold text-base text-slate-900">Figma Vector Artboard Specs</h3>
+        <button onclick="closeExportModal()" class="text-slate-500 hover:text-slate-800 font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-600">Copy this SVG and press Ctrl+V directly on your Figma canvas. Figma will parse it into editable vector frames and components!</p>
+      <textarea id="figma-svg-output" readonly rows="9" class="w-full font-mono text-[11px] p-3 rounded-xl bg-slate-900 text-slate-200 border border-slate-800"></textarea>
+      <div class="flex justify-between items-center pt-2">
+        <button onclick="copyFigmaSVG()" id="btn-copy-svg" class="px-4 py-2 bg-[#714B67] text-white rounded-xl font-bold text-xs">Copy SVG to Clipboard</button>
+        <button onclick="closeExportModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    const ROLES = {
+      super_admin: {
+        id: "super_admin",
+        name: "Super Admin",
+        category: "Executive",
+        badge: "Role 1 of 9",
+        subtitle: "Enterprise governance, multi-branch attendance metrics, and infrastructure health.",
+        user: { name: "Aryan Patel", title: "Chief Technology & Operations Officer", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Workforce", val: "150", sub: "3 Entities", trend: "+8.4%", color: "indigo", spark: [136, 138, 140, 144, 146, 148, 150] },
+          { label: "ZKTeco Sync", val: "Online", sub: "Port 4370", trend: "100%", color: "emerald", spark: [100, 100, 98, 100, 100, 100, 100] },
+          { label: "Monthly Payroll", val: "₹ 48.2 L", sub: "Oct 2026", trend: "+3.1%", color: "purple", spark: [44.5, 45.0, 46.2, 46.8, 47.5, 47.9, 48.2] },
+          { label: "System Health", val: "99.98%", sub: "PostgreSQL 14", trend: "Healthy", color: "teal", spark: [99.9, 99.9, 100, 99.8, 100, 100, 99.98] }
+        ],
+        announcement: { badge: "Notice", title: "Q4 Town Hall & Annual Appraisal Cycle Launch 🚀", desc: "Leadership meeting Friday 04:30 PM. Review branch headcount and PMS guidelines.", date: "05 Nov 2026" },
+        charts: [
+          { type: "area", title: "Attendance Velocity (7 Days)", sub: "Daily present vs late punch counts", data: [{l:"Mon",v1:141,v2:7},{l:"Tue",v1:143,v2:5},{l:"Wed",v1:145,v2:3},{l:"Thu",v1:142,v2:6},{l:"Today",v1:145,v2:4}], c1:"#10B981", c2:"#F59E0B", n1:"Present", n2:"Late" },
+          { type: "donut", title: "Headcount by Entity", sub: "Workforce distribution", center: "150", centerLabel: "Staff", data: [{label:"Ahmedabad HQ",value:114,color:"#6366F1"},{label:"Pune Satellite",value:24,color:"#0EA5E9"},{label:"Remote UK/US",value:12,color:"#EC4899"}] }
+        ],
+        actions: [{label:"Database Backup",color:"indigo"},{label:"Permissions",color:"purple"},{label:"Biometric Sync",color:"emerald"},{label:"Run Payroll",color:"teal"}],
+        approvals: [{user:"Neha Joshi",role:"HR Head",title:"Revised Q4 Remote Work Policy",time:"10m ago",status:"Pending"},{user:"Chirag Trivedi",role:"IT Lead",title:"CapEx: 8x M3 MacBooks for AI Team",time:"1h ago",status:"₹ 14.8 L"}]
+      },
+      hr_admin: {
+        id: "hr_admin",
+        name: "HR Administrator",
+        category: "Talent & People Ops",
+        badge: "Role 2 of 9",
+        subtitle: "Enterprise attendance compliance, probation confirmations, and leave verifications.",
+        user: { name: "Neha Joshi", title: "Senior HR Administrator", avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Presence", val: "142 / 150", sub: "94.6% Present", trend: "+2.1%", color: "emerald", spark: [139, 140, 141, 140, 143, 141, 142] },
+          { label: "Leave Approvals", val: "4 Pending", sub: "Casual & WFH", trend: "Action", color: "amber", spark: [2, 3, 5, 4, 6, 5, 4] },
+          { label: "Probations Due", val: "3 Due", sub: "Letters Ready", trend: "This Week", color: "purple", spark: [1, 2, 2, 3, 3, 3, 3] },
+          { label: "Job Openings", val: "12 Roles", sub: "Active", trend: "Active", color: "rose", spark: [8, 9, 10, 11, 11, 12, 12] }
+        ],
+        announcement: { badge: "Compliance", title: "Diwali Festive Bonus & Public Holiday Notification 🪔", desc: "Payroll cutoff for festival advance is Nov 8th. Ensure regularizations are cleared.", date: "04 Nov 2026" },
+        charts: [
+          { type: "area", title: "Daily Attendance Variance", sub: "On-time punches vs regularized anomalies", data: [{l:"Mon",v1:132,v2:11},{l:"Tue",v1:136,v2:7},{l:"Wed",v1:139,v2:5},{l:"Thu",v1:137,v2:6},{l:"Today",v1:140,v2:4}], c1:"#10B981", c2:"#8B5CF6", n1:"On Time", n2:"Regularized" },
+          { type: "donut", title: "Leave Requests Breakdown", sub: "Share by leave category", center: "18", centerLabel: "Requests", data: [{label:"Paid Leave",value:8,color:"#8B5CF6"},{label:"Work From Home",value:5,color:"#0EA5E9"},{label:"Sick Leave",value:3,color:"#F59E0B"},{label:"Comp Off",value:2,color:"#10B981"}] }
+        ],
+        actions: [{label:"New Employee",color:"purple"},{label:"Regularize Attendance",color:"emerald"},{label:"Confirmation Letter",color:"indigo"},{label:"Post Notice",color:"rose"}],
+        approvals: [{user:"Manan Shah",role:"React Dev",title:"Probation Confirmation Sign-off",time:"10:15 AM",status:"Ready"},{user:"Rohan Sharma",role:"Python Dev",title:"Casual Leave (3 Days: Nov 11-13)",time:"Yesterday",status:"Endorsed"}]
+      },
+      hr_officer: {
+        id: "hr_officer",
+        name: "HR Officer",
+        category: "Talent Ops",
+        badge: "Role 3 of 9",
+        subtitle: "Frontline punch regularization, document verification, and interview coordination.",
+        user: { name: "Pooja Mehta", title: "HR Operations Officer", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Missing Punches", val: "5", sub: "Action Required", trend: "Action", color: "amber", spark: [3, 4, 6, 5, 7, 5, 5] },
+          { label: "Interviews", val: "4 Rounds", sub: "Tech L1 & L2", trend: "Today", color: "sky", spark: [2, 3, 5, 3, 4, 4, 4] },
+          { label: "Joiner Kits", val: "2 Ready", sub: "Docs Prepared", trend: "Ready", color: "emerald", spark: [0, 1, 1, 2, 2, 2, 2] },
+          { label: "Helpdesk", val: "3 Queue", sub: "PF & Tax", trend: "In SLA", color: "indigo", spark: [6, 5, 4, 4, 3, 3, 3] }
+        ],
+        announcement: { badge: "Onboarding", title: "2 New Joiners Orientation Scheduled for Monday Morning 🎯", desc: "Welcome kit, employee ID badges, and biometrics pre-enrolled.", date: "05 Nov 2026" },
+        charts: [
+          { type: "bar", title: "Interview Rounds Progress", sub: "Candidate evaluation funnel", data: [{label:"Screening",count:12,color:"#0EA5E9"},{label:"Tech L1",count:7,color:"#6366F1"},{label:"Tech L2",count:4,color:"#8B5CF6"},{label:"Final HR",count:3,color:"#10B981"}] },
+          { type: "donut", title: "Missing Punch Causes", sub: "Biometric issue distribution", center: "16", centerLabel: "Cases", data: [{label:"Forgot Punch",value:7,color:"#F59E0B"},{label:"WFH / Client",value:6,color:"#0EA5E9"},{label:"Biometric Fail",value:3,color:"#F43F5E"}] }
+        ],
+        actions: [{label:"Manual Punch",color:"sky"},{label:"Schedule Interview",color:"indigo"},{label:"Print ID Badge",color:"purple"},{label:"Upload KYC",color:"emerald"}],
+        approvals: [{user:"Kavita Rao",role:"QA Tester",title:"Evening Punch Regularization",time:"25m ago",status:"Action"},{user:"Siddharth Verma",role:"Candidate",title:"Signed Offer Letter Verification",time:"2h ago",status:"Check Docs"}]
+      },
+      manager: {
+        id: "manager",
+        name: "Manager / Team Leader",
+        category: "Leadership",
+        badge: "Role 4 of 9",
+        subtitle: "Squad live attendance tracking, leave/WFH approval queue, timesheet validation, and PMS reviews.",
+        user: { name: "Vikram Rathore", title: "Engineering Squad Lead", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Squad Presence", val: "11 / 12", sub: "1 WFH • 0 Absent", trend: "91.6%", color: "emerald", spark: [10, 11, 12, 11, 12, 11, 11] },
+          { label: "Team Requests", val: "3", sub: "Leaves & Timesheets", trend: "Pending", color: "amber", spark: [1, 2, 4, 3, 5, 4, 3] },
+          { label: "Timesheets", val: "94.2%", sub: "Weekly Compliance", trend: "+5.1%", color: "indigo", spark: [88, 89, 90, 92, 93, 94, 94.2] },
+          { label: "PMS Reviews", val: "2", sub: "Q3 1-on-1s Due", trend: "Due Nov 10", color: "purple", spark: [4, 4, 3, 3, 2, 2, 2] }
+        ],
+        announcement: { badge: "Sprint Alert", title: "Sprint 24 Code Freeze on Thursday 06:00 PM IST ⚡", desc: "Ensure all PRs are reviewed and timesheets for SquadFocus billable hours submitted.", date: "05 Nov 2026" },
+        charts: [
+          { type: "bar", title: "Squad Daily Hours Logged", sub: "Recorded hours against 8h baseline", data: [{label:"Aryan P.",count:8.5,color:"#10B981"},{label:"Rohan S.",count:8.2,color:"#10B981"},{label:"Sneha M.",count:7.9,color:"#10B981"},{label:"Kavita R.",count:8.0,color:"#10B981"},{label:"Manan S.",count:8.6,color:"#10B981"}] },
+          { type: "donut", title: "Project Capacity Share", sub: "Billable vs internal allocation", center: "100%", centerLabel: "Capacity", data: [{label:"SquadFocus Core",value:68,color:"#10B981"},{label:"Omega ERP",value:22,color:"#0EA5E9"},{label:"Internal R&D",value:10,color:"#8B5CF6"}] }
+        ],
+        actions: [{label:"Approve Squad Leave",color:"emerald"},{label:"Timesheet Audit",color:"indigo"},{label:"Schedule 1-on-1",color:"purple"},{label:"Reassign Task",color:"sky"}],
+        approvals: [{user:"Sneha Mukherjee",role:"Engineer",title:"WFH Request for Friday",time:"15m ago",status:"Review"},{user:"Aryan Patel",role:"Senior Dev",title:"Sprint Overtime 4.5h Log",time:"1h ago",status:"Billable"}]
+      },
+      employee: {
+        id: "employee",
+        name: "Employee Self-Service (ESS)",
+        category: "Personal Workspace",
+        badge: "Role 5 of 9",
+        subtitle: "Personal attendance punch logs, leave balances, performance reviews, and squad notifications.",
+        user: { name: "Aryan Patel", title: "Senior Full Stack Engineer (L4)", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Today's Presence", val: "03h 42m", sub: "Punched in 09:15 AM", trend: "Active", color: "emerald", spark: [8.5, 8.2, 8.8, 8.4, 8.5, 8.6, 3.7] },
+          { label: "Leave Balance", val: "14.5 Days", sub: "8.5 Paid • 4 Sick • 2 Comp", trend: "Healthy", color: "purple", spark: [18, 17, 16.5, 15.5, 15.5, 14.5, 14.5] },
+          { label: "PMS Rating", val: "4.85 ★", sub: "Exceeds Expectations", trend: "+0.15", color: "amber", spark: [4.4, 4.5, 4.6, 4.7, 4.75, 4.8, 4.85] },
+          { label: "Client Project", val: "SquadFocus", sub: "100% Billable", trend: "Active", color: "sky", spark: [100, 100, 100, 100, 100, 100, 100] }
+        ],
+        announcement: { badge: "Notice", title: "Diwali Corporate Holidays: Office closed Nov 11 to 13 🪔", desc: "Timesheet submission deadline is Thursday, Nov 7 at 06:00 PM.", date: "04 Nov 2026" },
+        charts: [
+          { type: "area", title: "Weekly Working Hours vs Target", sub: "Biometric hours vs 8h target", data: [{l:"Mon",v1:8.5,v2:8.0},{l:"Tue",v1:8.4,v2:8.0},{l:"Wed",v1:8.8,v2:8.0},{l:"Thu",v1:8.2,v2:8.0},{l:"Today",v1:3.7,v2:8.0}], c1:"#6366F1", c2:"#CBD5E1", n1:"Logged", n2:"Target" },
+          { type: "donut", title: "Leave Entitlement Balance", sub: "Remaining vs consumed (24 Total)", center: "14.5", centerLabel: "Days Left", data: [{label:"Paid Leave",value:8.5,color:"#6366F1"},{label:"Sick Leave",value:4.0,color:"#0EA5E9"},{label:"Comp Off",value:2.0,color:"#10B981"},{label:"Consumed",value:9.5,color:"#F59E0B"}] }
+        ],
+        actions: [{label:"Apply Leave / WFH",color:"indigo"},{label:"Regularize Punch",color:"emerald"},{label:"Log Timesheet",color:"sky"},{label:"Download Payslip",color:"purple"}],
+        approvals: [{user:"My Leave Application",role:"Status",title:"Casual Leave (Nov 14)",time:"11:30 AM",status:"Approved"},{user:"Annual Cultural Poll",role:"HR Poll",title:"Event Location Voting",time:"Closes Tomorrow",status:"Vote Now"}]
+      },
+      it_admin: {
+        id: "it_admin",
+        name: "IT Administrator",
+        category: "Infrastructure",
+        badge: "Role 6 of 9",
+        subtitle: "Hardware inventory, asset tags, laptop handovers, and server downtime monitoring.",
+        user: { name: "Chirag Trivedi", title: "Lead Infrastructure Architect", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Assigned Laptops", val: "184 Units", sub: "Active Employees", trend: "Healthy", color: "indigo", spark: [178, 179, 180, 182, 182, 184, 184] },
+          { label: "Hardware Stock", val: "38 Ready", sub: "Ready for Handover", trend: "+6 Stock", color: "emerald", spark: [32, 34, 30, 36, 35, 38, 38] },
+          { label: "Open Tickets", val: "5", sub: "1 Critical Alert", trend: "Action", color: "rose", spark: [4, 6, 8, 7, 6, 5, 5] },
+          { label: "Office Subnets", val: "3", sub: "IP Whitelist Active", trend: "Secure", color: "teal", spark: [3, 3, 3, 3, 3, 3, 3] }
+        ],
+        announcement: { badge: "Security", title: "Scheduled Core Switch & Firewall Patching Window Tonight 🛡️", desc: "Window: 11:00 PM – 11:45 PM. Intermittent reconnects on office VPN.", date: "05 Nov 2026" },
+        charts: [
+          { type: "donut", title: "Hardware Asset Distribution", sub: "Laptops & equipment in inventory", center: "322", centerLabel: "Devices", data: [{label:"MacBook Pro M2/M3",value:92,color:"#6366F1"},{label:"ThinkPad T14",value:86,color:"#0EA5E9"},{label:"4K Displays",value:120,color:"#F59E0B"},{label:"Dell Desktops",value:24,color:"#10B981"}] },
+          { type: "area", title: "Helpdesk SLA Performance", sub: "Tickets created vs resolved", data: [{l:"Mon",v1:8,v2:7},{l:"Tue",v1:6,v2:6},{l:"Wed",v1:10,v2:9},{l:"Thu",v1:5,v2:6},{l:"Today",v1:4,v2:4}], c1:"#F43F5E", c2:"#10B981", n1:"Created", n2:"Resolved" }
+        ],
+        actions: [{label:"Register Asset Tag",color:"indigo"},{label:"Assign Laptop",color:"emerald"},{label:"Revoke Access",color:"rose"},{label:"Audit Network",color:"teal"}],
+        approvals: [{user:"TICK-104: DevOps",role:"Critical",title:"VPN Gateway Tunnel Reset",time:"12m ago",status:"P1 Urgent"},{user:"Priya Rao (Joiner)",role:"QA",title:"Handover Sign-off: ThinkPad T14",time:"45m ago",status:"Sign Needed"}]
+      },
+      it_officer: {
+        id: "it_officer",
+        name: "IT Officer",
+        category: "Infrastructure",
+        badge: "Role 7 of 9",
+        subtitle: "Resolving desk hardware tickets, peripheral replacements, and biometric maintenance.",
+        user: { name: "Suresh Prajapati", title: "IT Support Officer", avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Assigned Tickets", val: "3 Active", sub: "Assigned to You", trend: "In SLA", color: "teal", spark: [2, 4, 3, 5, 4, 3, 3] },
+          { label: "Under Repair", val: "4 Units", sub: "Vendor Servicing", trend: "Vendor", color: "amber", spark: [3, 3, 4, 5, 4, 4, 4] },
+          { label: "Handovers Due", val: "2", sub: "Pending Signatures", trend: "Today", color: "purple", spark: [1, 1, 2, 2, 2, 2, 2] },
+          { label: "Biometric Port", val: "Port 4370", sub: "Device Synced OK", trend: "Active", color: "emerald", spark: [1, 1, 1, 1, 1, 1, 1] }
+        ],
+        announcement: { badge: "Stock", title: "New Batch of Ergonomic Keyboards & USB-C Docks Arrived 🔌", desc: "Available at IT desk for employees with approved ergonomic requests.", date: "05 Nov 2026" },
+        charts: [
+          { type: "donut", title: "Support Incident Share", sub: "Desk ticket categories", center: "36", centerLabel: "Tickets", data: [{label:"Display / HDMI",value:14,color:"#14B8A6"},{label:"Password SSO",value:9,color:"#6366F1"},{label:"Docking Hub",value:8,color:"#0EA5E9"},{label:"Slow Boot",value:5,color:"#F59E0B"}] },
+          { type: "area", title: "Issue Resolution Velocity", sub: "Tickets closed within SLA", data: [{l:"Mon",v1:6,v2:6},{l:"Tue",v1:8,v2:8},{l:"Wed",v1:7,v2:7},{l:"Thu",v1:9,v2:9},{l:"Fri",v1:5,v2:5}], c1:"#14B8A6", c2:"#10B981", n1:"Resolved", n2:"SLA" }
+        ],
+        actions: [{label:"Resolve Ticket",color:"teal"},{label:"Issue Cable",color:"indigo"},{label:"Test ZK Device",color:"emerald"},{label:"Reset Password",color:"amber"}],
+        approvals: [{user:"Desk 304: Anjali",role:"UI Designer",title:"4K Display HDMI Port Issue",time:"18m ago",status:"Open"},{user:"Desk 202: Manish",role:"QA",title:"Charger Replacement Return",time:"1h ago",status:"Sign Needed"}]
+      },
+      recruiter: {
+        id: "recruiter",
+        name: "Recruiter / BDE",
+        category: "Talent Acquisition",
+        badge: "Role 8 of 9",
+        subtitle: "Candidate talent pool, interview scorecards, CTC offers, and client account allocation.",
+        user: { name: "Simran Kaur", title: "Lead Talent Partner", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Active Openings", val: "12 Roles", sub: "Engineering & QA", trend: "High Demand", color: "pink", spark: [8, 9, 10, 11, 11, 12, 12] },
+          { label: "Pipeline", val: "38 Active", sub: "Across 4 Stages", trend: "+6 New", color: "indigo", spark: [28, 30, 32, 35, 36, 38, 38] },
+          { label: "Interviews Today", val: "5 Rounds", sub: "Tech & HR Scheduled", trend: "Today", color: "sky", spark: [3, 4, 6, 4, 5, 5, 5] },
+          { label: "Offer Acceptance", val: "87.5%", sub: "Q3 Benchmark", trend: "+4.2%", color: "emerald", spark: [80, 82, 84, 85, 86, 87, 87.5] }
+        ],
+        announcement: { badge: "Milestone", title: "Senior Python & Odoo Lead Candidate Accepted Offer Letter! 🎉", desc: "Joining scheduled Dec 1st. Onboarding team notified.", date: "05 Nov 2026" },
+        charts: [
+          { type: "bar", title: "Recruitment Pipeline Funnel", sub: "Candidate progression through stages", data: [{label:"Applied",count:148,color:"#EC4899"},{label:"Screened",count:38,color:"#6366F1"},{label:"Tech L1/L2",count:18,color:"#0EA5E9"},{label:"Management HR",count:7,color:"#F59E0B"},{label:"Offered",count:4,color:"#10B981"}] },
+          { type: "donut", title: "Sourcing Channel Share", sub: "Qualified candidate origins", center: "100%", centerLabel: "Sources", data: [{label:"LinkedIn",value:52,color:"#0EA5E9"},{label:"Referrals",value:28,color:"#10B981"},{label:"Job Portals",value:12,color:"#8B5CF6"},{label:"Campus",value:8,color:"#F59E0B"}] }
+        ],
+        actions: [{label:"Create Opening",color:"pink"},{label:"Add Candidate",color:"indigo"},{label:"Generate Offer",color:"emerald"},{label:"Schedule Round",color:"sky"}],
+        approvals: [{user:"Snehal Dave",role:"Senior Odoo",title:"CTC Offer Approval: ₹ 22.5 LPA",time:"30m ago",status:"Admin Sign"},{user:"Harshil Mehta",role:"Frontend Dev",title:"Tech L2 Scorecard: 4.5/5",time:"2h ago",status:"HR Round"}]
+      },
+      project_manager: {
+        id: "project_manager",
+        name: "Project Manager",
+        category: "Delivery & Projects",
+        badge: "Role 9 of 9",
+        subtitle: "Tracking client deliverables, timesheet compliance, billable hours, and bench rate.",
+        user: { name: "Karan Singhal", title: "Technical Project Manager", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200" },
+        metrics: [
+          { label: "Active Projects", val: "8 Accounts", sub: "Client & Internal", trend: "Healthy", color: "blue", spark: [6, 7, 7, 8, 8, 8, 8] },
+          { label: "Logged Hours", val: "342 / 360 h", sub: "95% Target Achieved", trend: "On-Track", color: "emerald", spark: [310, 320, 335, 340, 338, 342, 342] },
+          { label: "Billability Rate", val: "89.2%", sub: "4 on Bench", trend: "+2.4%", color: "indigo", spark: [82, 84, 85, 86, 88, 89, 89.2] },
+          { label: "Overdue Items", val: "1", sub: "Omega ERP Phase 2", trend: "Action", color: "amber", spark: [0, 0, 1, 1, 2, 1, 1] }
+        ],
+        announcement: { badge: "Deployment", title: "SquadFocus Enterprise v2.4 Deployment to Client Staging Success! 🚀", desc: "Client UAT kickoff Monday 10:00 AM IST. Submit all sprint timesheets.", date: "05 Nov 2026" },
+        charts: [
+          { type: "area", title: "Sprint Velocity & Points Delivery", sub: "Committed vs delivered points", data: [{l:"Sprint 20",v1:48,v2:46},{l:"Sprint 21",v1:52,v2:50},{l:"Sprint 22",v1:50,v2:52},{l:"Sprint 23",v1:55,v2:54},{l:"Sprint 24",v1:60,v2:58}], c1:"#94A3B8", c2:"#2563EB", n1:"Committed", n2:"Delivered" },
+          { type: "donut", title: "Developer Hours by Account", sub: "Distribution of billable hours", center: "974 h", centerLabel: "Logged", data: [{label:"SquadFocus Core",value:420,color:"#2563EB"},{label:"Omega ERP",value:310,color:"#0EA5E9"},{label:"FinTech",value:180,color:"#10B981"},{label:"Bench",value:64,color:"#F59E0B"}] }
+        ],
+        actions: [{label:"Create Milestone",color:"blue"},{label:"Allocate Dev",color:"indigo"},{label:"Approve Timesheet",color:"emerald"},{label:"Velocity Report",color:"purple"}],
+        approvals: [{user:"SquadFocus v2.4",role:"Release",title:"Sprint 24 Staging Sign-off",time:"40m ago",status:"PM Sign"},{user:"Rohan Sharma",role:"Timesheet",title:"Weekly Log: 40h Billable",time:"1h ago",status:"Audit Ready"}]
+      }
+    };
+
+    let activeRoleKey = 'super_admin';
+    let isCanvasMode = false;
+    let punchSeconds = 13338;
+    let isPunchedIn = true;
+
+    setInterval(() => {
+      if (isPunchedIn) {
+        punchSeconds++;
+        const hrs = String(Math.floor(punchSeconds / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((punchSeconds % 3600) / 60)).padStart(2, '0');
+        const secs = String(punchSeconds % 60).padStart(2, '0');
+        const str = `${hrs}:${mins}:${secs}`;
+        const t1 = document.getElementById('top-timer');
+        const t2 = document.getElementById('widget-timer');
+        if (t1) t1.textContent = str;
+        if (t2) t2.textContent = str;
+      }
+    }, 1000);
+
+    function togglePunchWidget() {
+      isPunchedIn = !isPunchedIn;
+      const b = document.getElementById('punch-status-badge');
+      const btn = document.getElementById('btn-punch-toggle');
+      const sub = document.getElementById('punch-subtext');
+      if (isPunchedIn) {
+        b.className = "inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200";
+        b.innerHTML = '<span class="w-1.5 h-1.5 rounded-full mr-1.5 bg-emerald-500 pulse-dot"></span><span>On Duty</span>';
+        btn.className = "w-full py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center transition-all bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer";
+        btn.innerHTML = '<span>Punch Out for Break</span>';
+        sub.textContent = "Checked In at 09:15 AM";
+      } else {
+        b.className = "inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border bg-amber-50 text-amber-700 border-amber-200";
+        b.innerHTML = '<span class="w-1.5 h-1.5 rounded-full mr-1.5 bg-amber-500"></span><span>Checked Out</span>';
+        btn.className = "w-full py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center transition-all bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer";
+        btn.innerHTML = '<span>Punch In Now</span>';
+        sub.textContent = "Shift Paused";
+      }
+    }
+
+    const COLOR_CLASSES = {
+      indigo: { tile: "bg-indigo-50 text-indigo-600 border border-indigo-100", trend: "text-indigo-700 bg-indigo-50 border-indigo-200", stroke: "#6366F1", btn: "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200" },
+      emerald: { tile: "bg-emerald-50 text-emerald-600 border border-emerald-100", trend: "text-emerald-700 bg-emerald-50 border-emerald-200", stroke: "#10B981", btn: "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200" },
+      purple: { tile: "bg-purple-50 text-purple-600 border border-purple-100", trend: "text-purple-700 bg-purple-50 border-purple-200", stroke: "#8B5CF6", btn: "bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200" },
+      sky: { tile: "bg-sky-50 text-sky-600 border border-sky-100", trend: "text-sky-700 bg-sky-50 border-sky-200", stroke: "#0EA5E9", btn: "bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200" },
+      amber: { tile: "bg-amber-50 text-amber-600 border border-amber-100", trend: "text-amber-800 bg-amber-50 border-amber-200", stroke: "#F59E0B", btn: "bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200" },
+      rose: { tile: "bg-rose-50 text-rose-600 border border-rose-100", trend: "text-rose-700 bg-rose-50 border-rose-200", stroke: "#F43F5E", btn: "bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200" },
+      teal: { tile: "bg-teal-50 text-teal-600 border border-teal-100", trend: "text-teal-700 bg-teal-50 border-teal-200", stroke: "#14B8A6", btn: "bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200" },
+      blue: { tile: "bg-blue-50 text-blue-600 border border-blue-100", trend: "text-blue-700 bg-blue-50 border-blue-200", stroke: "#2563EB", btn: "bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200" },
+      pink: { tile: "bg-pink-50 text-pink-600 border border-pink-100", trend: "text-pink-700 bg-pink-50 border-pink-200", stroke: "#EC4899", btn: "bg-pink-50 hover:bg-pink-100 text-pink-700 border-pink-200" }
+    };
+
+    function renderSpark(spark, color) {
+      const min = Math.min(...spark), max = Math.max(...spark), range = max - min || 1;
+      const pts = spark.map((val, idx) => {
+        const x = (idx / (spark.length - 1)) * 74;
+        const y = 26 - ((val - min) / range) * 20 - 3;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      const stroke = (COLOR_CLASSES[color] || COLOR_CLASSES.indigo).stroke;
+      return `<svg width="74" height="26" class="overflow-visible"><polyline fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" points="${pts}"/></svg>`;
+    }
+
+    function renderAreaSVG(c) {
+      const w = 460, h = 180, pl = 35, pr = 15, pt = 15, pb = 25;
+      const cw = w - pl - pr, ch = h - pt - pb;
+      let maxVal = 0;
+      c.data.forEach(d => { if (d.v1 > maxVal) maxVal = d.v1; if (d.v2 > maxVal) maxVal = d.v2; });
+      maxVal = Math.ceil(maxVal * 1.1) || 10;
+      const pts1 = c.data.map((d, i) => `${pl + (i / (c.data.length - 1)) * cw},${pt + ch - (d.v1 / maxVal) * ch}`).join(' ');
+      const area1 = `${pl},${pt + ch} ${pts1} ${pl + cw},${pt + ch}`;
+      const pts2 = c.data.map((d, i) => `${pl + (i / (c.data.length - 1)) * cw},${pt + ch - (d.v2 / maxVal) * ch}`).join(' ');
+      const xLabs = c.data.map((d, i) => `<text x="${pl + (i / (c.data.length - 1)) * cw}" y="${h - 8}" text-anchor="middle" font-size="9" fill="#64748B" font-weight="600">${d.l}</text>`).join('');
+
+      return `
+        <div class="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-2xs">
+          <div class="flex justify-between items-center mb-2.5">
+            <div><h3 class="text-xs font-bold text-slate-900 uppercase tracking-wide">${c.title}</h3><p class="text-[11px] text-slate-400 mt-0.5">${c.sub}</p></div>
+            <div class="flex space-x-2.5 text-[11px]">
+              <span class="flex items-center font-semibold text-slate-600"><span class="w-2 h-2 rounded-full mr-1" style="background:${c.c1}"></span>${c.n1}</span>
+              <span class="flex items-center font-semibold text-slate-600"><span class="w-2 h-2 rounded-full mr-1" style="background:${c.c2}"></span>${c.n2}</span>
+            </div>
+          </div>
+          <svg viewBox="0 0 ${w} ${h}" class="w-full h-36 select-none">
+            <defs><linearGradient id="grd-${c.n1}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c.c1}" stop-opacity="0.25"/><stop offset="100%" stop-color="${c.c1}" stop-opacity="0"/></linearGradient></defs>
+            <line x1="${pl}" y1="${pt}" x2="${w - pr}" y2="${pt}" stroke="#F1F5F9" stroke-dasharray="3 3"/>
+            <line x1="${pl}" y1="${pt + ch/2}" x2="${w - pr}" y2="${pt + ch/2}" stroke="#F1F5F9" stroke-dasharray="3 3"/>
+            <line x1="${pl}" y1="${pt + ch}" x2="${w - pr}" y2="${pt + ch}" stroke="#E2E8F0"/>
+            <polygon points="${area1}" fill="url(#grd-${c.n1})"/>
+            <polyline fill="none" stroke="${c.c1}" stroke-width="2.2" stroke-linecap="round" points="${pts1}"/>
+            <polyline fill="none" stroke="${c.c2}" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3" points="${pts2}"/>
+            ${xLabs}
+          </svg>
+        </div>
+      `;
+    }
+
+    function renderDonutSVG(c) {
+      const total = c.data.reduce((a, b) => a + b.value, 0) || 1;
+      const radius = 54, strokeWidth = 15;
+      const circ = 2 * Math.PI * radius;
+      let cumAngle = 0;
+
+      const circles = c.data.map(item => {
+        const len = (item.value / total) * circ;
+        const offset = -cumAngle;
+        cumAngle += len;
+        return `<circle cx="70" cy="70" r="${radius}" fill="none" stroke="${item.color}" stroke-width="${strokeWidth}" stroke-dasharray="${len} ${circ}" stroke-dashoffset="${offset}" stroke-linecap="round" class="transition-all hover:stroke-[18px] cursor-pointer"/>`;
+      }).join('');
+
+      const legend = c.data.map(item => {
+        const pct = Math.round((item.value / total) * 100);
+        return `
+          <div class="flex items-center justify-between text-[11px] text-slate-600 py-0.5">
+            <div class="flex items-center space-x-1.5 truncate">
+              <span class="w-2 h-2 rounded-full shrink-0" style="background:${item.color}"></span>
+              <span class="truncate">${item.label}</span>
+            </div>
+            <span class="font-mono font-bold text-slate-800 ml-1.5">${pct}%</span>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col justify-between">
+          <div class="mb-2">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wide">${c.title}</h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">${c.sub}</p>
+          </div>
+          <div class="flex items-center justify-between gap-3 my-auto py-1">
+            <div class="relative w-32 h-32 shrink-0 flex items-center justify-center">
+              <svg class="w-full h-full -rotate-90" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="${radius}" fill="none" stroke="#F1F5F9" stroke-width="${strokeWidth}" />
+                ${circles}
+              </svg>
+              <div class="absolute text-center">
+                <span class="text-sm font-extrabold text-slate-900 font-mono block leading-none">${c.center || total}</span>
+                <span class="text-[9px] uppercase font-bold text-slate-400 mt-0.5 block">${c.centerLabel || 'Total'}</span>
+              </div>
+            </div>
+            <div class="flex-1 space-y-1">${legend}</div>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex justify-between text-[10px] text-slate-400">
+            <span>Breakdown</span><span>Relative Share</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBarHTML(c) {
+      const maxC = Math.max(...c.data.map(d => d.count), 1);
+      const bars = c.data.map(item => {
+        const pct = Math.round((item.count / maxC) * 100);
+        return `
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px] font-semibold">
+              <span class="text-slate-700">${item.label}</span>
+              <span class="font-mono font-bold text-slate-900">${item.count}</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden p-0.5">
+              <div class="h-full rounded-full" style="width: ${pct}%; background-color: ${item.color || '#6366F1'};"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col justify-between">
+          <div class="mb-2">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wide">${c.title}</h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">${c.sub}</p>
+          </div>
+          <div class="space-y-2.5 my-auto py-1">${bars}</div>
+          <div class="pt-2 border-t border-slate-100 flex justify-between text-[10px] text-slate-400">
+            <span>Metric Scale</span><span>Count</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function switchRole(roleKey) {
+      activeRoleKey = roleKey;
+      const role = ROLES[roleKey] || ROLES.super_admin;
+      document.getElementById('sidebarRoleSelector').value = roleKey;
+      document.getElementById('top-breadcrumb-role').textContent = role.name;
+
+      document.getElementById('role-category').textContent = role.category;
+      document.getElementById('role-badge').textContent = role.badge;
+      document.getElementById('role-heading').textContent = role.name;
+      document.getElementById('role-subtitle').textContent = role.subtitle;
+      document.getElementById('role-avatar').src = role.user.avatar;
+      document.getElementById('role-user-name').textContent = role.user.name;
+      document.getElementById('role-user-title').textContent = role.user.title;
+      document.getElementById('sidebar-user-avatar').src = role.user.avatar;
+      document.getElementById('sidebar-user-name').textContent = role.user.name;
+      document.getElementById('sidebar-user-title').textContent = role.user.title;
+      document.getElementById('top-avatar').src = role.user.avatar;
+      document.getElementById('top-name').textContent = role.user.name;
+      document.getElementById('top-title').textContent = role.user.title;
+
+      renderTabs();
+
+      // 4 Clean Metric Cards
+      document.getElementById('kpi-cards-container').innerHTML = role.metrics.map(m => {
+        const cls = COLOR_CLASSES[m.color] || COLOR_CLASSES.indigo;
+        return `
+          <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate">${m.label}</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${cls.tile}">★</div>
+            </div>
+            <div class="flex items-baseline justify-between gap-2 my-2">
+              <div class="text-2xl font-extrabold text-slate-900 tracking-tight font-sans">${m.val}</div>
+              <div class="shrink-0">${renderSpark(m.spark, m.color)}</div>
+            </div>
+            <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 text-xs">
+              <span class="text-[10px] text-slate-500 font-medium truncate">${m.sub}</span>
+              <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold border shrink-0 ${cls.trend}">${m.trend}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Clean Announcement Banner
+      const ann = role.announcement;
+      document.getElementById('announcement-container').innerHTML = `
+        <div class="bg-gradient-to-r from-purple-50 via-indigo-50/50 to-white border border-purple-200 rounded-2xl p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-start space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-purple-100 text-[#714B67] flex items-center justify-center shrink-0 mt-0.5 font-bold">📢</div>
+            <div class="space-y-0.5">
+              <div class="flex items-center space-x-2">
+                <span class="bg-purple-100 text-[#714B67] px-2 py-0.2 rounded-full text-[9px] font-bold uppercase">${ann.badge}</span>
+                <span class="text-[10px] text-slate-400">${ann.date}</span>
+              </div>
+              <h4 class="text-xs sm:text-sm font-bold text-slate-900 leading-snug">${ann.title}</h4>
+              <p class="text-[11px] text-slate-600 max-w-xl leading-relaxed">${ann.desc}</p>
+            </div>
+          </div>
+          <button onclick="alert('Notice: ${ann.title}')" class="px-3 py-1.5 rounded-xl bg-[#714B67] text-white text-xs font-bold transition shadow-2xs cursor-pointer self-start sm:self-auto shrink-0">View Details →</button>
+        </div>
+      `;
+
+      // Render exactly 2 clean varied charts
+      document.getElementById('charts-container').innerHTML = role.charts.map(c => {
+        if (c.type === 'area') return renderAreaSVG(c);
+        if (c.type === 'donut') return renderDonutSVG(c);
+        return renderBarHTML(c);
+      }).join('');
+
+      // Quick Actions
+      document.getElementById('quick-actions-container').innerHTML = role.actions.map(act => {
+        const cls = COLOR_CLASSES[act.color] || COLOR_CLASSES.indigo;
+        return `
+          <button onclick="alert('Action: ${act.label}')" class="p-2.5 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between hover:shadow-2xs ${cls.btn}">
+            <div class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center mb-1.5 font-bold text-xs">⚡</div>
+            <span class="text-xs font-bold leading-tight">${act.label}</span>
+          </button>
+        `;
+      }).join('');
+
+      // Approvals
+      document.getElementById('approvals-count').textContent = `${role.approvals.length} Pending`;
+      document.getElementById('pending-approvals-container').innerHTML = role.approvals.map((app, idx) => `
+        <div class="p-2.5 bg-slate-50/80 rounded-xl border border-slate-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="space-y-0.5">
+            <div class="flex items-center space-x-1.5">
+              <span class="font-bold text-xs text-slate-800">${app.user}</span>
+              <span class="text-[9px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded font-semibold">${app.role}</span>
+            </div>
+            <p class="text-xs text-slate-600 font-medium leading-tight">${app.title}</p>
+            <div class="text-[10px] text-slate-400">${app.time} • <span class="text-amber-700 font-semibold">${app.status}</span></div>
+          </div>
+          <div class="flex space-x-1.5 shrink-0 self-end sm:self-center">
+            <button onclick="alert('Approved #${idx+1}'); this.closest('.space-y-2.5').removeChild(this.closest('.p-2.5'));" class="px-2 py-1 bg-emerald-600 text-white rounded-lg text-[11px] font-bold cursor-pointer">Approve</button>
+            <button onclick="alert('Rejected #${idx+1}'); this.closest('.space-y-2.5').removeChild(this.closest('.p-2.5'));" class="px-2 py-1 bg-white text-rose-600 border border-slate-200 rounded-lg text-[11px] font-bold cursor-pointer">Reject</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderTabs() {
+      const c = document.getElementById('persona-tabs');
+      c.innerHTML = '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1.5">Persona:</span>' + Object.keys(ROLES).map(k => {
+        const r = ROLES[k];
+        const act = activeRoleKey === k && !isCanvasMode;
+        return `
+          <button onclick="isCanvasMode = false; switchRole('${k}'); updateCanvas();" class="px-3 py-1 rounded-xl text-xs font-bold transition border cursor-pointer ${act ? 'bg-[#714B67] text-white border-[#714B67]' : 'bg-slate-50 text-slate-600 border-slate-200'}">
+            <span>${r.name.split(' (')[0]}</span>
+            ${act ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block ml-1"></span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function toggleFigmaCanvasView() {
+      isCanvasMode = !isCanvasMode;
+      updateCanvas();
+    }
+
+    function updateCanvas() {
+      const s = document.getElementById('view-single-dashboard');
+      const c = document.getElementById('view-figma-canvas');
+      const txt = document.getElementById('btn-canvas-text');
+      const btn = document.getElementById('btn-figma-canvas');
+      if (isCanvasMode) {
+        s.classList.add('hidden');
+        c.classList.remove('hidden');
+        txt.textContent = "Single Board";
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer shadow-2xs bg-indigo-600 text-white border-indigo-600";
+        renderGrid();
+      } else {
+        c.classList.add('hidden');
+        s.classList.remove('hidden');
+        txt.textContent = "Figma Multi-Board";
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer shadow-2xs bg-white text-slate-700 border-slate-200";
+      }
+      renderTabs();
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('figma-cards-grid');
+      grid.innerHTML = Object.keys(ROLES).map((k, idx) => {
+        const r = ROLES[k];
+        return `
+          <div onclick="isCanvasMode = false; switchRole('${k}'); updateCanvas();" class="bg-white rounded-2xl border border-slate-200 hover:border-slate-300 p-4 shadow-2xs hover:shadow-md transition cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between pb-2 border-b border-slate-100 mb-2.5 text-[10px] font-bold text-slate-400">
+                <span>Artboard #${idx+1}</span>
+                <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${r.category}</span>
+              </div>
+              <h3 class="font-extrabold text-sm text-slate-900">${r.name}</h3>
+              <p class="text-xs text-slate-500 line-clamp-2 mt-0.5 mb-2.5">${r.subtitle}</p>
+              <div class="grid grid-cols-2 gap-2 my-2">
+                ${r.metrics.slice(0, 2).map(m => `
+                  <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                    <span class="text-[9px] uppercase font-bold text-slate-400 block truncate">${m.label}</span>
+                    <span class="text-sm font-extrabold text-slate-900 font-mono">${m.val}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            <div class="pt-2.5 border-t border-slate-100 flex justify-between text-xs font-bold text-[#714B67]">
+              <span>Open Dashboard</span>
+              <span>→</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openExportModal() {
+      const r = ROLES[activeRoleKey] || ROLES.super_admin;
+      const svg = `<!-- FIGMA COMPATIBLE VECTOR ARTBOARD: ${r.name.toUpperCase()} DASHBOARD -->
+<svg width="1440" height="960" viewBox="0 0 1440 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="960" fill="#F8FAFC"/>
+  <rect width="240" height="960" fill="#FFFFFF"/>
+  <line x1="240" y1="0" x2="240" y2="960" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="24" y="36" fill="#0F172A" font-family="sans-serif" font-size="14" font-weight="800">SquadFocus</text>
+  <rect x="264" y="24" width="1152" height="64" rx="16" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <text x="288" y="58" fill="#0F172A" font-family="sans-serif" font-size="16" font-weight="800">${r.name} — Clean Console</text>
+  ${r.metrics.map((m, i) => `
+  <g transform="translate(${264 + i * 294}, 104)">
+    <rect width="278" height="116" rx="16" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <text x="18" y="28" fill="#64748B" font-family="sans-serif" font-size="10" font-weight="700">${m.label.toUpperCase()}</text>
+    <text x="18" y="68" fill="#0F172A" font-family="sans-serif" font-size="24" font-weight="800">${m.val}</text>
+    <text x="18" y="98" fill="#94A3B8" font-family="sans-serif" font-size="10">${m.sub}</text>
+  </g>`).join('')}
+</svg>`;
+      document.getElementById('figma-svg-output').value = svg;
+      document.getElementById('figma-export-modal').classList.remove('hidden');
+    }
+
+    function closeExportModal() {
+      document.getElementById('figma-export-modal').classList.add('hidden');
+    }
+
+    function copyFigmaSVG() {
+      const textarea = document.getElementById('figma-svg-output');
+      navigator.clipboard.writeText(textarea.value);
+      const btn = document.getElementById('btn-copy-svg');
+      btn.textContent = "✓ Copied for Figma!";
+      setTimeout(() => { btn.textContent = "Copy SVG to Clipboard"; }, 2000);
+    }
+
+    switchRole('super_admin');
+  </script>
+</body>
+</html>
