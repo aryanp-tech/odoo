@@ -1,20 +1,25 @@
 // src/routes/index.jsx
-// Production route tree with code splitting (React.lazy & Suspense) for all operational modules
+// Production route tree with code splitting (React.lazy & Suspense) and Route Protection
 
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
+
+// Public Authentication Pages
+const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
+const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'));
 
 // Code-split pages for high performance and reduced initial bundle footprint
 const EmployeeDashboardPage = lazy(() => import('../pages/employee/EmployeeDashboardPage'));
 const ProfilePage = lazy(() => import('../pages/employee/ProfilePage'));
 const AttendancePage = lazy(() => import('../pages/employee/AttendancePage'));
-const ProjectTimesheetPage = lazy(() => import('../pages/employee/ProjectTimesheetPage'));
+const ProjectsPage = lazy(() => import('../pages/employee/ProjectsPage'));
+const TimesheetsPage = lazy(() => import('../pages/employee/TimesheetsPage'));
 const LeavesPage = lazy(() => import('../pages/employee/LeavesPage'));
 const PerformancePage = lazy(() => import('../pages/employee/PerformancePage'));
 const AssetsPage = lazy(() => import('../pages/employee/AssetsPage'));
-const InfrastructurePage = lazy(() => import('../pages/employee/InfrastructurePage'));
+const TicketsPage = lazy(() => import('../pages/employee/TicketsPage'));
 const VotingPage = lazy(() => import('../pages/employee/VotingPage'));
-const SettingsPage = lazy(() => import('../pages/employee/SettingsPage'));
 
 function PageLoader() {
   return (
@@ -31,20 +36,104 @@ export default function AppRoutes() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Main Dashboard / Overview */}
-        <Route path="/" element={<EmployeeDashboardPage />} />
-        <Route path="/overview" element={<EmployeeDashboardPage />} />
+        {/* Public Authentication Routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/forgot-password" element={<Navigate to="/reset-password" replace />} />
 
-        {/* Operational Modules */}
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/attendance" element={<AttendancePage />} />
-        <Route path="/project-timesheets" element={<ProjectTimesheetPage />} />
-        <Route path="/leaves" element={<LeavesPage />} />
-        <Route path="/performance" element={<PerformancePage />} />
-        <Route path="/assets" element={<AssetsPage />} />
-        <Route path="/infrastructure" element={<InfrastructurePage />} />
-        <Route path="/voting" element={<VotingPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        {/* Protected Operational Modules */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <EmployeeDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/overview"
+          element={
+            <ProtectedRoute>
+              <EmployeeDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/attendance"
+          element={
+            <ProtectedRoute>
+              <AttendancePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <ProtectedRoute>
+              <ProjectsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/timesheets"
+          element={
+            <ProtectedRoute>
+              <TimesheetsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/project-timesheets" element={<Navigate to="/timesheets" replace />} />
+        <Route
+          path="/leaves"
+          element={
+            <ProtectedRoute>
+              <LeavesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/performance"
+          element={
+            <ProtectedRoute>
+              <PerformancePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/assets"
+          element={
+            <ProtectedRoute>
+              <AssetsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tickets"
+          element={
+            <ProtectedRoute>
+              <TicketsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/helpdesk" element={<Navigate to="/tickets" replace />} />
+        <Route path="/infrastructure" element={<Navigate to="/tickets" replace />} />
+        <Route
+          path="/voting"
+          element={
+            <ProtectedRoute>
+              <VotingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/settings" element={<Navigate to="/profile" replace />} />
 
         {/* Wildcard redirects back to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

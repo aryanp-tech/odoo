@@ -8,8 +8,6 @@ import {
   Calendar as CalendarIcon,
   Check,
   Building,
-  UserCheck,
-  ShieldCheck,
   Clock,
   Info,
 } from 'lucide-react';
@@ -444,46 +442,22 @@ export default function LeavesCalendarView({ onRequestLeave }) {
               </div>
             </div>
 
-            {/* Bi-Approval Workflow Details */}
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="text-[11px] font-bold text-slate-700">
-                Dual Approval Status:
-              </div>
-
-              {/* Manager Step */}
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 text-slate-600">
-                  <UserCheck size={13} className="text-indigo-600" />
-                  <span>Lead Manager:</span>
-                </div>
-                <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                    selectedEvent.managerApproval.status === 'Approved'
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-amber-100 text-amber-800'
-                  }`}
-                >
-                  {selectedEvent.managerApproval.status}
-                </span>
-              </div>
-
-              {/* HR Step */}
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 text-slate-600">
-                  <ShieldCheck size={13} className="text-indigo-600" />
-                  <span>HR Operations:</span>
-                </div>
-                <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                    selectedEvent.hrApproval.status === 'Approved' ||
-                    selectedEvent.hrApproval.status === 'Gazetted Holiday'
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-amber-100 text-amber-800'
-                  }`}
-                >
-                  {selectedEvent.hrApproval.status}
-                </span>
-              </div>
+            {/* Unified Approval Status */}
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+              <span className="font-semibold text-slate-700">Approval Status:</span>
+              <span
+                className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border shadow-2xs ${
+                  selectedEvent.hrApproval?.status === 'Approved' ||
+                  selectedEvent.hrApproval?.status === 'Gazetted Holiday'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                    : 'bg-amber-50 text-amber-800 border-amber-300'
+                }`}
+              >
+                {selectedEvent.hrApproval?.status === 'Approved' ||
+                selectedEvent.hrApproval?.status === 'Gazetted Holiday'
+                  ? 'Approved'
+                  : 'Pending'}
+              </span>
             </div>
 
             <button

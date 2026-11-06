@@ -1,5 +1,5 @@
 // src/components/employee/CompanyPollsCard.jsx
-// Professional colorful Office Pulse Poll matching user mockup (employee.voting)
+// Clean Office Pulse Poll (no technical model labels or extra subtext)
 
 import React, { useState } from 'react';
 import { Vote, Check, Sparkles } from 'lucide-react';
@@ -29,26 +29,16 @@ export default function CompanyPollsCard({ poll = {} }) {
     <div className="bg-gradient-to-br from-[#fff7ed] via-[#ffedd5]/60 to-[#fed7aa]/40 border border-[#fed7aa] rounded-2xl p-6 shadow-xs space-y-4">
       {/* Header Row */}
       <div className="flex items-center justify-between gap-3 pb-3 border-b border-orange-200/60">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#ea580c] flex items-center justify-center shrink-0">
-            <Vote size={18} />
+            <Vote size={16} />
           </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm font-bold text-slate-900 leading-tight">
-                Office Pulse Poll
-              </h3>
-              <span className="text-[10px] font-mono text-orange-800 bg-white/90 px-1.5 py-0.2 rounded border border-orange-200 shadow-2xs">
-                employee.voting
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Quick team choice &amp; workplace governance
-            </p>
-          </div>
+          <h3 className="text-sm font-bold text-slate-900 leading-tight">
+            Office Pulse Poll
+          </h3>
         </div>
 
-        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white text-orange-800 border border-orange-200 shadow-2xs">
+        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white text-orange-800 border border-orange-200 shadow-2xs">
           Open Vote
         </span>
       </div>
@@ -57,7 +47,7 @@ export default function CompanyPollsCard({ poll = {} }) {
       <div className="flex items-center justify-between text-xs font-bold text-slate-900">
         <div className="flex items-center gap-1.5">
           <Sparkles size={14} className="text-orange-600" />
-          <span>Q4 All-Hands Hackathon Theme Selection</span>
+          <span>Q4 Hackathon Theme Selection</span>
         </div>
         <span className="text-[10px] font-semibold text-slate-400 bg-white/80 px-2 py-0.5 rounded border border-orange-100">
           ends in 3d

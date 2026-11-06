@@ -4,7 +4,6 @@
 import React from 'react';
 import Sidebar from '../../components/layout/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
-import WelcomeBanner from '../../components/employee/WelcomeBanner';
 import { useGetEmployeeDashboardQuery } from '../../services/api/apiSlice';
 import { getStoredSession } from '../../services/authService';
 import {
@@ -56,9 +55,6 @@ export default function AttendancePage() {
                 <span>Export Timesheet</span>
               </button>
             </div>
-
-            {/* Live Punch Controls Banner */}
-            <WelcomeBanner user={user} attendance={attendance} />
 
             {/* 4 Colorful Attendance Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">

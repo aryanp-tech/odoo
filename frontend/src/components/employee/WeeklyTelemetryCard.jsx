@@ -1,5 +1,5 @@
 // src/components/employee/WeeklyTelemetryCard.jsx
-// Exact Row 3 Left layout matching user reference: Weekly Attendance & Shift Telemetry
+// Clean Weekly Attendance & Shift Telemetry (no technical model labels or extra subtext)
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,11 +8,6 @@ import { Calendar, ArrowUpRight } from 'lucide-react';
 export default function WeeklyTelemetryCard({ attendance = {} }) {
   const navigate = useNavigate();
 
-  // Dynamic or fallback rows matching the mockup:
-  // Mon, Nov 2 | 08:58 AM - 05:32 PM | 8.5 hrs | Verified
-  // Tue, Nov 3 | 09:02 AM - 05:46 PM | 8.7 hrs | Verified
-  // Wed, Nov 4 | 08:45 AM - 05:15 PM | 8.5 hrs | Verified
-  // Thu, Nov 5 | 01:07 PM - Active Shift | 1.2 hrs | Current
   const rows = [
     {
       id: '1',
@@ -51,42 +46,32 @@ export default function WeeklyTelemetryCard({ attendance = {} }) {
   return (
     <div className="bg-gradient-to-br from-[#f8faff] via-[#f0f7ff] to-[#e0f2fe]/40 border border-[#bae6fd] rounded-2xl p-6 shadow-xs flex flex-col justify-between h-full">
       {/* 1. Card Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-sky-200/60">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3 pb-3 border-b border-sky-200/60">
+        <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
-            <Calendar size={18} />
+            <Calendar size={16} />
           </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm font-bold text-slate-900 leading-tight">
-                Weekly Attendance &amp; Shift Telemetry
-              </h3>
-              <span className="text-[10px] font-mono text-sky-800 bg-white/90 px-1.5 py-0.2 rounded border border-sky-200 shadow-2xs">
-                hr.attendance
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Automated biometric logging &amp; verified hours
-            </p>
-          </div>
+          <h3 className="text-sm font-bold text-slate-900 leading-tight">
+            Weekly Attendance Telemetry
+          </h3>
         </div>
 
         <button
           type="button"
           onClick={() => navigate('/attendance')}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors cursor-pointer"
         >
           <span>Full Timesheet</span>
           <ArrowUpRight size={14} className="text-slate-500" />
         </button>
       </div>
 
-      {/* 2. Telemetry Rows Matching Mockup */}
+      {/* 2. Telemetry Rows */}
       <div className="divide-y divide-sky-100 mt-2">
         {rows.map((row) => (
           <div
             key={row.id}
-            className={`py-3.5 flex items-center justify-between gap-4 text-xs px-2.5 rounded-lg transition-colors ${
+            className={`py-3 flex items-center justify-between gap-4 text-xs px-2.5 rounded-lg transition-colors ${
               row.isCurrent ? 'bg-white/90 border border-sky-200/80 shadow-2xs' : 'hover:bg-white/60'
             }`}
           >

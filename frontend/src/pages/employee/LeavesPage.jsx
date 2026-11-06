@@ -1,5 +1,5 @@
 // src/pages/employee/LeavesPage.jsx
-// Leaves & Time Off page with View Switcher: Approval Tracker & Calendar View
+// Leaves & Time Off page with View Switcher: Time Off Requests & Calendar View
 
 import React, { useState } from 'react';
 import Sidebar from '../../components/layout/Sidebar';
@@ -12,8 +12,6 @@ import {
   Calendar as CalendarIcon,
   Plus,
   Table,
-  UserCheck,
-  ShieldCheck,
   Home,
   HeartPulse,
   Sparkles,
@@ -21,11 +19,11 @@ import {
 
 export default function LeavesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Default tab is 'table' (Approval Tracker first), toggleable to 'calendar'
+  // Default tab is 'table' (Requests first), toggleable to 'calendar'
   const [activeTab, setActiveTab] = useState('table');
 
   const user = getStoredSession();
-  const { data: dashboardData } = useGetEmployeeDashboardQuery();
+  const { data: _dashboardData } = useGetEmployeeDashboardQuery();
 
   // Quotas matching the user's reference mockup:
   // 1/3 Days Casual Leave 2026 | 5/6 Days Work From Home | 3/3 Days Sick Leave 2026
@@ -71,7 +69,7 @@ export default function LeavesPage() {
     },
   ];
 
-  // Request History with Manager and HR approval statuses
+  // Request History with single unified status column
   const leaveHistory = [
     {
       id: 'lv-1',
@@ -79,11 +77,7 @@ export default function LeavesPage() {
       type: 'Casual Leave 2026',
       dateRange: 'Nov 09, 2026',
       days: 1.0,
-      managerApprover: 'Sarah Chen (Lead)',
-      managerStatus: 'Approved',
-      hrApprover: 'HR Operations',
-      hrStatus: 'Approved',
-      overallStatus: 'Approved',
+      status: 'Approved',
     },
     {
       id: 'lv-2',
@@ -91,11 +85,7 @@ export default function LeavesPage() {
       type: 'Casual Leave 2026',
       dateRange: 'Nov 12, 2026',
       days: 1.0,
-      managerApprover: 'Sarah Chen (Lead)',
-      managerStatus: 'Approved',
-      hrApprover: 'HR Operations',
-      hrStatus: 'Pending HR Approval',
-      overallStatus: 'Pending HR Approval',
+      status: 'Pending',
     },
     {
       id: 'lv-3',
@@ -103,11 +93,7 @@ export default function LeavesPage() {
       type: 'Work From Home',
       dateRange: 'Nov 13, 2026',
       days: 1.0,
-      managerApprover: 'Sarah Chen (Lead)',
-      managerStatus: 'Approved',
-      hrApprover: 'HR Operations',
-      hrStatus: 'Approved',
-      overallStatus: 'Approved',
+      status: 'Approved',
     },
     {
       id: 'lv-4',
@@ -115,21 +101,17 @@ export default function LeavesPage() {
       type: 'Casual Leave 2026',
       dateRange: 'Dec 24, 2026 - Dec 26, 2026',
       days: 3.0,
-      managerApprover: 'Sarah Chen (Lead)',
-      managerStatus: 'Pending Review',
-      hrApprover: 'HR Operations',
-      hrStatus: 'Pending HR Approval',
-      overallStatus: 'Pending HR Approval',
+      status: 'Pending',
     },
   ];
 
-  // Helper for pristine, non-wrapping status badges with colored indicator dots and crisp borders
-  const renderStatusPill = (status, approver, align = 'start') => {
+  // Helper for pristine status badges with colored indicator dot and crisp border
+  const renderStatusPill = (status, align = 'start') => {
     const isApproved = status === 'Approved' || status === 'Fully Approved';
     const isRejected = status === 'Rejected';
 
     return (
-      <div className={`flex flex-col ${align === 'end' ? 'items-end' : 'items-start'} gap-0.5`}>
+      <div className={`flex ${align === 'end' ? 'justify-end' : 'justify-start'}`}>
         <span
           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap shrink-0 border shadow-2xs leading-none ${
             isApproved
@@ -150,11 +132,6 @@ export default function LeavesPage() {
           />
           <span>{status}</span>
         </span>
-        {approver && (
-          <span className="text-[10px] text-slate-400 font-medium pl-1 whitespace-nowrap">
-            {approver}
-          </span>
-        )}
       </div>
     );
   };
@@ -177,12 +154,12 @@ export default function LeavesPage() {
                   Leaves &amp; Time Off Portal
                 </h1>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Track leave allocations, company holiday schedules, and approval statuses
+                  Track leave allocations, company holiday schedules, and time off status
                 </p>
               </div>
 
               <div className="flex items-center gap-3">
-                {/* View Switcher Buttons (Approval Tracker & Calendar) */}
+                {/* View Switcher Buttons (Requests & Calendar) */}
                 <div className="flex items-center rounded-xl border border-slate-200 bg-white p-1 shadow-2xs">
                   <button
                     type="button"
@@ -194,7 +171,7 @@ export default function LeavesPage() {
                     }`}
                   >
                     <Table size={14} />
-                    <span>Approval Tracker</span>
+                    <span>Time Off Requests</span>
                   </button>
                   <button
                     type="button"
@@ -268,7 +245,7 @@ export default function LeavesPage() {
               })}
             </div>
 
-            {/* Tab 1: Approval Tracker Table */}
+            {/* Tab 1: Time Off Requests Table */}
             {activeTab === 'table' && (
               <div className="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs space-y-3">
                 <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
@@ -278,10 +255,10 @@ export default function LeavesPage() {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-slate-900 tracking-tight leading-tight">
-                        My Time Off Requests &amp; Approval Tracker
+                        My Time Off Requests
                       </h3>
                       <p className="text-[10px] text-slate-400 mt-0.5">
-                        Manager review &amp; HR authorization status pipeline
+                        Submitted applications and review status
                       </p>
                     </div>
                   </div>
@@ -292,32 +269,20 @@ export default function LeavesPage() {
                 </div>
 
                 <div className="overflow-x-auto rounded-xl border border-slate-200 shadow-2xs bg-white">
-                  <table className="w-full text-left text-xs whitespace-nowrap min-w-[840px]">
+                  <table className="w-full text-left text-xs whitespace-nowrap min-w-[700px]">
                     <thead>
                       <tr className="border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-50/80">
                         <th className="py-3.5 px-4 font-bold">Request Title</th>
                         <th className="py-3.5 px-4 font-bold">Type</th>
                         <th className="py-3.5 px-4 font-bold">Scheduled Date</th>
                         <th className="py-3.5 px-4 font-bold">Duration</th>
-                        <th className="py-3.5 px-4 font-bold">
-                          <span className="flex items-center gap-1.5">
-                            <UserCheck size={13} className="text-indigo-600" />
-                            <span>Manager Approval</span>
-                          </span>
-                        </th>
-                        <th className="py-3.5 px-4 font-bold">
-                          <span className="flex items-center gap-1.5">
-                            <ShieldCheck size={13} className="text-emerald-600" />
-                            <span>HR Operations</span>
-                          </span>
-                        </th>
-                        <th className="py-3.5 px-4 font-bold text-right">Overall Status</th>
+                        <th className="py-3.5 px-4 font-bold text-right">Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-medium bg-white">
                       {leaveHistory.map((item) => (
                         <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                          <td className="py-3.5 px-4 font-bold text-slate-900 max-w-xs truncate">
+                          <td className="py-3.5 px-4 font-bold text-slate-900 max-w-sm truncate">
                             {item.title}
                           </td>
                           <td className="py-3.5 px-4 whitespace-nowrap">
@@ -348,14 +313,8 @@ export default function LeavesPage() {
                           <td className="py-3.5 px-4 font-bold text-slate-800 whitespace-nowrap">
                             {item.days} Day{item.days > 1 ? 's' : ''}
                           </td>
-                          <td className="py-3.5 px-4 whitespace-nowrap">
-                            {renderStatusPill(item.managerStatus, item.managerApprover)}
-                          </td>
-                          <td className="py-3.5 px-4 whitespace-nowrap">
-                            {renderStatusPill(item.hrStatus, item.hrApprover)}
-                          </td>
                           <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                            {renderStatusPill(item.overallStatus, null, 'end')}
+                            {renderStatusPill(item.status, 'end')}
                           </td>
                         </tr>
                       ))}

@@ -1,5 +1,5 @@
 // src/components/employee/WelcomeBanner.jsx
-// Exact Row 1 layout matching user reference: Greeting dossier (left) + Daily Attendance with square buttons (right)
+// Row 1: Clean Greeting dossier (left) + Daily Attendance with clean square buttons (right)
 
 import React, { useState, useEffect } from 'react';
 import { Power, Coffee, Clock } from 'lucide-react';
@@ -82,16 +82,16 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
         toast.success('Break ended. Back on duty!');
       }
     } catch (err) {
-      toast.error('Failed to toggle break');
+      toast.error(err?.data?.message || 'Failed to toggle break');
     }
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-      {/* 1. Left Card: Greeting Dossier (Soft Violet / Indigo Component Theme) */}
+      {/* 1. Left Card: Greeting Dossier */}
       <div className="lg:col-span-8 bg-gradient-to-br from-[#f5f3ff] via-[#ede9fe]/60 to-[#ede9fe] border border-[#ddd6fe] rounded-2xl p-6 shadow-xs flex flex-col justify-between">
         <div>
-          {/* Top Meta Badges Row */}
+          {/* Top Meta Row */}
           <div className="flex items-center gap-2.5 flex-wrap">
             <div className="w-7 h-7 rounded-lg bg-[#4338ca] text-white flex items-center justify-center font-bold text-xs shadow-xs">
               {user?.avatar_initials || 'AP'}
@@ -103,10 +103,6 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
               Active
             </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 bg-white/90 border border-indigo-100 px-2.5 py-0.5 rounded-full shadow-2xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              Munich HQ - Desk 4-D
-            </span>
           </div>
 
           {/* Headline Greeting */}
@@ -115,7 +111,7 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
           </h2>
 
           <p className="text-xs text-slate-600 mt-1">
-            Here is your workday overview, balance status, and operational agenda for {todayDateStr}.
+            Workday overview and balance status for {todayDateStr}.
           </p>
         </div>
 
@@ -130,23 +126,18 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
         </div>
       </div>
 
-      {/* 2. Right Card: Daily Attendance (Soft Sky / Blue Component Theme) */}
+      {/* 2. Right Card: Daily Attendance */}
       <div className="lg:col-span-4 bg-gradient-to-br from-[#f0f9ff] via-[#e0f2fe]/60 to-[#bae6fd]/30 border border-[#bae6fd] rounded-2xl p-6 shadow-xs flex flex-col justify-between">
         <div>
           {/* Header Row */}
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-sky-200 text-sky-800 flex items-center justify-center shrink-0">
-                <Clock size={15} />
+              <div className="w-8 h-8 rounded-xl bg-sky-200 text-sky-800 flex items-center justify-center shrink-0">
+                <Clock size={16} />
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 leading-tight">
-                  Daily Attendance
-                </h3>
-                <span className="text-[10px] text-sky-800 bg-white/90 px-1.5 py-0.2 rounded border border-sky-200 font-mono inline-block mt-0.5 shadow-2xs">
-                  hr.attendance
-                </span>
-              </div>
+              <h3 className="text-sm font-bold text-slate-900 leading-tight">
+                Daily Attendance
+              </h3>
             </div>
 
             <div className="text-right">
@@ -160,7 +151,7 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
             </div>
           </div>
 
-          {/* Two Square Buttons (Matching Mockup) */}
+          {/* Two Clean Square Buttons */}
           <div className="grid grid-cols-2 gap-3 mt-4">
             {/* Square Button 1: Punch Out / In */}
             <button
@@ -173,14 +164,11 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
                   : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-100'
               } disabled:opacity-50`}
             >
-              <div className="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center mb-1">
+              <div className="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center mb-1.5">
                 <Power size={16} />
               </div>
               <div className="text-xs font-bold leading-tight">
                 {isPunchLoading ? 'Updating...' : isClockedIn ? 'Punch Out' : 'Punch In'}
-              </div>
-              <div className="text-[9px] text-indigo-200 mt-0.5 leading-tight">
-                {isClockedIn ? 'Click to end shift' : 'Click to start shift'}
               </div>
             </button>
 
@@ -195,14 +183,11 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
                   : 'bg-[#fffbeb] hover:bg-[#fef3c7] border-[#fef08a] text-slate-800'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <div className="w-8 h-8 rounded-full bg-[#fde68a] text-[#b45309] flex items-center justify-center mb-1">
+              <div className="w-8 h-8 rounded-full bg-[#fde68a] text-[#b45309] flex items-center justify-center mb-1.5">
                 <Coffee size={16} />
               </div>
               <div className="text-xs font-bold text-amber-950 leading-tight">
                 {isBreakLoading ? 'Updating...' : isBreak ? 'End Break' : 'Tea Break'}
-              </div>
-              <div className="text-[9px] text-amber-700 mt-0.5 leading-tight">
-                {isBreak ? 'Click to resume' : 'Pause active timer'}
               </div>
             </button>
           </div>
