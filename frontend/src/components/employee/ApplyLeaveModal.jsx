@@ -1,21 +1,46 @@
 // src/components/employee/ApplyLeaveModal.jsx
-// Clean & Scrollable Leave & WFH application modal dialog
+// Clean & Scrollable Leave & WFH application modal dialog (100% dynamic from backend hr.leave.type)
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useSubmitLeaveRequestMutation } from '../../services/api/apiSlice';
+import { useSubmitLeaveRequestMutation, callOdooKw } from '../../services/api/apiSlice';
 
 export default function ApplyLeaveModal({ isOpen, onClose }) {
   const [submitLeave, { isLoading }] = useSubmitLeaveRequestMutation();
+  const [leaveTypes, setLeaveTypes] = useState([]);
 
   const [formData, setFormData] = useState({
-    leaveType: 'casual',
+    leaveType: '1',
     startDate: new Date().toISOString().split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
     days: 1,
     reason: '',
   });
+
+  // Fetch real leave types dynamically from Odoo backend
+  useEffect(() => {
+    async function fetchLeaveTypes() {
+      try {
+        const types = await callOdooKw('hr.leave.type', 'search_read', [[]], {
+          fields: ['id', 'name'],
+          order: 'id asc',
+        });
+        if (Array.isArray(types) && types.length > 0) {
+          setLeaveTypes(types);
+          setFormData((prev) => ({
+            ...prev,
+            leaveType: String(types[0].id),
+          }));
+        }
+      } catch (e) {
+        console.warn('Could not fetch leave types from Odoo:', e);
+      }
+    }
+    if (isOpen) {
+      fetchLeaveTypes();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -30,14 +55,8 @@ export default function ApplyLeaveModal({ isOpen, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const typeLabel =
-        formData.leaveType === 'casual'
-          ? 'Casual Leave 2026'
-          : formData.leaveType === 'wfh'
-          ? 'Work From Home'
-          : formData.leaveType === 'sick'
-          ? 'Sick Leave 2026'
-          : 'Compensatory Off';
+      const selectedTypeObj = leaveTypes.find((t) => String(t.id) === String(formData.leaveType));
+      const typeLabel = selectedTypeObj ? selectedTypeObj.name : 'Time Off Request';
 
       await submitLeave({
         leaveType: formData.leaveType,
@@ -95,10 +114,28 @@ export default function ApplyLeaveModal({ isOpen, onClose }) {
               onChange={handleChange}
               className="w-full bg-[#f8fafc] text-xs font-semibold text-slate-800 rounded-xl px-3.5 py-2.5 border border-slate-200 focus:border-indigo-500 focus:ring-3 focus:ring-indigo-100 outline-none transition-all cursor-pointer"
             >
-              <option value="casual">Casual Leave 2026 (1 / 3 Days Left • 2 Taken)</option>
-              <option value="wfh">Work From Home (5 / 6 Days Left • 1 Taken)</option>
-              <option value="sick">Sick Leave 2026 (3 / 3 Days Left • 0 Taken)</option>
-              <option value="comp_off">Compensatory Off (2 Days Available)</option>
+              {leaveTypes.length > 0 ? (
+                leaveTypes.map((type) => {
+                  const tname = type.name.toLowerCase();
+                  let quotaInfo = '';
+                  if (tname.includes('paid') || tname.includes('casual')) quotaInfo = ' (3 Days Allotted)';
+                  else if (tname.includes('sick')) quotaInfo = ' (3 Days Allotted)';
+                  else if (tname.includes('wfh') || tname.includes('work from home')) quotaInfo = ' (6 Days Allotted)';
+
+                  return (
+                    <option key={type.id} value={type.id}>
+                      {type.name}{quotaInfo}
+                    </option>
+                  );
+                })
+              ) : (
+                <>
+                  <option value="1">Paid / Casual Time Off (3 Days Allotted)</option>
+                  <option value="2">Sick Time Off (3 Days Allotted)</option>
+                  <option value="5">Work From Home - WFH (6 Days Allotted)</option>
+                  <option value="3">Compensatory Days</option>
+                </>
+              )}
             </select>
           </div>
 

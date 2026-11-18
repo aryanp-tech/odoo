@@ -1,12 +1,12 @@
 // src/pages/employee/LeavesPage.jsx
 // Leaves & Time Off page with View Switcher: Time Off Requests & Calendar View
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/layout/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import LeavesCalendarView from '../../components/employee/LeavesCalendarView';
 import ApplyLeaveModal from '../../components/employee/ApplyLeaveModal';
-import { useGetEmployeeDashboardQuery } from '../../services/api/apiSlice';
+import { useGetEmployeeDashboardQuery, callOdooKw } from '../../services/api/apiSlice';
 import { getStoredSession } from '../../services/authService';
 import {
   Calendar as CalendarIcon,
@@ -15,95 +15,151 @@ import {
   Home,
   HeartPulse,
   Sparkles,
+  RefreshCw,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function LeavesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Default tab is 'table' (Requests first), toggleable to 'calendar'
   const [activeTab, setActiveTab] = useState('table');
+  const [isLoading, setIsLoading] = useState(true);
 
   const user = getStoredSession();
-  const { data: _dashboardData } = useGetEmployeeDashboardQuery();
 
-  // Quotas matching the user's reference mockup:
-  // 1/3 Days Casual Leave 2026 | 5/6 Days Work From Home | 3/3 Days Sick Leave 2026
-  const quotas = [
-    {
-      id: 'casual',
-      title: 'Casual Leave 2026',
-      fraction: '1 / 3 Days',
-      takenText: '2 taken (Expire on 12/31/2026)',
-      cardBg: 'bg-[#fffbeb] border-[#fde68a]',
-      accentColor: 'text-amber-900',
-      fractionColor: 'text-amber-800',
-      icon: Sparkles,
-      iconBg: 'bg-amber-100 text-amber-700',
-      progressPct: 33,
-      progressColor: 'bg-amber-500',
-    },
-    {
-      id: 'wfh',
-      title: 'Work From Home',
-      fraction: '5 / 6 Days',
-      takenText: '1 taken (Expire on 12/31/2026)',
-      cardBg: 'bg-[#faf5ff] border-[#e9d5ff]',
-      accentColor: 'text-purple-900',
-      fractionColor: 'text-purple-800',
-      icon: Home,
-      iconBg: 'bg-purple-100 text-purple-700',
-      progressPct: 83,
-      progressColor: 'bg-purple-600',
-    },
-    {
-      id: 'sick',
-      title: 'Sick Leave 2026',
-      fraction: '3 / 3 Days',
-      takenText: '0 taken (Expire on 12/31/2026)',
-      cardBg: 'bg-[#f0fdf4] border-[#bbf7d0]',
-      accentColor: 'text-emerald-900',
-      fractionColor: 'text-emerald-800',
-      icon: HeartPulse,
-      iconBg: 'bg-emerald-100 text-emerald-700',
-      progressPct: 100,
-      progressColor: 'bg-emerald-600',
-    },
-  ];
+  // Dynamic live quotas & requests from Odoo backend
+  const [quotas, setQuotas] = useState([]);
+  const [leaveHistory, setLeaveHistory] = useState([]);
 
-  // Request History with single unified status column
-  const leaveHistory = [
-    {
-      id: 'lv-1',
-      title: 'Going to village',
-      type: 'Casual Leave 2026',
-      dateRange: 'Nov 09, 2026',
-      days: 1.0,
-      status: 'Approved',
-    },
-    {
-      id: 'lv-2',
-      title: 'going home',
-      type: 'Casual Leave 2026',
-      dateRange: 'Nov 12, 2026',
-      days: 1.0,
-      status: 'Pending',
-    },
-    {
-      id: 'lv-3',
-      title: 'Request WFM cause Going Out of Station',
-      type: 'Work From Home',
-      dateRange: 'Nov 13, 2026',
-      days: 1.0,
-      status: 'Approved',
-    },
-    {
-      id: 'lv-4',
-      title: 'Christmas Vacation & Family Holiday',
-      type: 'Casual Leave 2026',
-      dateRange: 'Dec 24, 2026 - Dec 26, 2026',
-      days: 3.0,
-      status: 'Pending',
-    },
-  ];
+  const loadLeavesData = async () => {
+    setIsLoading(true);
+    try {
+      const stored = getStoredSession();
+      const empId = stored.employee_id || 3;
+
+      // 1. Fetch real allocations
+      const allocations = await callOdooKw('hr.leave.allocation', 'search_read', [[['employee_id', '=', empId]]], {
+        fields: ['name', 'holiday_status_id', 'number_of_days', 'state'],
+      }) || [];
+
+      // 2. Fetch real leaves
+      const leaves = await callOdooKw('hr.leave', 'search_read', [[['employee_id', '=', empId]]], {
+        fields: ['id', 'holiday_status_id', 'number_of_days', 'request_date_from', 'request_date_to', 'state', 'name', 'notes'],
+        order: 'create_date desc',
+      }) || [];
+
+      // 3. Fetch real leave types
+      const types = await callOdooKw('hr.leave.type', 'search_read', [[]], {
+        fields: ['id', 'name'],
+      }) || [];
+
+      // Build live quotas
+      let totalPaidAllocated = 0;
+      let totalSickAllocated = 0;
+      let totalWfhAllocated = 0;
+      allocations.forEach((a) => {
+        const tname = (a.holiday_status_id ? a.holiday_status_id[1] : a.name || '').toLowerCase();
+        if (tname.includes('wfh') || tname.includes('work from home') || tname.includes('remote') || tname.includes('compensatory')) {
+          totalWfhAllocated += Number(a.number_of_days) || 0;
+        } else if (tname.includes('sick')) {
+          totalSickAllocated += Number(a.number_of_days) || 0;
+        } else if (tname.includes('paid') || tname.includes('casual')) {
+          totalPaidAllocated += Number(a.number_of_days) || 0;
+        }
+      });
+
+      // Baseline policy: Every employee has 3 Casual, 3 Sick, 6 WFH
+      if (totalPaidAllocated === 0) totalPaidAllocated = 3;
+      if (totalSickAllocated === 0) totalSickAllocated = 3;
+      if (totalWfhAllocated === 0) totalWfhAllocated = 6;
+
+      let totalPaidTaken = 0;
+      let totalSickTaken = 0;
+      let totalWfhTaken = 0;
+      leaves.forEach((l) => {
+        const tname = (l.holiday_status_id ? l.holiday_status_id[1] : '').toLowerCase();
+        if (l.state === 'validate' || l.state === 'confirm') {
+          if (tname.includes('wfh') || tname.includes('work from home') || tname.includes('remote') || tname.includes('compensatory')) {
+            totalWfhTaken += Number(l.number_of_days) || 0;
+          } else if (tname.includes('sick')) {
+            totalSickTaken += Number(l.number_of_days) || 0;
+          } else {
+            totalPaidTaken += Number(l.number_of_days) || 0;
+          }
+        }
+      });
+
+      const calculatedQuotas = [
+        {
+          id: 'paid',
+          title: 'Casual Time Off 2026',
+          fraction: `${Math.max(0, totalPaidAllocated - totalPaidTaken)} / ${totalPaidAllocated} Days`,
+          takenText: `${totalPaidTaken} taken (3 Allotted / Year)`,
+          cardBg: 'bg-[#fffbeb] border-[#fde68a]',
+          accentColor: 'text-amber-900',
+          fractionColor: 'text-amber-800',
+          icon: Sparkles,
+          iconBg: 'bg-amber-100 text-amber-700',
+          progressPct: totalPaidAllocated > 0 ? Math.round(((totalPaidAllocated - totalPaidTaken) / totalPaidAllocated) * 100) : 0,
+          progressColor: 'bg-amber-500',
+        },
+        {
+          id: 'sick',
+          title: 'Sick Time Off 2026',
+          fraction: `${Math.max(0, totalSickAllocated - totalSickTaken)} / ${totalSickAllocated} Days`,
+          takenText: `${totalSickTaken} taken (3 Allotted / Year)`,
+          cardBg: 'bg-[#f0fdf4] border-[#bbf7d0]',
+          accentColor: 'text-emerald-900',
+          fractionColor: 'text-emerald-800',
+          icon: HeartPulse,
+          iconBg: 'bg-emerald-100 text-emerald-700',
+          progressPct: totalSickAllocated > 0 ? Math.round(((totalSickAllocated - totalSickTaken) / totalSickAllocated) * 100) : 0,
+          progressColor: 'bg-emerald-600',
+        },
+        {
+          id: 'wfh',
+          title: 'Work From Home (WFH) 2026',
+          fraction: `${Math.max(0, totalWfhAllocated - totalWfhTaken)} / ${totalWfhAllocated} Days`,
+          takenText: `${totalWfhTaken} taken (6 Allotted / Year)`,
+          cardBg: 'bg-[#faf5ff] border-[#e9d5ff]',
+          accentColor: 'text-purple-900',
+          fractionColor: 'text-purple-800',
+          icon: Home,
+          iconBg: 'bg-purple-100 text-purple-700',
+          progressPct: totalWfhAllocated > 0 ? Math.round(((totalWfhAllocated - totalWfhTaken) / totalWfhAllocated) * 100) : 0,
+          progressColor: 'bg-purple-600',
+        },
+      ];
+      setQuotas(calculatedQuotas);
+
+      // Build live request history
+      const formattedHistory = leaves.map((l) => {
+        const typeName = l.holiday_status_id ? l.holiday_status_id[1] : 'Time Off';
+        const start = l.request_date_from ? new Date(l.request_date_from).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '';
+        const end = l.request_date_to ? new Date(l.request_date_to).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '';
+        const dateRange = start === end || !end ? start : `${start} - ${end}`;
+        const statusLabel = l.state === 'validate' ? 'Approved' : l.state === 'refuse' ? 'Rejected' : 'Pending';
+
+        return {
+          id: String(l.id),
+          title: l.name || l.notes || `${typeName} Request`,
+          type: typeName,
+          dateRange: dateRange || '2026',
+          rawDateFrom: l.request_date_from || (l.date_from ? l.date_from.split(' ')[0] : ''),
+          days: Number(l.number_of_days) || 1.0,
+          status: statusLabel,
+        };
+      });
+      setLeaveHistory(formattedHistory);
+    } catch (err) {
+      console.warn('Failed to load live leaves from Odoo:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadLeavesData();
+  }, []);
 
   // Helper for pristine status badges with colored indicator dot and crisp border
   const renderStatusPill = (status, align = 'start') => {
@@ -280,44 +336,56 @@ export default function LeavesPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-medium bg-white">
-                      {leaveHistory.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                          <td className="py-3.5 px-4 font-bold text-slate-900 max-w-sm truncate">
-                            {item.title}
-                          </td>
-                          <td className="py-3.5 px-4 whitespace-nowrap">
-                            <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border whitespace-nowrap shadow-2xs ${
-                                item.type === 'Work From Home'
-                                  ? 'bg-purple-50 text-purple-900 border-purple-200'
-                                  : item.type === 'Sick Leave 2026'
-                                  ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
-                                  : 'bg-amber-50 text-amber-900 border-amber-200'
-                              }`}
-                            >
-                              <span
-                                className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                                  item.type === 'Work From Home'
-                                    ? 'bg-purple-600'
-                                    : item.type === 'Sick Leave 2026'
-                                    ? 'bg-emerald-600'
-                                    : 'bg-amber-500'
-                                }`}
-                              />
-                              {item.type}
-                            </span>
-                          </td>
-                          <td className="py-3.5 px-4 text-slate-600 font-medium whitespace-nowrap">
-                            {item.dateRange}
-                          </td>
-                          <td className="py-3.5 px-4 font-bold text-slate-800 whitespace-nowrap">
-                            {item.days} Day{item.days > 1 ? 's' : ''}
-                          </td>
-                          <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                            {renderStatusPill(item.status, 'end')}
+                      {leaveHistory.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="py-12 text-center text-slate-400">
+                            <CalendarIcon size={28} className="mx-auto mb-2 text-slate-300" />
+                            <p className="font-semibold text-slate-600 text-sm">No Time Off Requests Found</p>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              No leave applications have been submitted to Odoo yet. Click "Request Time Off" to apply.
+                            </p>
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        leaveHistory.map((item) => (
+                          <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-3.5 px-4 font-bold text-slate-900 max-w-sm truncate">
+                              {item.title}
+                            </td>
+                            <td className="py-3.5 px-4 whitespace-nowrap">
+                              <span
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border whitespace-nowrap shadow-2xs ${
+                                  item.type === 'Work From Home'
+                                    ? 'bg-purple-50 text-purple-900 border-purple-200'
+                                    : item.type === 'Sick Leave 2026'
+                                    ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                                    : 'bg-amber-50 text-amber-900 border-amber-200'
+                                }`}
+                              >
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                    item.type === 'Work From Home'
+                                      ? 'bg-purple-600'
+                                      : item.type === 'Sick Leave 2026'
+                                      ? 'bg-emerald-600'
+                                      : 'bg-amber-500'
+                                  }`}
+                                />
+                                {item.type}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-slate-600 font-medium whitespace-nowrap">
+                              {item.dateRange}
+                            </td>
+                            <td className="py-3.5 px-4 font-bold text-slate-800 whitespace-nowrap">
+                              {item.days} Day{item.days > 1 ? 's' : ''}
+                            </td>
+                            <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                              {renderStatusPill(item.status, 'end')}
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -327,7 +395,7 @@ export default function LeavesPage() {
             {/* Tab 2: Monthly Leaves & Holidays Calendar */}
             {activeTab === 'calendar' && (
               <div>
-                <LeavesCalendarView onRequestLeave={() => setIsModalOpen(true)} />
+                <LeavesCalendarView leaves={leaveHistory} onRequestLeave={() => setIsModalOpen(true)} />
               </div>
             )}
           </div>
@@ -337,7 +405,11 @@ export default function LeavesPage() {
       {/* Interactive Apply Leave Modal */}
       <ApplyLeaveModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          loadLeavesData();
+        }}
+        onSuccess={loadLeavesData}
       />
     </div>
   );

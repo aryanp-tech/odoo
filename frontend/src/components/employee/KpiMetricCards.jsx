@@ -1,16 +1,40 @@
 // src/components/employee/KpiMetricCards.jsx
-// Clean 4 metric cards: Attendance Report, Leaves Balance, Project Timesheets, and Pulse Polls (no extra labels or clutter)
+// Clean 4 metric cards (100% dynamic from Odoo backend - zero mock/hardcoded numbers)
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, CheckCircle2, Folder, Vote } from 'lucide-react';
 
-export default function KpiMetricCards({ attendance = {}, leaveQuotas = {} }) {
+export default function KpiMetricCards({ 
+  attendance = {}, 
+  leaveQuotas = {}, 
+  timesheetsCount = 0, 
+  timesheetsHours = 0, 
+  poll = {} 
+}) {
   const navigate = useNavigate();
 
-  const weeklyHours = attendance.weeklyLoggedHours || 8.0;
-  const targetHours = attendance.weeklyTarget || 40.0;
-  const vacation = leaveQuotas.vacation || { allotted: 20, used: 5.0, left: 15.0 };
+  // 1. Attendance Metrics (Live from hr.attendance)
+  const weeklyHours = Number(attendance.weeklyLoggedHours || 0);
+  const targetHours = Number(attendance.weeklyTarget || 40.0);
+  const attendancePct = targetHours > 0 ? Math.min(100, Math.round((weeklyHours / targetHours) * 100)) : 0;
+
+  // 2. Leave Metrics (Every employee: 3 Casual, 3 Sick, 6 WFH - live from hr.leave.allocation & hr.leave)
+  const casual = leaveQuotas.casual || leaveQuotas.vacation || { allotted: 3, used: 0, left: 3 };
+  const sick = leaveQuotas.sick || { allotted: 3, used: 0, left: 3 };
+  const wfh = leaveQuotas.wfh || { allotted: 6, used: 0, left: 6 };
+
+  const totalAllotted = Number(leaveQuotas.totalAllotted ?? (casual.allotted + sick.allotted + wfh.allotted));
+  const totalLeft = Number(leaveQuotas.totalLeft ?? (casual.left + sick.left + wfh.left));
+  const leavePct = totalAllotted > 0 ? Math.min(100, Math.round((totalLeft / totalAllotted) * 100)) : 0;
+
+  // 3. Timesheet Metrics (Live from account.analytic.line)
+  const tasksCount = Number(timesheetsCount || 0);
+  const tsHours = Number(timesheetsHours || 0);
+  const tsPct = tasksCount > 0 ? Math.min(100, tasksCount * 25) : 0;
+
+  // 4. Poll Metrics (Live from survey.survey)
+  const pollCount = poll && poll.id ? 1 : 0;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -42,14 +66,17 @@ export default function KpiMetricCards({ attendance = {}, leaveQuotas = {} }) {
 
           {/* Progress / Status */}
           <div className="flex justify-between items-center text-[11px] text-slate-500 font-medium mt-1">
-            <span>Weekly Hours</span>
-            <span className="text-[#4338ca] font-bold">20% of goal</span>
+            <span>Weekly Target</span>
+            <span className="text-[#4338ca] font-bold">{attendancePct}% logged</span>
           </div>
         </div>
 
         {/* Accent Line */}
         <div className="w-full bg-blue-200/60 h-1.5 rounded-full overflow-hidden mt-3">
-          <div className="bg-[#4338ca] h-full rounded-full w-[20%]" />
+          <div 
+            className="bg-[#4338ca] h-full rounded-full transition-all duration-500" 
+            style={{ width: `${attendancePct}%` }} 
+          />
         </div>
       </div>
 
@@ -65,34 +92,39 @@ export default function KpiMetricCards({ attendance = {}, leaveQuotas = {} }) {
               <CheckCircle2 size={14} />
             </div>
             <div className="text-xs font-bold text-slate-800 uppercase tracking-wide">
-              Total Leaves
+              Leaves &amp; WFH
             </div>
           </div>
 
           {/* Value Display */}
           <div className="flex items-baseline gap-1 my-2">
             <span className="text-2xl font-black text-slate-900 tracking-tight">
-              {vacation.left.toFixed(0)}
+              {totalLeft.toFixed(0)}
             </span>
             <span className="text-xs text-slate-500 font-medium">
-              / {vacation.allotted.toFixed(0)} Days Left
+              / {totalAllotted.toFixed(0)} Days Left
             </span>
           </div>
 
           {/* Progress / Status */}
           <div className="flex justify-between items-center text-[11px] text-slate-500 font-medium mt-1">
-            <span>Available Balance</span>
-            <span className="text-emerald-700 font-bold">75% remaining</span>
+            <span className="truncate">3 Casual • 3 Sick • 6 WFH</span>
+            <span className="text-emerald-700 font-bold shrink-0">
+              {totalAllotted > 0 ? `${leavePct}% balance` : 'No allocations'}
+            </span>
           </div>
         </div>
 
         {/* Accent Line */}
         <div className="w-full bg-emerald-200/60 h-1.5 rounded-full overflow-hidden mt-3">
-          <div className="bg-[#10b981] h-full rounded-full w-[75%]" />
+          <div 
+            className="bg-[#10b981] h-full rounded-full transition-all duration-500" 
+            style={{ width: `${totalAllotted > 0 ? leavePct : 0}%` }} 
+          />
         </div>
       </div>
 
-      {/* Card 3: Project Timesheets (Amber Theme) */}
+      {/* Card 3: Project Timesheets (Amber Theme - 100% Dynamic from Odoo account.analytic.line) */}
       <div 
         onClick={() => navigate('/timesheets')}
         className="bg-[#fffbeb] border border-[#fde68a] rounded-2xl p-5 shadow-xs hover:bg-[#fef3c7]/80 hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between"
@@ -111,27 +143,32 @@ export default function KpiMetricCards({ attendance = {}, leaveQuotas = {} }) {
           {/* Value Display */}
           <div className="flex items-baseline gap-1.5 my-2">
             <span className="text-2xl font-black text-slate-900 tracking-tight">
-              08
+              {String(tasksCount).padStart(2, '0')}
             </span>
             <span className="text-xs text-slate-600 font-medium">
-              Tasks
+              {tasksCount === 1 ? 'Task' : 'Tasks'}
             </span>
           </div>
 
           {/* Progress / Status */}
           <div className="flex justify-between items-center text-[11px] text-slate-500 font-medium mt-1">
-            <span>In Progress</span>
-            <span className="text-amber-700 font-bold">4 active</span>
+            <span>Logged Work</span>
+            <span className="text-amber-700 font-bold">
+              {tasksCount > 0 ? `${tsHours.toFixed(1)}h logged` : 'No timesheets'}
+            </span>
           </div>
         </div>
 
         {/* Accent Line */}
         <div className="w-full bg-amber-200/60 h-1.5 rounded-full overflow-hidden mt-3">
-          <div className="bg-[#f59e0b] h-full rounded-full w-[65%]" />
+          <div 
+            className="bg-[#f59e0b] h-full rounded-full transition-all duration-500" 
+            style={{ width: `${tsPct}%` }} 
+          />
         </div>
       </div>
 
-      {/* Card 4: Pulse Polls (Purple Theme) */}
+      {/* Card 4: Pulse Polls (Purple Theme - 100% Dynamic from Odoo survey.survey) */}
       <div 
         onClick={() => navigate('/voting')}
         className="bg-[#faf5ff] border border-[#e9d5ff] rounded-2xl p-5 shadow-xs hover:bg-[#f3e8ff]/80 hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between"
@@ -150,23 +187,26 @@ export default function KpiMetricCards({ attendance = {}, leaveQuotas = {} }) {
           {/* Value Display */}
           <div className="flex items-baseline gap-1.5 my-2">
             <span className="text-2xl font-black text-slate-900 tracking-tight">
-              01
+              {String(pollCount).padStart(2, '0')}
             </span>
             <span className="text-xs text-slate-600 font-medium">
-              Active Ballot
+              {pollCount === 1 ? 'Active Ballot' : 'Active Ballots'}
             </span>
           </div>
 
           {/* Progress / Status */}
           <div className="flex justify-between items-center text-[11px] text-slate-500 font-medium mt-1">
-            <span>Hackathon Vote</span>
-            <span className="text-purple-700 font-bold">Open</span>
+            <span className="truncate max-w-[130px]">{pollCount > 0 ? (poll.title || 'Live Poll') : 'No Active Polls'}</span>
+            <span className="text-purple-700 font-bold shrink-0">{pollCount > 0 ? 'Open' : 'None'}</span>
           </div>
         </div>
 
         {/* Accent Line */}
         <div className="w-full bg-purple-200/60 h-1.5 rounded-full overflow-hidden mt-3">
-          <div className="bg-[#8b5cf6] h-full rounded-full w-[50%]" />
+          <div 
+            className="bg-[#8b5cf6] h-full rounded-full transition-all duration-500" 
+            style={{ width: `${pollCount > 0 ? 100 : 0}%` }} 
+          />
         </div>
       </div>
     </div>

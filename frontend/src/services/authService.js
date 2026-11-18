@@ -1,6 +1,8 @@
 // src/services/authService.js
 // Enterprise Authentication, Session Management & Live Odoo 14 Backend Connection
 
+import { getAllEmployees } from './employeeService';
+
 const STORAGE_KEY = 'latitude_user_session';
 const PASSWORDS_KEY = 'latitude_custom_passwords';
 const RESET_OTP_KEY = 'latitude_reset_otp';
@@ -13,66 +15,15 @@ export const ENTERPRISE_USERS = [
     username: "aryan.p",
     email: "aryan.p@latitudetechnolabs.org",
     role: "super_admin",
-    roleLabel: "Super Admin / Core Tech",
+    roleLabel: "Super Admin",
     badge_id: "6APX-77402",
-    job_title: "Software Engineer",
+    job_title: "Software Engineer & Super Admin",
     department: "Engineering & Cloud Systems",
     standard_hours: "09:00 - 18:00",
     location: "Hybrid (HQ Bay 4B)",
     node: "HQ-EMEA-01",
     avatar_initials: "AP",
     defaultPassword: "Aryan@123",
-  },
-  {
-    id: 12,
-    employee_id: 4,
-    name: "Amit Trivedi",
-    username: "amit.t",
-    email: "amit.t@latitudetechnolabs.org",
-    role: "manager",
-    roleLabel: "Engineering Manager",
-    badge_id: "6APX-77403",
-    job_title: "Engineering Manager",
-    department: "Engineering & Cloud Systems",
-    standard_hours: "09:00 - 18:00",
-    location: "Ahmedabad HQ",
-    node: "HQ-EMEA-02",
-    avatar_initials: "AT",
-    defaultPassword: "Amit@123",
-  },
-  {
-    id: 13,
-    employee_id: 5,
-    name: "Sarah Chen",
-    username: "sarah.c",
-    email: "sarah.c@latitudetechnolabs.org",
-    role: "hr_admin",
-    roleLabel: "HR Operations Lead",
-    badge_id: "6APX-77404",
-    job_title: "People Operations Manager",
-    department: "Human Resources",
-    standard_hours: "09:30 - 18:30",
-    location: "Ahmedabad HQ",
-    node: "HQ-EMEA-03",
-    avatar_initials: "SC",
-    defaultPassword: "Sarah@123",
-  },
-  {
-    id: 14,
-    employee_id: 6,
-    name: "Karan Shah",
-    username: "karan.s",
-    email: "devops@latitudetechnolabs.org",
-    role: "it_admin",
-    roleLabel: "DevOps & Cloud Lead",
-    badge_id: "6APX-77405",
-    job_title: "DevOps Lead",
-    department: "Infrastructure Operations",
-    standard_hours: "09:00 - 18:00",
-    location: "Ahmedabad HQ",
-    node: "HQ-EMEA-04",
-    avatar_initials: "KS",
-    defaultPassword: "DevOps@123",
   },
 ];
 
@@ -102,12 +53,12 @@ export function isAuthenticated() {
 export function getStoredSession() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_USER;
+    if (!raw) return null;
     const parsed = JSON.parse(raw);
-    return { ...DEFAULT_USER, ...parsed };
+    return parsed || null;
   } catch (e) {
     console.error("Failed to parse stored session", e);
-    return DEFAULT_USER;
+    return null;
   }
 }
 
@@ -188,15 +139,57 @@ export async function loginUser(identifier, password) {
           console.warn('Odoo employee lookup non-blocking error:', e);
         }
 
+        // Query user's real groups from Odoo backend for role determination
+        let groupNames = [];
+        try {
+          const userRes = await fetch('/web/dataset/call_kw', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              params: {
+                model: 'res.users',
+                method: 'read',
+                args: [[odooUser.uid], ['groups_id']],
+                kwargs: {},
+              },
+            }),
+          });
+          const userData = await userRes.json();
+          const gids = userData?.result?.[0]?.groups_id || [];
+          if (gids.length > 0) {
+            const grpRes = await fetch('/web/dataset/call_kw', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({
+                jsonrpc: '2.0',
+                params: {
+                  model: 'res.groups',
+                  method: 'read',
+                  args: [gids, ['name']],
+                  kwargs: {},
+                },
+              }),
+            });
+            const grpData = await grpRes.json();
+            groupNames = (grpData?.result || []).map((g) => g.name);
+          }
+        } catch (e) {
+          console.warn('Group check non-blocking error:', e);
+        }
+
+        const cleanLower = cleanId.toLowerCase();
         const matchedProfile = ENTERPRISE_USERS.find(
           (u) =>
-            u.email.toLowerCase() === cleanId.toLowerCase() ||
+            u.email.toLowerCase() === cleanLower ||
             u.id === odooUser.uid ||
-            u.username.toLowerCase() === cleanId.toLowerCase()
+            u.username.toLowerCase() === cleanLower
         );
 
-        const fullName = empDetails?.name || odooUser.name || matchedProfile?.name || 'Aryan Patel';
-        const initials = fullName
+        const fullName = empDetails?.name || odooUser.name || matchedProfile?.name || cleanId;
+        const initials = (fullName || 'EM')
           .split(' ')
           .map((n) => n[0])
           .join('')
@@ -205,23 +198,82 @@ export async function loginUser(identifier, password) {
 
         const departmentName = Array.isArray(empDetails?.department_id)
           ? empDetails.department_id[1]
-          : matchedProfile?.department || 'Engineering & Cloud Systems';
+          : matchedProfile?.department || 'Latitude Techno Labs';
+
+        // Precise role calculation from Odoo backend groups and identifiers
+        const isSuperAdmin =
+          Boolean(odooUser.is_system) ||
+          groupNames.includes('Super Admin') ||
+          cleanLower === 'admin' ||
+          cleanLower.includes('superadmin') ||
+          cleanLower === 'aryan.p@latitudetechnolabs.org' ||
+          matchedProfile?.role === 'super_admin';
+
+        const isHrAdmin =
+          !isSuperAdmin && (
+            cleanLower.includes('hr') ||
+            groupNames.includes('Quarterly Review Super Admin') ||
+            groupNames.includes('Employee Voting Admin') ||
+            (groupNames.includes('Administrator') && cleanLower.includes('hr')) ||
+            matchedProfile?.role === 'super_hr' ||
+            matchedProfile?.role === 'hr_admin' ||
+            matchedProfile?.role === 'hr_manager' ||
+            matchedProfile?.role === 'hr_officer'
+          );
+
+        const isItAdmin =
+          !isSuperAdmin && (
+            cleanLower.includes('it') ||
+            groupNames.includes('IT Admin') ||
+            groupNames.includes('IT Officer') ||
+            groupNames.includes('Server Issue Admin') ||
+            matchedProfile?.role === 'it_admin' ||
+            matchedProfile?.role === 'it_officer'
+          );
+
+        const isManager =
+          !isSuperAdmin && !isHrAdmin && !isItAdmin && (
+            cleanLower.includes('manager') ||
+            groupNames.includes('Manager') ||
+            groupNames.includes('All Approver') ||
+            matchedProfile?.role === 'project_manager' ||
+            matchedProfile?.role === 'team_lead'
+          );
+
+        let determinedRole = matchedProfile?.role || 'employee';
+        let determinedRoleLabel = matchedProfile?.roleLabel || empDetails?.job_title || 'Standard Employee';
+
+        if (isSuperAdmin) {
+          determinedRole = 'super_admin';
+          determinedRoleLabel = matchedProfile?.roleLabel || empDetails?.job_title || 'Super Admin';
+        } else if (isHrAdmin) {
+          determinedRole = matchedProfile?.role || 'hr_admin';
+          determinedRoleLabel = matchedProfile?.roleLabel || empDetails?.job_title || 'HR Administrator';
+        } else if (isItAdmin) {
+          determinedRole = matchedProfile?.role || 'it_admin';
+          determinedRoleLabel = matchedProfile?.roleLabel || empDetails?.job_title || 'IT Administrator';
+        } else if (isManager) {
+          determinedRole = matchedProfile?.role || 'project_manager';
+          determinedRoleLabel = matchedProfile?.roleLabel || empDetails?.job_title || 'Project Manager';
+        }
 
         const sessionUser = {
           id: odooUser.uid,
-          employee_id: empDetails?.id || matchedProfile?.employee_id || 3,
+          employee_id: empDetails?.id || matchedProfile?.employee_id || 7,
           name: fullName,
           username: odooUser.username || cleanId,
           email: empDetails?.work_email || cleanId,
-          role: odooUser.is_system ? 'super_admin' : (matchedProfile?.role || 'employee'),
-          roleLabel: odooUser.is_system ? 'Super Admin / Core Tech' : (matchedProfile?.roleLabel || 'Employee'),
-          badge_id: empDetails?.barcode || matchedProfile?.badge_id || '6APX-77402',
-          job_title: empDetails?.job_title || matchedProfile?.job_title || 'Software Engineer',
+          rawLogin: cleanId,
+          rawPassword: cleanPass,
+          role: determinedRole,
+          roleLabel: determinedRoleLabel,
+          badge_id: empDetails?.barcode || matchedProfile?.badge_id || `EMP-${odooUser.uid}00`,
+          job_title: empDetails?.job_title || determinedRoleLabel,
           department: departmentName,
           standard_hours: matchedProfile?.standard_hours || '09:00 - 18:00',
-          location: matchedProfile?.location || 'Hybrid (HQ Bay 4B)',
+          location: matchedProfile?.location || 'Ahmedabad (WFO)',
           node: matchedProfile?.node || 'HQ-EMEA-01',
-          avatar_initials: initials || 'AP',
+          avatar_initials: initials || 'EM',
           odooSession: {
             uid: odooUser.uid,
             db: odooUser.db,
@@ -250,12 +302,27 @@ export async function loginUser(identifier, password) {
   }
 
   const cleanLower = cleanId.toLowerCase();
-  const matchedUser = ENTERPRISE_USERS.find(
-    (u) => u.email.toLowerCase() === cleanLower || u.username.toLowerCase() === cleanLower
+
+  // Search dynamic employee directory first, then fallback to initial ENTERPRISE_USERS
+  let allDirectoryUsers = ENTERPRISE_USERS;
+  try {
+    const dynamicEmployees = getAllEmployees();
+    if (Array.isArray(dynamicEmployees) && dynamicEmployees.length > 0) {
+      allDirectoryUsers = dynamicEmployees;
+    }
+  } catch {
+    allDirectoryUsers = ENTERPRISE_USERS;
+  }
+
+  const matchedUser = allDirectoryUsers.find(
+    (u) =>
+      u.email.toLowerCase() === cleanLower ||
+      (u.username && u.username.toLowerCase() === cleanLower)
   );
 
   if (matchedUser) {
-    const validPassword = customPasswords[matchedUser.email] || matchedUser.defaultPassword;
+    const validPassword =
+      customPasswords[matchedUser.email.toLowerCase()] || matchedUser.defaultPassword;
     const isMatch =
       cleanPass === validPassword ||
       (matchedUser.username === 'aryan.p' && (cleanPass === 'Aryan@123' || cleanPass === 'admin'));
@@ -263,6 +330,8 @@ export async function loginUser(identifier, password) {
     if (isMatch) {
       const sessionUser = {
         ...matchedUser,
+        rawLogin: cleanId,
+        rawPassword: cleanPass,
         isAuthenticated: true,
         lastLogin: new Date().toISOString(),
       };

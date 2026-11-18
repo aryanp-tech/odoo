@@ -5,9 +5,9 @@ import React from 'react';
 import { Plus, Umbrella } from 'lucide-react';
 
 export default function LeaveBalancesSection({ leaveQuotas = {}, onRequestLeave }) {
-  const casual = leaveQuotas.casual || { allotted: 20, taken: 6, left: 14 };
-  const sick = leaveQuotas.sick || { allotted: 10, taken: 3, left: 7 };
-  const compOff = leaveQuotas.compOff || { earned: 2, left: 2, subtext: 'Earned from Weekend Release' };
+  const casual = leaveQuotas.casual || { allotted: 3, taken: 0, left: 3 };
+  const sick = leaveQuotas.sick || { allotted: 3, taken: 0, left: 3 };
+  const compOff = leaveQuotas.wfh || leaveQuotas.compOff || { allotted: 6, taken: 0, left: 6, subtext: 'Work From Home (WFH)' };
 
   // Calculate percentage used / remaining
   const casualPct = casual.allotted > 0 ? Math.round((casual.left / casual.allotted) * 100) : 0;

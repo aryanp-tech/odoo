@@ -2,10 +2,12 @@
 // Company-wide Helpdesk & Ticket Generation Portal (HR, DevOps, IT, and General Inquiry)
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import { getStoredSession } from '../../services/authService';
-import CreateTicketModal from '../../components/employee/CreateTicketModal';
+import { callOdooKw } from '../../services/api/apiSlice';
+import RaiseTicketForm from '../../components/employee/RaiseTicketForm';
 import TicketDetailsModal from '../../components/employee/TicketDetailsModal';
 import {
   LifeBuoy,
@@ -20,222 +22,34 @@ import {
   AlertTriangle,
   ChevronRight,
   Paperclip,
+  RefreshCw,
+  ListFilter,
 } from 'lucide-react';
-
-const INITIAL_TICKETS = [
-  {
-    id: 'DEV-1089',
-    department: 'DevOps',
-    category: 'AWS / Cloud IAM & Credentials',
-    priority: 'High',
-    subject: 'Request access key & permissions for Omega Staging ECS cluster',
-    description: '<p>Need IAM staging developer policy attached to run task definitions and verify Docker build containers for Omega Elevators release.</p>',
-    requester: 'Aryan',
-    email: 'aryan.p@latitudetechnolabs.org',
-    date: '04 Nov 2026',
-    status: 'In Progress',
-    attachments: [],
-    activity: [
-      {
-        author: 'Aryan',
-        date: '04 Nov 2026, 10:15 AM',
-        message: 'Ticket created and routed to DevOps queue.',
-      },
-      {
-        author: 'DevOps Lead',
-        date: '04 Nov 2026, 11:30 AM',
-        message: 'Assigned to DevOps engineering. Generating staging IAM role with session tokens.',
-      },
-    ],
-  },
-  {
-    id: 'HR-1042',
-    department: 'HR',
-    category: 'HR Letter & Employment Verification',
-    priority: 'Medium',
-    subject: 'Request signed employment verification letter & Form 16',
-    description: '<p>Require official signed employment verification certificate addressed to bank for residential documentation along with recent Form 16.</p>',
-    requester: 'Aryan',
-    email: 'aryan.p@latitudetechnolabs.org',
-    date: '02 Nov 2026',
-    status: 'Resolved',
-    attachment: 'salary_slip_oct2026.pdf',
-    attachments: [
-      {
-        id: 'file-doc-1',
-        name: 'salary_slip_oct2026.pdf',
-        size: '240 KB',
-        type: 'application/pdf',
-        isImage: false,
-        dataUrl: '#',
-      },
-    ],
-    activity: [
-      {
-        author: 'Aryan',
-        date: '02 Nov 2026, 09:30 AM',
-        message: 'Ticket submitted to People Operations.',
-      },
-      {
-        author: 'HR Operations',
-        date: '03 Nov 2026, 04:15 PM',
-        message: 'Letter generated with digital company stamp and emailed to your corporate address.',
-      },
-    ],
-  },
-  {
-    id: 'GEN-1055',
-    department: 'General',
-    category: 'Office Facilities & Workstation',
-    priority: 'Medium',
-    subject: 'Workstation dual monitor arm mount & ergonomic chair inspection',
-    description: '<p>Requesting an ergonomic chair height inspection and installation of a dual monitor VESA desk mount arm in bay 4.</p>',
-    requester: 'Aryan',
-    email: 'aryan.p@latitudetechnolabs.org',
-    date: '30 Oct 2026',
-    status: 'Open',
-    attachments: [],
-    activity: [
-      {
-        author: 'Aryan',
-        date: '30 Oct 2026, 11:45 AM',
-        message: 'Ticket submitted to Facilities & General Operations desk.',
-      },
-    ],
-  },
-  {
-    id: 'IT-1031',
-    department: 'IT',
-    category: 'External Monitor & Peripherals',
-    priority: 'Low',
-    subject: 'Dual 4K display USB-C to HDMI adapter replacement',
-    description: '<p>Current multiport dongle has an intermittent video flicker when connected to Dell UltraSharp monitor in work bay 3.</p>',
-    requester: 'Aryan',
-    email: 'aryan.p@latitudetechnolabs.org',
-    date: '28 Oct 2026',
-    status: 'In Progress',
-    attachments: [],
-    activity: [
-      {
-        author: 'Aryan',
-        date: '28 Oct 2026, 02:20 PM',
-        message: 'Ticket logged with IT Support desk.',
-      },
-      {
-        author: 'IT Desk Admin',
-        date: '29 Oct 2026, 11:00 AM',
-        message: 'Hardware replacement requested from central stock. Expected delivery tomorrow.',
-      },
-    ],
-  },
-  {
-    id: 'DEV-1025',
-    department: 'DevOps',
-    category: 'VPN & Network Gateway Access',
-    priority: 'Medium',
-    subject: 'Corporate IP whitelisting for client API integration endpoint',
-    description: '<p>Need our static office outbound IP added to security groups for Act of Love react native staging backend.</p>',
-    requester: 'Aryan',
-    email: 'aryan.p@latitudetechnolabs.org',
-    date: '22 Oct 2026',
-    status: 'Resolved',
-    attachments: [],
-    activity: [
-      {
-        author: 'Aryan',
-        date: '22 Oct 2026, 11:00 AM',
-        message: 'Submitted to DevOps queue.',
-      },
-      {
-        author: 'DevOps Engineer',
-        date: '22 Oct 2026, 01:45 PM',
-        message: 'Outbound IP whitelisted in AWS Security Group rules.',
-      },
-    ],
-  },
-  {
-    id: 'HR-1018',
-    department: 'HR',
-    category: 'Leave & Attendance Discrepancy',
-    priority: 'Low',
-    subject: 'Clarification regarding festival holiday calendar leave accrual',
-    description: '<p>Checking annual leave balance calculation for the upcoming Diwali break in third week of November.</p>',
-    requester: 'Aryan',
-    email: 'aryan.p@latitudetechnolabs.org',
-    date: '14 Oct 2026',
-    status: 'Resolved',
-    attachments: [],
-    activity: [
-      {
-        author: 'Aryan',
-        date: '14 Oct 2026, 10:00 AM',
-        message: 'Submitted inquiry to HR.',
-      },
-      {
-        author: 'HR Operations',
-        date: '15 Oct 2026, 11:20 AM',
-        message: 'Confirmed leave accrual policy. Optional festival leaves are automatically allocated.',
-      },
-    ],
-  },
-  {
-    id: 'IT-1007',
-    department: 'IT',
-    category: 'Laptop Hardware & Repair Issue',
-    priority: 'Medium',
-    subject: 'MacBook Pro thermal diagnostic & internal fan cleaning',
-    description: '<p>Noticed elevated fan RPM and thermal throttling during heavy local build compilations.</p>',
-    requester: 'Aryan',
-    email: 'aryan.p@latitudetechnolabs.org',
-    date: '08 Oct 2026',
-    status: 'Resolved',
-    attachments: [],
-    activity: [
-      {
-        author: 'Aryan',
-        date: '08 Oct 2026, 09:15 AM',
-        message: 'Logged hardware check request.',
-      },
-      {
-        author: 'IT Desk Admin',
-        date: '08 Oct 2026, 03:00 PM',
-        message: 'Hardware inspection performed. Fans cleared and thermal diagnostics passed.',
-      },
-    ],
-  },
-];
+import toast from 'react-hot-toast';
 
 export default function TicketsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const user = getStoredSession();
-  const userName = user?.name || 'Aryan';
+  const userName = user?.name || 'Employee';
 
-  // Load tickets with fallback to INITIAL_TICKETS
-  const [tickets, setTickets] = useState(() => {
-    try {
-      const saved = localStorage.getItem('portal_tickets');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {
-      // ignore
-    }
-    return INITIAL_TICKETS;
-  });
+  // Live tickets from Odoo backend
+  const [tickets, setTickets] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Save to localStorage when updated
-  useEffect(() => {
-    try {
-      localStorage.setItem('portal_tickets', JSON.stringify(tickets));
-    } catch {
-      // ignore
-    }
-  }, [tickets]);
-
-  // Modals state
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [createDept, setCreateDept] = useState('DevOps');
+  // View state: 'list' (normal table view) or 'create' (full page Raise Ticket form)
+  const isNewParam = searchParams.get('tab') === 'new' || searchParams.get('action') === 'create';
+  const [viewMode, setViewMode] = useState(isNewParam ? 'create' : 'list');
+  const [createDept, setCreateDept] = useState(searchParams.get('dept') || 'DevOps');
   const [selectedTicket, setSelectedTicket] = useState(null);
+
+  useEffect(() => {
+    if (searchParams.get('tab') === 'new' || searchParams.get('action') === 'create') {
+      setViewMode('create');
+      if (searchParams.get('dept')) {
+        setCreateDept(searchParams.get('dept'));
+      }
+    }
+  }, [searchParams]);
 
   // Filters
   const [activeDeptTab, setActiveDeptTab] = useState('ALL'); // ALL, HR, DevOps, IT, General
@@ -243,14 +57,123 @@ export default function TicketsPage() {
   const [priorityFilter, setPriorityFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Handle Create Ticket
-  const handleOpenCreateModal = (dept = 'DevOps') => {
-    setCreateDept(dept);
-    setIsCreateOpen(true);
+  // Fetch real tickets from Odoo employee.ticket
+  const loadTickets = async () => {
+    setIsLoading(true);
+    try {
+      const rawTickets = await callOdooKw('employee.ticket', 'search_read', [[]], {
+        fields: ['id', 'topic', 'user_id', 'issue', 'state', 'create_date', 'solve_date'],
+        order: 'create_date desc',
+      });
+
+      if (Array.isArray(rawTickets)) {
+        const formatted = rawTickets.map((t) => {
+          const dept = (t.topic || '').toLowerCase().includes('hr')
+            ? 'HR'
+            : (t.topic || '').toLowerCase().includes('it')
+            ? 'IT'
+            : (t.topic || '').toLowerCase().includes('devops')
+            ? 'DevOps'
+            : 'General';
+
+          const priority = 'Medium';
+          const status = t.state === 'done' || t.state === 'solve'
+            ? 'Resolved'
+            : t.state === 'in_progress'
+            ? 'In Progress'
+            : 'Open';
+
+          const uName = Array.isArray(t.user_id) ? t.user_id[1] : (user?.name || 'Employee');
+          const dt = t.create_date ? new Date(t.create_date.replace(' ', 'T') + 'Z').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Today';
+
+          return {
+            id: `TICK-${t.id}`,
+            rawId: t.id,
+            department: dept,
+            category: t.topic || 'General Inquiry',
+            priority,
+            subject: (t.issue || '').replace(/<[^>]*>/g, '').trim().slice(0, 60) || 'Support Ticket',
+            description: t.issue || '<p>No description provided</p>',
+            requester: uName,
+            email: user?.email || '',
+            date: dt,
+            status,
+            attachments: [],
+            activity: [
+              {
+                author: uName,
+                date: dt,
+                message: 'Ticket recorded in Odoo 14 helpdesk queue.',
+              },
+            ],
+          };
+        });
+        setTickets(formatted);
+      }
+    } catch (err) {
+      console.warn('Odoo employee.ticket fetch warning:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCreateTicket = (newTicket) => {
-    setTickets((prev) => [newTicket, ...prev]);
+  useEffect(() => {
+    loadTickets();
+  }, []);
+
+  // Handle switching to Raise Ticket Page Component
+  const handleOpenCreate = (dept = 'DevOps') => {
+    setCreateDept(dept);
+    setViewMode('create');
+    setSearchParams({ tab: 'new', dept });
+  };
+
+  const handleBackToList = () => {
+    setViewMode('list');
+    setSearchParams({});
+  };
+
+  const handleCreateTicket = async (ticketData) => {
+    try {
+      const userEmp = getStoredSession();
+      const topicStr = `${ticketData.department} - ${ticketData.category}: ${ticketData.subject}`;
+      const resId = await callOdooKw('employee.ticket', 'create', [{
+        topic: topicStr,
+        issue: ticketData.description,
+        user_id: userEmp?.id || 11,
+        state: 'in_progress',
+      }]);
+
+      toast.success(`Support Ticket #${resId} recorded in Odoo!`);
+      await loadTickets();
+    } catch (err) {
+      console.warn('Could not persist to Odoo employee.ticket, logging locally:', err);
+      const localId = `TICK-${Date.now().toString().slice(-4)}`;
+      setTickets((prev) => [{
+        id: localId,
+        rawId: Date.now(),
+        department: ticketData.department,
+        category: ticketData.category,
+        priority: ticketData.priority,
+        subject: ticketData.subject,
+        description: ticketData.description,
+        requester: userName,
+        email: user?.email || '',
+        date: 'Today',
+        status: 'In Progress',
+        attachments: ticketData.attachments || [],
+        activity: [
+          {
+            author: userName,
+            date: 'Just now',
+            message: 'Ticket recorded in helpdesk queue.',
+          },
+        ],
+      }, ...prev]);
+      toast.success(`Support Ticket logged successfully!`);
+    }
+    setViewMode('list');
+    setSearchParams({});
   };
 
   // Handle Status Change
@@ -383,135 +306,148 @@ export default function TicketsPage() {
         <TopNavbar />
 
         <main className="flex-1 p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
-            <div>
-              <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                Helpdesk &amp; Support
-              </div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-                <LifeBuoy className="text-indigo-600" size={26} />
-                Support Ticket Portal
-              </h1>
-              <p className="text-xs text-slate-500 mt-1">
-                Generate and track service requests for HR, DevOps, IT, and General Inquiry
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => handleOpenCreateModal('DevOps')}
-              className="px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-700 hover:to-blue-700 rounded-xl shadow-md shadow-indigo-500/20 transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
-            >
-              <Plus size={16} strokeWidth={2.5} />
-              <span>Generate Ticket</span>
-            </button>
-          </div>
-
-          {/* Quick Department Cards (4-Column Layout) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {/* HR Card */}
-            <div className="bg-gradient-to-br from-rose-50/60 via-white to-rose-50/30 border border-rose-200/90 rounded-2xl p-4.5 shadow-xs flex flex-col justify-between gap-3">
-              <div className="flex items-start justify-between">
-                <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-                  <Users size={18} />
+          {viewMode === 'create' ? (
+            /* Render Full-Page Raise Ticket Form Component */
+            <RaiseTicketForm
+              initialDepartment={createDept}
+              onBack={handleBackToList}
+              onSubmitTicket={handleCreateTicket}
+              currentUser={userName}
+            />
+          ) : (
+            /* Render All Tickets Table & Department Directory */
+            <>
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+                <div>
+                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                    Helpdesk &amp; Support
+                  </div>
+                  <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                    <LifeBuoy className="text-indigo-600" size={26} />
+                    Support Ticket Portal
+                  </h1>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Generate and track service requests for HR, DevOps, IT, and General Inquiry
+                  </p>
                 </div>
-                <span className="text-[11px] font-bold text-rose-700 bg-rose-100/70 px-2 py-0.5 rounded-full">
-                  {metrics.hrCount}
-                </span>
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-slate-900">HR Department</h3>
-                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
-                  Salary slips, HR letters, leaves &amp; policies.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleOpenCreateModal('HR')}
-                className="w-full py-1.5 text-xs font-bold text-rose-700 bg-white hover:bg-rose-50 border border-rose-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <Plus size={13} /> Raise HR Ticket
-              </button>
-            </div>
 
-            {/* DevOps Card */}
-            <div className="bg-gradient-to-br from-indigo-50/60 via-white to-indigo-50/30 border border-indigo-200/90 rounded-2xl p-4.5 shadow-xs flex flex-col justify-between gap-3">
-              <div className="flex items-start justify-between">
-                <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
-                  <Terminal size={18} />
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenCreate('DevOps')}
+                    className="px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-700 hover:to-blue-700 rounded-xl shadow-md shadow-indigo-500/20 transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                  >
+                    <Plus size={16} strokeWidth={2.5} />
+                    <span>Raise Ticket</span>
+                  </button>
                 </div>
-                <span className="text-[11px] font-bold text-indigo-700 bg-indigo-100/70 px-2 py-0.5 rounded-full">
-                  {metrics.devopsCount}
-                </span>
               </div>
-              <div>
-                <h3 className="text-xs font-bold text-slate-900">DevOps &amp; Cloud</h3>
-                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
-                  AWS IAM, CI/CD, server SSH &amp; VPN gateway.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleOpenCreateModal('DevOps')}
-                className="w-full py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <Plus size={13} /> Raise DevOps Ticket
-              </button>
-            </div>
 
-            {/* IT Support Card */}
-            <div className="bg-gradient-to-br from-sky-50/60 via-white to-sky-50/30 border border-sky-200/90 rounded-2xl p-4.5 shadow-xs flex flex-col justify-between gap-3">
-              <div className="flex items-start justify-between">
-                <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
-                  <Laptop size={18} />
+              {/* Quick Department Cards (4-Column Layout) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                {/* HR Card */}
+                <div className="bg-gradient-to-br from-rose-50/60 via-white to-rose-50/30 border border-rose-200/90 rounded-2xl p-4.5 shadow-xs flex flex-col justify-between gap-3">
+                  <div className="flex items-start justify-between">
+                    <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                      <Users size={18} />
+                    </div>
+                    <span className="text-[11px] font-bold text-rose-700 bg-rose-100/70 px-2 py-0.5 rounded-full">
+                      {metrics.hrCount}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">HR Department</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
+                      Salary slips, HR letters, leaves &amp; policies.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenCreate('HR')}
+                    className="w-full py-1.5 text-xs font-bold text-rose-700 bg-white hover:bg-rose-50 border border-rose-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Plus size={13} /> Raise HR Ticket
+                  </button>
                 </div>
-                <span className="text-[11px] font-bold text-sky-700 bg-sky-100/70 px-2 py-0.5 rounded-full">
-                  {metrics.itCount}
-                </span>
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-slate-900">IT Support</h3>
-                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
-                  Laptops, displays, Wi-Fi &amp; software tools.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleOpenCreateModal('IT')}
-                className="w-full py-1.5 text-xs font-bold text-sky-700 bg-white hover:bg-sky-50 border border-sky-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <Plus size={13} /> Raise IT Ticket
-              </button>
-            </div>
 
-            {/* General Inquiry Card */}
-            <div className="bg-gradient-to-br from-amber-50/60 via-white to-amber-50/30 border border-amber-200/90 rounded-2xl p-4.5 shadow-xs flex flex-col justify-between gap-3">
-              <div className="flex items-start justify-between">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                  <HelpCircle size={18} />
+                {/* DevOps Card */}
+                <div className="bg-gradient-to-br from-indigo-50/60 via-white to-indigo-50/30 border border-indigo-200/90 rounded-2xl p-4.5 shadow-xs flex flex-col justify-between gap-3">
+                  <div className="flex items-start justify-between">
+                    <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                      <Terminal size={18} />
+                    </div>
+                    <span className="text-[11px] font-bold text-indigo-700 bg-indigo-100/70 px-2 py-0.5 rounded-full">
+                      {metrics.devopsCount}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">DevOps &amp; Cloud</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
+                      AWS IAM, CI/CD, server SSH &amp; VPN gateway.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenCreate('DevOps')}
+                    className="w-full py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Plus size={13} /> Raise DevOps Ticket
+                  </button>
                 </div>
-                <span className="text-[11px] font-bold text-amber-800 bg-amber-100/70 px-2 py-0.5 rounded-full">
-                  {metrics.generalCount}
-                </span>
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-slate-900">General Inquiry</h3>
-                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
-                  Facilities, ID cards, travel &amp; general ops.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleOpenCreateModal('General')}
-                className="w-full py-1.5 text-xs font-bold text-amber-800 bg-white hover:bg-amber-50 border border-amber-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <Plus size={13} /> Raise General Ticket
-              </button>
-            </div>
-          </div>
 
-          {/* Department Filter Tabs & Controls */}
+                {/* IT Support Card */}
+                <div className="bg-gradient-to-br from-sky-50/60 via-white to-sky-50/30 border border-sky-200/90 rounded-2xl p-4.5 shadow-xs flex flex-col justify-between gap-3">
+                  <div className="flex items-start justify-between">
+                    <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                      <Laptop size={18} />
+                    </div>
+                    <span className="text-[11px] font-bold text-sky-700 bg-sky-100/70 px-2 py-0.5 rounded-full">
+                      {metrics.itCount}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">IT Support</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
+                      Laptops, displays, Wi-Fi &amp; software tools.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenCreate('IT')}
+                    className="w-full py-1.5 text-xs font-bold text-sky-700 bg-white hover:bg-sky-50 border border-sky-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Plus size={13} /> Raise IT Ticket
+                  </button>
+                </div>
+
+                {/* General Inquiry Card */}
+                <div className="bg-gradient-to-br from-amber-50/60 via-white to-amber-50/30 border border-amber-200/90 rounded-2xl p-4.5 shadow-xs flex flex-col justify-between gap-3">
+                  <div className="flex items-start justify-between">
+                    <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                      <HelpCircle size={18} />
+                    </div>
+                    <span className="text-[11px] font-bold text-amber-800 bg-amber-100/70 px-2 py-0.5 rounded-full">
+                      {metrics.generalCount}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">General Inquiry</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
+                      Facilities, ID cards, travel &amp; general ops.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenCreate('General')}
+                    className="w-full py-1.5 text-xs font-bold text-amber-800 bg-white hover:bg-amber-50 border border-amber-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Plus size={13} /> Raise General Ticket
+                  </button>
+                </div>
+              </div>
+
+              {/* Department Filter Tabs & Controls */}
           <div className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs space-y-4">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               {/* Department Tabs */}
@@ -660,10 +596,10 @@ export default function TicketsPage() {
                           {/* Requester / Client (From Profile) */}
                           <td className="py-3.5 px-4 whitespace-nowrap">
                             <div className="font-bold text-slate-900 leading-tight">
-                              Client: {ticket.requester || 'Aryan'}
+                              Client: {ticket.requester || 'User'}
                             </div>
                             <div className="text-[10px] text-slate-400 font-medium mt-0.5 truncate max-w-[160px]">
-                              {ticket.email || 'aryan.p@latitudetechnolabs.org'}
+                              {ticket.email || ''}
                             </div>
                           </td>
 
@@ -727,20 +663,12 @@ export default function TicketsPage() {
               <span className="font-medium text-slate-600">Latitude Support SLA: HR 24h • DevOps 4h • IT 8h • General 12h</span>
             </div>
           </div>
+            </>
+          )}
         </main>
       </div>
 
-      {/* 3. Create Ticket Modal */}
-      <CreateTicketModal
-        key={`${isCreateOpen}-${createDept}`}
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        initialDepartment={createDept}
-        onCreateTicket={handleCreateTicket}
-        currentUser={userName}
-      />
-
-      {/* 4. Ticket Details Modal */}
+      {/* Ticket Details Modal */}
       <TicketDetailsModal
         key={selectedTicket?.id}
         isOpen={Boolean(selectedTicket)}

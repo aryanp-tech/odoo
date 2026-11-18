@@ -1,30 +1,21 @@
 // src/components/employee/QuickActionsCard.jsx
-// Clean Quick Actions & Portals (no technical model labels or cluttered subtexts)
+// Clean Quick Actions & Shortcuts for core operational modules
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import {
   CalendarPlus,
-  Receipt,
-  Monitor,
-  DoorClosed,
+  FileSpreadsheet,
+  Laptop,
+  LifeBuoy,
   Layers,
 } from 'lucide-react';
 
 export default function QuickActionsCard({ onRequestLeave }) {
   const navigate = useNavigate();
 
-  const handleClaimExpense = () => {
-    toast.success('Expense claim workflow ready.');
-  };
-
-  const handleBookRoom = () => {
-    toast.success('Meeting room reservation system ready.');
-  };
-
   return (
-    <div className="bg-gradient-to-br from-[#faf5ff] via-[#f3e8ff]/60 to-[#e9d5ff]/40 border border-[#e9d5ff] rounded-2xl p-6 shadow-xs flex flex-col justify-between h-full">
+    <div className="bg-gradient-to-br from-[#faf5ff] via-[#f3e8ff]/60 to-[#e9d5ff]/40 border border-[#e9d5ff] rounded-2xl p-6 shadow-xs">
       {/* 1. Card Header */}
       <div className="flex items-center gap-2.5 pb-3 border-b border-purple-200/60">
         <div className="w-8 h-8 rounded-xl bg-purple-100 text-[#7c3aed] flex items-center justify-center shrink-0">
@@ -51,45 +42,45 @@ export default function QuickActionsCard({ onRequestLeave }) {
           </div>
         </button>
 
-        {/* Tile 2: Claim Expense */}
+        {/* Tile 2: Log Timesheet */}
         <button
           type="button"
-          onClick={handleClaimExpense}
+          onClick={() => navigate('/timesheets')}
           className="p-4 rounded-xl border border-purple-100/90 bg-white/90 hover:bg-white hover:border-purple-300 transition-all text-left cursor-pointer flex flex-col items-start gap-2 group shadow-2xs"
         >
           <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
-            <Receipt size={16} />
+            <FileSpreadsheet size={16} />
           </div>
           <div className="text-xs font-bold text-slate-900 leading-tight group-hover:text-emerald-600 transition-colors">
-            Claim Expense
+            Log Timesheet
           </div>
         </button>
 
-        {/* Tile 3: Request Hardware */}
+        {/* Tile 3: Hardware & Devices */}
         <button
           type="button"
           onClick={() => navigate('/assets')}
           className="p-4 rounded-xl border border-purple-100/90 bg-white/90 hover:bg-white hover:border-purple-300 transition-all text-left cursor-pointer flex flex-col items-start gap-2 group shadow-2xs"
         >
           <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center">
-            <Monitor size={16} />
+            <Laptop size={16} />
           </div>
           <div className="text-xs font-bold text-slate-900 leading-tight group-hover:text-purple-600 transition-colors">
-            Request Hardware
+            Hardware &amp; Devices
           </div>
         </button>
 
-        {/* Tile 4: Book Room */}
+        {/* Tile 4: Raise Support Ticket */}
         <button
           type="button"
-          onClick={handleBookRoom}
+          onClick={() => navigate('/tickets?tab=new')}
           className="p-4 rounded-xl border border-purple-100/90 bg-white/90 hover:bg-white hover:border-purple-300 transition-all text-left cursor-pointer flex flex-col items-start gap-2 group shadow-2xs"
         >
           <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
-            <DoorClosed size={16} />
+            <LifeBuoy size={16} />
           </div>
           <div className="text-xs font-bold text-slate-900 leading-tight group-hover:text-amber-600 transition-colors">
-            Book Room
+            Raise Ticket
           </div>
         </button>
       </div>

@@ -1,7 +1,7 @@
 // src/components/employee/CreateTimesheetModal.jsx
 // Modal for filing daily work history and timesheets linked to company projects
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Clock, Folder, Send, Paperclip } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -13,12 +13,20 @@ export default function CreateTimesheetModal({
   onAddTimesheet,
 }) {
   const [formData, setFormData] = useState(() => ({
-    project: selectedProject || (projects[0]?.name || 'Act of Love react native'),
+    project: selectedProject || (projects[0]?.name || ''),
     task: '',
     date: new Date().toISOString().split('T')[0],
     hours: '08:00',
     description: '',
   }));
+
+  useEffect(() => {
+    if (selectedProject) {
+      setFormData((prev) => ({ ...prev, project: selectedProject }));
+    } else if (!formData.project && projects.length > 0) {
+      setFormData((prev) => ({ ...prev, project: projects[0]?.name || '' }));
+    }
+  }, [selectedProject, projects]);
 
   if (!isOpen) return null;
 
@@ -102,11 +110,15 @@ export default function CreateTimesheetModal({
                 required
                 className="w-full bg-[#f8fafc] text-xs font-semibold text-slate-800 rounded-xl px-3.5 py-2.5 border border-slate-200 focus:border-purple-500 focus:ring-3 focus:ring-purple-100 outline-none transition-all cursor-pointer appearance-none"
               >
-                {projects.map((proj) => (
-                  <option key={proj.id || proj.name} value={proj.name}>
-                    {proj.name} ({proj.taskCount || 0} Tasks)
-                  </option>
-                ))}
+                {projects.length === 0 ? (
+                  <option value="">No projects found (Create one in Projects page)</option>
+                ) : (
+                  projects.map((proj) => (
+                    <option key={proj.id || proj.name} value={proj.name}>
+                      {proj.name} ({proj.taskCount || 0} Tasks)
+                    </option>
+                  ))
+                )}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
                 <Folder size={14} />

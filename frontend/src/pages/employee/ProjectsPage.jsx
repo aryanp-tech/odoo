@@ -1,11 +1,13 @@
 // src/pages/employee/ProjectsPage.jsx
 // Dedicated Company Projects catalog matching Odoo Kanban mockup with direct Timesheet links
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import { getStoredSession } from '../../services/authService';
+import { callOdooKw } from '../../services/api/apiSlice';
+import CreateProjectModal from '../../components/employee/CreateProjectModal';
 import {
   FolderKanban,
   Search,
@@ -16,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Plus,
 } from 'lucide-react';
 
 export default function ProjectsPage() {
@@ -24,66 +27,49 @@ export default function ProjectsPage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTag, setFilterTag] = useState('');
+  const [projects, setProjects] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  // Projects list matching Odoo user mockup
-  const [projects, setProjects] = useState([
-    {
-      id: 'p-1',
-      name: 'Anmol - Ecommerce Web/App',
-      tasks: 455,
-      isFavorite: false,
-      color: 'border-l-indigo-500',
-    },
-    {
-      id: 'p-2',
-      name: 'Anmoltech - web',
-      tasks: 1,
-      isFavorite: false,
-      color: 'border-l-sky-500',
-    },
-    {
-      id: 'p-3',
-      name: 'Mharr.india ecommerce',
-      tasks: 2,
-      isFavorite: false,
-      color: 'border-l-emerald-500',
-    },
-    {
-      id: 'p-4',
-      name: 'Mharr.india social media',
-      tasks: 87,
-      isFavorite: false,
-      color: 'border-l-purple-500',
-    },
-    {
-      id: 'p-5',
-      name: 'Omega Elevators',
-      tasks: 51,
-      isFavorite: false,
-      color: 'border-l-amber-500',
-    },
-    {
-      id: 'p-6',
-      name: 'Omega Elevators (Mobile)',
-      tasks: 3,
-      isFavorite: false,
-      color: 'border-l-orange-500',
-    },
-    {
-      id: 'p-7',
-      name: 'Omega Task Management',
-      tasks: 55,
-      isFavorite: false,
-      color: 'border-l-blue-500',
-    },
-    {
-      id: 'p-8',
-      name: 'Act of Love react native',
-      tasks: 142,
-      isFavorite: true,
-      color: 'border-l-pink-500',
-    },
-  ]);
+  // Live fetch projects dynamically from Odoo 14 backend project.project
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    try {
+      const records = await callOdooKw('project.project', 'search_read', [[]], {
+        fields: ['id', 'name', 'task_count'],
+        order: 'name asc',
+      });
+      if (Array.isArray(records)) {
+        const colors = [
+          'border-l-indigo-500',
+          'border-l-sky-500',
+          'border-l-emerald-500',
+          'border-l-purple-500',
+          'border-l-amber-500',
+          'border-l-orange-500',
+          'border-l-blue-500',
+          'border-l-pink-500',
+        ];
+        setProjects(
+          records.map((p, idx) => ({
+            id: p.id,
+            name: p.name,
+            tasks: p.task_count || 0,
+            isFavorite: false,
+            color: colors[idx % colors.length],
+          }))
+        );
+      }
+    } catch (e) {
+      console.warn('Failed to fetch projects from Odoo backend:', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
@@ -175,6 +161,15 @@ export default function ProjectsPage() {
 
                   <button
                     type="button"
+                    onClick={() => setIsCreateOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-xs transition-all cursor-pointer ml-1"
+                  >
+                    <Plus size={14} strokeWidth={2.5} />
+                    <span>New Project</span>
+                  </button>
+
+                  <button
+                    type="button"
                     className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
                   >
                     <ListFilter size={12} />
@@ -207,59 +202,86 @@ export default function ProjectsPage() {
 
             {/* Kanban / Cards Grid Matching Odoo Mockup */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {filteredProjects.map((project) => (
-                <div
-                  key={project.id}
-                  onClick={() => navigate(`/timesheets?project=${encodeURIComponent(project.name)}`)}
-                  className={`bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md hover:border-purple-300 transition-all cursor-pointer flex flex-col justify-between min-h-[140px] group border-l-4 ${project.color}`}
-                >
-                  {/* Top: Star Favorite + Project Title */}
-                  <div>
-                    <div className="flex items-start gap-2">
+              {filteredProjects.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center col-span-full shadow-2xs">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 mx-auto flex items-center justify-center mb-3 border border-slate-200">
+                    <FolderKanban size={24} />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-800">No Projects Found</h3>
+                  <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto mb-4">
+                    No company projects found in backend database. When projects are created, they will dynamically appear here.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl shadow-xs transition-all cursor-pointer"
+                  >
+                    <Plus size={14} />
+                    <span>Create New Project</span>
+                  </button>
+                </div>
+              ) : (
+                filteredProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    onClick={() => navigate(`/timesheets?project=${encodeURIComponent(project.name)}`)}
+                    className={`bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md hover:border-purple-300 transition-all cursor-pointer flex flex-col justify-between min-h-[140px] group border-l-4 ${project.color}`}
+                  >
+                    {/* Top: Star Favorite + Project Title */}
+                    <div>
+                      <div className="flex items-start gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => toggleFavorite(project.id, e)}
+                          className="text-slate-300 hover:text-amber-500 transition-colors mt-0.5 cursor-pointer"
+                        >
+                          <Star
+                            size={16}
+                            className={
+                              project.isFavorite
+                                ? 'text-amber-400 fill-amber-400'
+                                : 'text-slate-300 hover:text-amber-400'
+                            }
+                          />
+                        </button>
+                        <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-900 transition-colors leading-tight">
+                          {project.name}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Bottom: Task Count & Clickable Timesheets Link */}
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-3 text-xs">
+                      <span className="text-[11px] font-semibold text-slate-500">
+                        {project.tasks} Tasks
+                      </span>
+
                       <button
                         type="button"
-                        onClick={(e) => toggleFavorite(project.id, e)}
-                        className="text-slate-300 hover:text-amber-500 transition-colors mt-0.5 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/timesheets?project=${encodeURIComponent(project.name)}`);
+                        }}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-[#714B67] hover:text-[#52334b] hover:underline cursor-pointer"
                       >
-                        <Star
-                          size={16}
-                          className={
-                            project.isFavorite
-                              ? 'text-amber-400 fill-amber-400'
-                              : 'text-slate-300 hover:text-amber-400'
-                          }
-                        />
+                        <Clock size={13} />
+                        <span>Timesheets</span>
                       </button>
-                      <h3 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-900 transition-colors leading-tight">
-                        {project.name}
-                      </h3>
                     </div>
                   </div>
-
-                  {/* Bottom: Task Count & Clickable Timesheets Link */}
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-3 text-xs">
-                    <span className="text-[11px] font-semibold text-slate-500">
-                      {project.tasks} Tasks
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/timesheets?project=${encodeURIComponent(project.name)}`);
-                      }}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-[#714B67] hover:text-[#52334b] hover:underline cursor-pointer"
-                    >
-                      <Clock size={13} />
-                      <span>Timesheets</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </main>
       </div>
+
+      {/* Create Project Modal */}
+      <CreateProjectModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onProjectCreated={fetchProjects}
+      />
     </div>
   );
 }

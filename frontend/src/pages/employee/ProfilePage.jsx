@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import { getStoredSession, saveSession } from '../../services/authService';
+import { callOdooKw } from '../../services/api/apiSlice';
 import {
   Camera,
   Upload,
@@ -35,133 +36,6 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const INITIAL_PROFILE = {
-  photo: '',
-  // Top Form - Left Column
-  workMobile: '+91 98765 01234',
-  workPhone: '+91 79 4000 1234',
-  workEmail: 'aryan.p@latitudetechnolabs.org',
-  workingType: 'Hybrid (Full-Time)',
-
-  // Top Form - Right Column
-  department: 'Engineering & Cloud Systems',
-  manager: 'Amit Trivedi',
-  coach: 'Amit Trivedi',
-  readOnly: true,
-  probation: false,
-  mentorName: 'Sanjay Sharma',
-  techLead: 'Karan Shah',
-
-  // Private Information - Private Contact
-  privateAddress: 'B-402, Titanium City Center, Prahlad Nagar, Ahmedabad, Gujarat 380015',
-  privateEmail: 'aryan.personal@gmail.com',
-  privatePhone: '+91 98765 43210',
-  pfAccount: true,
-  universalAccountNo: '101489203941',
-
-  // Private Information - Identification ID
-  identificationNo: '7841 9023 4512',
-  panNo: 'ABCDE1234F',
-  passportNo: 'Z9823412',
-
-  // Family & Emergency Contact
-  gender: 'Male',
-  dateOfBirth: '20 Apr 2004',
-  maritalStatus: 'Single',
-  emergencyName: 'Ramesh Patel',
-  emergencyPhone: '+91 98250 12345',
-
-  // Work Information
-  workLocation: 'Latitude Techno Labs HQ • Bay 4B',
-  timeOffApprover: 'Amit Trivedi',
-  expenseApprover: 'HR Operations Desk',
-  timesheetApprover: 'Project Leader',
-  workingSchedule: 'Standard 40h / Week (09:00 - 18:00 IST)',
-  timezone: 'Asia/Kolkata (IST)',
-
-  // HR Settings
-  employeeType: 'Regular Full-Time',
-  badgeId: '6APX-77402',
-  pinCode: '••••',
-  jobPosition: 'Software Engineer',
-  noticePeriod: '60 Days',
-};
-
-const SAMPLE_PERSONAL_DATA = {
-  privateAddress: 'B-402, Titanium City Center, Prahlad Nagar, Ahmedabad, Gujarat 380015',
-  privateEmail: 'aryan.personal@gmail.com',
-  privatePhone: '+91 98765 43210',
-  pfAccount: true,
-  universalAccountNo: '101489203941',
-  identificationNo: '7841 9023 4512',
-  panNo: 'ABCDE1234F',
-};
-
-const BADGES = [
-  {
-    id: 'b-1',
-    name: 'Star Performer Q3',
-    issuer: 'Engineering Leadership',
-    date: '30 Sep 2026',
-    desc: 'Recognized for stellar sprint velocity and resilient architecture delivery on cloud systems.',
-    color: 'from-amber-400 to-amber-600',
-  },
-  {
-    id: 'b-2',
-    name: 'Fast Shipper',
-    issuer: 'Project Delivery Management',
-    date: '15 Aug 2026',
-    desc: 'Shipped Omega Elevators and Act of Love production deployments with zero rollback.',
-    color: 'from-blue-500 to-indigo-600',
-  },
-  {
-    id: 'b-3',
-    name: 'Team Collaboration Champion',
-    issuer: 'People Operations',
-    date: '02 Jul 2026',
-    desc: 'Outstanding cross-functional collaboration between frontend, backend, and DevOps pipelines.',
-    color: 'from-emerald-500 to-teal-600',
-  },
-  {
-    id: 'b-4',
-    name: 'Problem Solver',
-    issuer: 'CTO Office',
-    date: '10 May 2026',
-    desc: 'Proactively diagnosed and resolved complex database latency bottlenecks.',
-    color: 'from-purple-500 to-violet-600',
-  },
-];
-
-const EQUIPMENT_ITEMS = [
-  {
-    id: 'eq-1',
-    name: 'Apple MacBook Pro 16"',
-    category: 'Primary Laptop',
-    code: 'IMPX-NB-012',
-    serial: 'C02G80P1MD6T',
-    date: '15 Oct 2026',
-    status: 'Active',
-  },
-  {
-    id: 'eq-2',
-    name: 'Dell UltraSharp 32" 4K Monitor',
-    category: 'External Display',
-    code: 'IMPX-MN-114',
-    serial: 'CN-0K791X-74261',
-    date: '18 Oct 2026',
-    status: 'Active',
-  },
-  {
-    id: 'eq-3',
-    name: 'YubiKey 5C NFC Security Key',
-    category: 'Hardware MFA Token',
-    code: '6APX-SEC-9122',
-    serial: 'YUBI-9122-8411',
-    date: '01 Nov 2026',
-    status: 'Active',
-  },
-];
-
 export default function ProfilePage() {
   const navigate = useNavigate();
   const sessionUser = getStoredSession();
@@ -169,21 +43,172 @@ export default function ProfilePage() {
 
   const [activeTab, setActiveTab] = useState('private'); // work, badges, private, hr, exit, equipment
   const [isEditing, setIsEditing] = useState(false);
+  const [badgesList, setBadgesList] = useState([]);
+  const [equipmentList, setEquipmentList] = useState([]);
 
-  // Profile data with localStorage persistence
-  const [profile, setProfile] = useState(() => {
-    try {
-      const saved = localStorage.getItem('portal_employee_profile_v2');
-      if (saved) {
-        return { ...INITIAL_PROFILE, photo: sessionUser?.photo || '', ...JSON.parse(saved) };
-      }
-    } catch {
-      // ignore
-    }
-    return { ...INITIAL_PROFILE, photo: sessionUser?.photo || '' };
+  // Live profile data from Odoo backend
+  const [profile, setProfile] = useState({
+    photo: sessionUser?.photo || '',
+    workMobile: '',
+    workPhone: '',
+    workEmail: sessionUser?.email || '',
+    workingType: 'Hybrid (Full-Time)',
+    department: sessionUser?.department || 'Engineering & Cloud Systems',
+    manager: 'Leadership Board',
+    coach: 'Leadership Board',
+    readOnly: true,
+    probation: false,
+    mentorName: '',
+    techLead: '',
+    privateAddress: 'Ahmedabad, Gujarat, India',
+    privateEmail: sessionUser?.email || '',
+    privatePhone: '',
+    pfAccount: true,
+    universalAccountNo: '',
+    identificationNo: '',
+    panNo: '',
+    passportNo: '',
+    gender: 'Male',
+    dateOfBirth: '',
+    maritalStatus: 'Single',
+    emergencyName: '',
+    emergencyPhone: '',
+    workLocation: 'Latitude Techno Labs HQ',
+    timeOffApprover: 'Reporting Manager',
+    projectApprover: 'Project Lead',
+    timesheetApprover: 'Project Leader',
+    workingSchedule: 'Standard 40h / Week (09:00 - 18:00 IST)',
+    timezone: 'Asia/Kolkata (IST)',
+    employeeType: 'Regular Full-Time',
+    badgeId: sessionUser?.badge_id || '6APX-77402',
+    pinCode: '••••',
+    jobPosition: sessionUser?.job_title || 'Software Engineer',
+    noticePeriod: '60 Days',
   });
 
   const [editForm, setEditForm] = useState(profile);
+
+  // Load real employee profile, real badges, and real equipment from Odoo backend
+  useEffect(() => {
+    async function loadLiveEmployeeData() {
+      try {
+        const stored = getStoredSession();
+        const empId = stored.employee_id || 3;
+
+        // 1. Fetch real hr.employee record
+        const empRecords = await callOdooKw('hr.employee', 'search_read', [[['id', '=', empId]]], {
+          fields: [
+            'id',
+            'name',
+            'work_email',
+            'work_phone',
+            'mobile_phone',
+            'department_id',
+            'job_title',
+            'work_location',
+            'parent_id',
+            'coach_id',
+            'working_type',
+            'probabtion',
+            'mentor_id',
+            'lead_id',
+            'pf_account',
+            'uan',
+            'pan_no',
+            'identification_id',
+            'barcode',
+            'emergency_contact',
+            'emergency_phone',
+            'pin',
+            'blood_group',
+            'aadhar_no',
+            'gender',
+            'marital',
+            'birthday',
+          ],
+        });
+
+        if (Array.isArray(empRecords) && empRecords.length > 0) {
+          const emp = empRecords[0];
+          const loaded = {
+            photo: stored.photo || '',
+            workMobile: emp.mobile_phone || '',
+            workPhone: emp.work_phone || '',
+            workEmail: emp.work_email || stored.email || '',
+            workingType: emp.working_type || 'Hybrid (Full-Time)',
+            department: Array.isArray(emp.department_id) ? emp.department_id[1] : (stored.department || 'Engineering & Cloud Systems'),
+            manager: Array.isArray(emp.parent_id) ? emp.parent_id[1] : 'Leadership Board',
+            coach: Array.isArray(emp.coach_id) ? emp.coach_id[1] : 'Leadership Board',
+            readOnly: true,
+            probation: Boolean(emp.probabtion),
+            mentorName: Array.isArray(emp.mentor_id) ? emp.mentor_id[1] : '',
+            techLead: Array.isArray(emp.lead_id) ? emp.lead_id[1] : '',
+            privateAddress: 'Ahmedabad, Gujarat, India',
+            privateEmail: emp.work_email || stored.email || '',
+            privatePhone: emp.mobile_phone || '',
+            pfAccount: Boolean(emp.pf_account),
+            universalAccountNo: emp.uan || '',
+            identificationNo: emp.identification_id || emp.aadhar_no || '',
+            panNo: emp.pan_no || '',
+            passportNo: '',
+            gender: emp.gender === 'male' ? 'Male' : emp.gender === 'female' ? 'Female' : 'Other',
+            dateOfBirth: emp.birthday || '',
+            maritalStatus: emp.marital || 'Single',
+            emergencyName: emp.emergency_contact || '',
+            emergencyPhone: emp.emergency_phone || '',
+            workLocation: emp.work_location || 'Latitude Techno Labs HQ',
+            timeOffApprover: Array.isArray(emp.parent_id) ? emp.parent_id[1] : 'Reporting Manager',
+            expenseApprover: 'HR Operations Desk',
+            timesheetApprover: 'Project Leader',
+            workingSchedule: 'Standard 40h / Week (09:00 - 18:00 IST)',
+            timezone: 'Asia/Kolkata (IST)',
+            employeeType: 'Regular Full-Time',
+            badgeId: emp.barcode || stored.badge_id || `6APX-774${String(emp.id).padStart(2, '0')}`,
+            pinCode: emp.pin || '••••',
+            jobPosition: emp.job_title || stored.job_title || 'Software Engineer',
+            noticePeriod: '60 Days',
+          };
+          setProfile(loaded);
+          setEditForm(loaded);
+        }
+
+        // 2. Fetch real gamification badges from Odoo
+        const badgeRecords = await callOdooKw('gamification.badge', 'search_read', [[]], {
+          fields: ['id', 'name', 'description'],
+        });
+        if (Array.isArray(badgeRecords) && badgeRecords.length > 0) {
+          const colors = ['from-amber-400 to-amber-600', 'from-blue-500 to-indigo-600', 'from-purple-500 to-violet-600', 'from-emerald-500 to-teal-600'];
+          setBadgesList(badgeRecords.map((b, idx) => ({
+            id: String(b.id),
+            name: b.name,
+            issuer: 'Leadership Team',
+            date: 'Awarded 2026',
+            desc: b.description || 'Recognized for excellent engineering contributions.',
+            color: colors[idx % colors.length],
+          })));
+        }
+
+        // 3. Fetch real equipment from equipment.details
+        const equipRecords = await callOdooKw('equipment.details', 'search_read', [[['use_by', '=', empId]]], {
+          fields: ['id', 'name', 'tag_no', 'comp_name', 'state', 'details'],
+        });
+        if (Array.isArray(equipRecords) && equipRecords.length > 0) {
+          setEquipmentList(equipRecords.map((eq) => ({
+            id: String(eq.id),
+            name: eq.details || eq.name,
+            category: 'Assigned Asset',
+            code: eq.tag_no ? `Tag #${eq.tag_no}` : eq.name,
+            serial: eq.name,
+            date: 'Active Custody',
+            status: 'Active',
+          })));
+        }
+      } catch (err) {
+        console.warn('Live profile fetch warning:', err);
+      }
+    }
+    loadLiveEmployeeData();
+  }, []);
 
   // Sync session changes if photo changed elsewhere
   useEffect(() => {
@@ -277,12 +302,9 @@ export default function ProfilePage() {
     setIsEditing(false);
   };
 
-  const handleFillSampleData = () => {
-    setEditForm((prev) => ({
-      ...prev,
-      ...SAMPLE_PERSONAL_DATA,
-    }));
-    toast.success('Sample personal information filled (100%)');
+  const handleResetToBackendData = () => {
+    setEditForm(profile);
+    toast.success('Reset to live backend data');
   };
 
   const handleClearPersonalData = () => {
@@ -314,11 +336,11 @@ export default function ProfilePage() {
 
   const TABS = [
     { id: 'work', label: 'Work Information' },
-    { id: 'badges', label: `Received Badges (${BADGES.length})` },
+    { id: 'badges', label: `Received Badges (${badgesList.length})` },
     { id: 'private', label: 'Private Information' },
     { id: 'hr', label: 'HR Settings' },
     { id: 'exit', label: 'Exit data' },
-    { id: 'equipment', label: `Equipment (${EQUIPMENT_ITEMS.length})` },
+    { id: 'equipment', label: `Equipment (${equipmentList.length})` },
   ];
 
   return (
@@ -717,17 +739,17 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={handleFillSampleData}
+                        onClick={handleResetToBackendData}
                         className="px-2.5 py-1 text-[11px] font-semibold text-indigo-700 hover:text-indigo-950 bg-white border border-indigo-300 rounded-lg shadow-2xs hover:bg-indigo-50 transition-colors cursor-pointer"
                       >
-                        Auto-fill Sample (100%)
+                        Reset to Backend
                       </button>
                       <button
                         type="button"
                         onClick={handleClearPersonalData}
                         className="px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:text-rose-600 bg-white border border-slate-300 rounded-lg shadow-2xs hover:bg-rose-50 transition-colors cursor-pointer flex items-center gap-1"
                       >
-                        <RotateCcw size={11} /> Reset (0%)
+                        <RotateCcw size={11} /> Clear (0%)
                       </button>
                     </div>
                   ) : (
@@ -993,8 +1015,8 @@ export default function ProfilePage() {
                         <span className="col-span-2 text-slate-800 font-medium">{profile.timeOffApprover}</span>
                       </div>
                       <div className="grid grid-cols-3 items-center">
-                        <span className="font-bold text-slate-700">Expense Approver</span>
-                        <span className="col-span-2 text-slate-800 font-medium">{profile.expenseApprover}</span>
+                        <span className="font-bold text-slate-700">Project Approver</span>
+                        <span className="col-span-2 text-slate-800 font-medium">{profile.projectApprover || 'Project Lead'}</span>
                       </div>
                       <div className="grid grid-cols-3 items-center">
                         <span className="font-bold text-slate-700">Timesheet Approver</span>
@@ -1038,12 +1060,12 @@ export default function ProfilePage() {
                     <p className="text-slate-500 text-[11px]">Peer recognition and leadership commendations</p>
                   </div>
                   <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
-                    {BADGES.length} Badges Awarded
+                    {badgesList.length} Badges Awarded
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {BADGES.map((b) => (
+                  {badgesList.map((b) => (
                     <div
                       key={b.id}
                       className="p-4 rounded-xl border border-slate-200/90 bg-slate-50/50 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all space-y-2"
@@ -1139,7 +1161,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                  {EQUIPMENT_ITEMS.map((eq) => (
+                  {equipmentList.map((eq) => (
                     <div
                       key={eq.id}
                       className="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 shadow-2xs space-y-2.5 transition-all"

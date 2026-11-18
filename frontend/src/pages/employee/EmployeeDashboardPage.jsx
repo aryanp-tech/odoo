@@ -27,6 +27,8 @@ export default function EmployeeDashboardPage() {
   const leaveQuotas = dashboardData?.leaveQuotas || {};
   const poll = dashboardData?.poll || {};
   const birthdays = dashboardData?.birthdays || [];
+  const timesheetsCount = dashboardData?.timesheetsCount || 0;
+  const timesheetsHours = dashboardData?.timesheetsHours || 0;
 
   return (
     <div className="min-h-screen bg-[#f4f7fb] flex text-slate-800">
@@ -48,6 +50,9 @@ export default function EmployeeDashboardPage() {
             <KpiMetricCards
               attendance={attendance}
               leaveQuotas={leaveQuotas}
+              timesheetsCount={timesheetsCount}
+              timesheetsHours={timesheetsHours}
+              poll={poll}
               onRequestLeave={() => setIsLeaveModalOpen(true)}
             />
 

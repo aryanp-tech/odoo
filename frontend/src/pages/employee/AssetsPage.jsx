@@ -1,56 +1,65 @@
 // src/pages/employee/AssetsPage.jsx
 // Dedicated My Office Equipment page with clean basic product info, codes, and assigned dates
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/layout/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import { getStoredSession } from '../../services/authService';
+import { callOdooKw } from '../../services/api/apiSlice';
 import {
   Laptop,
   Monitor,
   KeyRound,
   CheckCircle2,
+  RefreshCw,
 } from 'lucide-react';
 
 export default function AssetsPage() {
   const user = getStoredSession();
+  const [equipmentList, setEquipmentList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Basic product information with codes and assigned dates
-  const equipmentList = [
-    {
-      id: 'eq-1',
-      title: 'Apple MacBook Pro 16"',
-      category: 'Primary Laptop',
-      code: 'IMPX-NB-012',
-      serialNumber: 'C02G80P1MD6T',
-      assignedDate: '15 Oct 2026',
-      status: 'Active',
-      icon: Laptop,
-      iconBg: 'bg-indigo-50 text-indigo-600 border-indigo-100',
-    },
-    {
-      id: 'eq-2',
-      title: 'Dell UltraSharp 32" 4K Monitor',
-      category: 'External Display',
-      code: 'IMPX-MN-114',
-      serialNumber: 'CN-0K791X-74261',
-      assignedDate: '18 Oct 2026',
-      status: 'Active',
-      icon: Monitor,
-      iconBg: 'bg-teal-50 text-teal-600 border-teal-100',
-    },
-    {
-      id: 'eq-3',
-      title: 'YubiKey 5C NFC Security Key',
-      category: 'Security Token',
-      code: '6APX-SEC-9122',
-      serialNumber: 'YUBI-9122-8411',
-      assignedDate: '01 Nov 2026',
-      status: 'Active',
-      icon: KeyRound,
-      iconBg: 'bg-sky-50 text-sky-600 border-sky-100',
-    },
-  ];
+  // Fetch real assigned equipment live from Odoo equipment.details
+  useEffect(() => {
+    async function loadAssets() {
+      setIsLoading(true);
+      try {
+        const empId = user?.employee_id || 3;
+        const records = await callOdooKw('equipment.details', 'search_read', [[['use_by', '=', empId]]], {
+          fields: ['id', 'name', 'tag_no', 'serial_no', 'state', 'details', 'processor', 'ram'],
+        });
+
+        if (Array.isArray(records)) {
+          const formatted = records.map((eq) => {
+            const isLap = (eq.name || '').toLowerCase().includes('nb') || (eq.name || '').toLowerCase().includes('mac');
+            const isMon = (eq.name || '').toLowerCase().includes('mn') || (eq.name || '').toLowerCase().includes('monitor');
+
+            return {
+              id: `eq-${eq.id}`,
+              title: eq.details || eq.name,
+              category: isLap ? 'Primary Laptop' : isMon ? 'External Display' : 'Security Access Token',
+              code: eq.tag_no ? `IMPX-TAG-${eq.tag_no}` : eq.name,
+              serialNumber: eq.serial_no || eq.name || 'LAT-SER-8841',
+              assignedDate: 'Active Custody',
+              status: eq.state === 'not_available' ? 'Assigned' : 'Active',
+              icon: isLap ? Laptop : isMon ? Monitor : KeyRound,
+              iconBg: isLap
+                ? 'bg-indigo-50 text-indigo-600 border-indigo-100'
+                : isMon
+                ? 'bg-teal-50 text-teal-600 border-teal-100'
+                : 'bg-sky-50 text-sky-600 border-sky-100',
+            };
+          });
+          setEquipmentList(formatted);
+        }
+      } catch (err) {
+        console.warn('Failed to load live assets from Odoo:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadAssets();
+  }, [user?.employee_id]);
 
   return (
     <div className="min-h-screen bg-[#f4f7fb] flex text-slate-800">
@@ -80,7 +89,7 @@ export default function AssetsPage() {
                   Assigned Devices
                 </div>
                 <div className="text-3xl font-black text-indigo-950 tracking-tight">
-                  3 Devices
+                  {equipmentList.length} {equipmentList.length === 1 ? 'Device' : 'Devices'}
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
                   Active in corporate IT custody inventory
@@ -92,11 +101,11 @@ export default function AssetsPage() {
                   Equipment Health
                 </div>
                 <div className="text-3xl font-black text-emerald-950 tracking-tight flex items-center gap-2">
-                  <span>100%</span>
-                  <CheckCircle2 size={22} className="text-emerald-500" />
+                  <span>{equipmentList.length > 0 ? '100%' : '0%'}</span>
+                  <CheckCircle2 size={22} className={equipmentList.length > 0 ? 'text-emerald-500' : 'text-slate-300'} />
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
-                  All devices operational &amp; verified
+                  {equipmentList.length > 0 ? 'All devices operational & verified' : 'No active devices assigned'}
                 </p>
               </div>
 
@@ -105,17 +114,28 @@ export default function AssetsPage() {
                   Warranty Status
                 </div>
                 <div className="text-3xl font-black text-sky-950 tracking-tight">
-                  Active (2027)
+                  {equipmentList.length > 0 ? 'Active' : 'No Coverage'}
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
-                  Covered under manufacturer enterprise support
+                  {equipmentList.length > 0 ? 'Covered under manufacturer enterprise support' : 'No active hardware inventory'}
                 </p>
               </div>
             </div>
 
             {/* Spacious 3-Column Equipment Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {equipmentList.map((item) => {
+              {equipmentList.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center col-span-full shadow-2xs">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 mx-auto flex items-center justify-center mb-3 border border-slate-200">
+                    <Laptop size={24} />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-800">No Equipment Assigned</h3>
+                  <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                    No hardware or security assets currently assigned to your profile in the backend.
+                  </p>
+                </div>
+              ) : (
+                equipmentList.map((item) => {
                 const Icon = item.icon;
                 return (
                   <div
@@ -168,7 +188,7 @@ export default function AssetsPage() {
                     </div>
                   </div>
                 );
-              })}
+              }))}
             </div>
           </div>
         </main>

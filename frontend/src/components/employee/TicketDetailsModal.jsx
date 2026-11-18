@@ -25,7 +25,7 @@ export default function TicketDetailsModal({
   ticket,
   onClose,
   onStatusChange,
-  currentUser = 'Aryan Patel',
+  currentUser,
 }) {
   const [replyText, setReplyText] = useState('');
   const [previewMedia, setPreviewMedia] = useState(null);
@@ -38,7 +38,7 @@ export default function TicketDetailsModal({
     if (!replyText.trim()) return;
 
     const newEntry = {
-      author: currentUser || 'Aryan Patel',
+      author: currentUser || 'User',
       date: 'Just now',
       message: replyText.trim(),
     };
@@ -119,8 +119,8 @@ export default function TicketDetailsModal({
     );
   };
 
-  const clientName = ticket.requester || 'Aryan';
-  const clientEmail = ticket.email || 'aryan.p@latitudetechnolabs.org';
+  const clientName = ticket.requester || 'User';
+  const clientEmail = ticket.email || '';
   const attachmentsList = Array.isArray(ticket.attachments) ? ticket.attachments : [];
 
   return (

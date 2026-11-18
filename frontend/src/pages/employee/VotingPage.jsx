@@ -1,45 +1,49 @@
 // src/pages/employee/VotingPage.jsx
 // Dedicated Polls & Voting governance page
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/layout/Sidebar';
 import TopNavbar from '../../components/layout/TopNavbar';
 import CompanyPollsCard from '../../components/employee/CompanyPollsCard';
-import { useGetEmployeeDashboardQuery } from '../../services/api/apiSlice';
+import { useGetEmployeeDashboardQuery, callOdooKw } from '../../services/api/apiSlice';
 import { getStoredSession } from '../../services/authService';
-import { Vote, Award, History, CheckCircle2, Users } from 'lucide-react';
+import { Vote, Award, History, CheckCircle2, Users, FileText } from 'lucide-react';
 
 export default function VotingPage() {
   const user = getStoredSession();
   const { data: dashboardData } = useGetEmployeeDashboardQuery();
   const poll = dashboardData?.poll || {};
+  const [surveys, setSurveys] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const pastPolls = [
-    {
-      id: 'past-1',
-      title: 'Q3 Cloud Infrastructure Migration (AWS vs GCP)',
-      winner: 'Hybrid Cloud Architecture with Terraform',
-      votes: 388,
-      date: 'Aug 2026',
-      status: 'Closed & Adopted',
-    },
-    {
-      id: 'past-2',
-      title: 'Annual Team Retreat Destination',
-      winner: 'Alps Mountain Resort (Austria)',
-      votes: 420,
-      date: 'May 2026',
-      status: 'Completed',
-    },
-    {
-      id: 'past-3',
-      title: 'Ergonomic Workstation & Hardware Stipend Scheme',
-      winner: 'Flexible Annual Allowance ($1,200/yr)',
-      votes: 450,
-      date: 'Jan 2026',
-      status: 'Implemented',
-    },
-  ];
+  const totalVotesCount = surveys.reduce((acc, s) => acc + (Number(s.votes) || 0), 0) + (Number(poll?.totalVotes) || 0);
+  const participationRate = totalVotesCount > 0 ? '100%' : '0%';
+
+  useEffect(() => {
+    async function loadSurveys() {
+      setIsLoading(true);
+      try {
+        const records = await callOdooKw('survey.survey', 'search_read', [[]], {
+          fields: ['id', 'title', 'state', 'answer_count', 'create_date'],
+        });
+        if (Array.isArray(records)) {
+          setSurveys(records.map((s) => ({
+            id: String(s.id),
+            title: s.title,
+            winner: `${s.answer_count || 0} responses recorded`,
+            votes: s.answer_count || 0,
+            date: s.create_date ? new Date(s.create_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '2026',
+            status: s.state === 'closed' ? 'Closed' : 'Active',
+          })));
+        }
+      } catch (e) {
+        console.warn('Odoo survey.survey load warning:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadSurveys();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f4f7fb] flex text-slate-800">
@@ -83,11 +87,11 @@ export default function VotingPage() {
                 <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-slate-100">
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase block">Participation</span>
-                    <span className="text-xl font-black text-slate-900">74%</span>
+                    <span className="text-xl font-black text-slate-900">{participationRate}</span>
                   </div>
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase block">Active Votes</span>
-                    <span className="text-xl font-black text-indigo-600">412 Cast</span>
+                    <span className="text-xl font-black text-indigo-600">{totalVotesCount} Cast</span>
                   </div>
                 </div>
               </div>
@@ -101,23 +105,29 @@ export default function VotingPage() {
               </h3>
 
               <div className="divide-y divide-slate-100 text-xs">
-                {pastPolls.map((p) => (
-                  <div key={p.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <h4 className="font-bold text-slate-900">{p.title}</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        Selected: <strong className="text-slate-800">{p.winner}</strong> • {p.votes} votes cast
-                      </p>
-                    </div>
+                {surveys.length > 0 ? (
+                  surveys.map((p) => (
+                    <div key={p.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <h4 className="font-bold text-slate-900">{p.title}</h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          Status: <strong className="text-slate-800">{p.winner}</strong>
+                        </p>
+                      </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-slate-400">{p.date}</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
-                        {p.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-slate-400">{p.date}</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
+                          {p.status}
+                        </span>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="py-6 text-center text-slate-400 text-xs">
+                    No active surveys recorded in Odoo 14 backend.
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>

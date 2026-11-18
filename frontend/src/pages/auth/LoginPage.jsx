@@ -37,7 +37,19 @@ export default function LoginPage() {
       const res = await loginUser(email, password);
       if (res.success) {
         toast.success(`Welcome back, ${res.user.name}!`);
-        navigate(from, { replace: true });
+        if (location.state?.from?.pathname && location.state.from.pathname !== '/login') {
+          navigate(location.state.from.pathname, { replace: true });
+        } else {
+          if (res.user.role === 'super_admin') {
+            navigate('/admin', { replace: true });
+          } else if (res.user.role === 'hr_admin') {
+            navigate('/admin/employees', { replace: true });
+          } else if (res.user.role === 'it_admin') {
+            navigate('/assets', { replace: true });
+          } else {
+            navigate('/', { replace: true });
+          }
+        }
       } else {
         setErrorMsg(res.error || 'Authentication failed. Please check credentials.');
         toast.error(res.error || 'Login failed');
@@ -90,10 +102,10 @@ export default function LoginPage() {
 
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email */}
+              {/* Email or Username */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Email
+                  Email or Username
                 </label>
                 <div className="relative">
                   <Mail
@@ -101,11 +113,12 @@ export default function LoginPage() {
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
                   />
                   <input
-                    type="email"
-                    name="email"
+                    type="text"
+                    name="identifier"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="aryan.p@latitudetechnolabs.org"
+                    placeholder="e.g. admin or employee@test.com"
+                    autoComplete="username"
                     required
                     className="w-full text-xs font-medium text-slate-900 bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3.5 py-2.5 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 placeholder:text-slate-400 transition-all"
                   />

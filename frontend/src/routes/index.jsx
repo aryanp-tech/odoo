@@ -9,6 +9,10 @@ import ProtectedRoute from '../components/auth/ProtectedRoute';
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'));
 
+// Super Admin Pages
+const SuperAdminDashboardPage = lazy(() => import('../pages/superadmin/SuperAdminDashboardPage'));
+const EmployeeManagementPage = lazy(() => import('../pages/superadmin/EmployeeManagementPage'));
+
 // Code-split pages for high performance and reduced initial bundle footprint
 const EmployeeDashboardPage = lazy(() => import('../pages/employee/EmployeeDashboardPage'));
 const ProfilePage = lazy(() => import('../pages/employee/ProfilePage'));
@@ -134,6 +138,24 @@ export default function AppRoutes() {
           }
         />
         <Route path="/settings" element={<Navigate to="/profile" replace />} />
+
+        {/* Super Admin Management Routes */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['super_admin']}>
+              <SuperAdminDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/employees"
+          element={
+            <ProtectedRoute allowedRoles={['super_admin', 'hr_admin']}>
+              <EmployeeManagementPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Wildcard redirects back to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

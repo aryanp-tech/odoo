@@ -22,6 +22,13 @@ export default function AttendancePage() {
   const attendance = dashboardData?.attendance || {};
   const rows = attendance.telemetryRows || [];
 
+  const weeklyLogged = Number(attendance.weeklyLoggedHours || 0);
+  const target = Number(attendance.weeklyTarget || 40.0);
+  const completionPct = target > 0 ? Math.min(100, Math.round((weeklyLogged / target) * 100)) : 0;
+  const dailyAvg = rows.length > 0 ? (weeklyLogged / rows.length).toFixed(1) : '0.0';
+  const overtime = Math.max(0, weeklyLogged - target).toFixed(1);
+  const punctuality = rows.length > 0 ? '100%' : '0%';
+
   const handleExport = () => {
     toast.success('Exporting timesheet records to Excel / CSV');
   };
@@ -63,13 +70,13 @@ export default function AttendancePage() {
                   Weekly Logged
                 </div>
                 <div className="text-3xl font-black text-indigo-950 tracking-tight">
-                  {attendance.weeklyLoggedHours || 38.5}h
+                  {weeklyLogged.toFixed(1)}h
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Target: 40.0h (96% completion)
+                  Target: {target.toFixed(1)}h ({completionPct}% completion)
                 </p>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-3">
-                  <div className="bg-indigo-600 h-full rounded-full w-[96%]" />
+                  <div className="bg-indigo-600 h-full rounded-full" style={{ width: `${completionPct}%` }} />
                 </div>
               </div>
 
@@ -78,14 +85,14 @@ export default function AttendancePage() {
                   Punctuality Rate
                 </div>
                 <div className="text-3xl font-black text-emerald-950 tracking-tight flex items-center gap-1.5">
-                  <span>98%</span>
-                  <CheckCircle2 size={20} className="text-emerald-500" />
+                  <span>{punctuality}</span>
+                  <CheckCircle2 size={20} className={rows.length > 0 ? 'text-emerald-500' : 'text-slate-300'} />
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Consistent on-time check-ins
+                  {rows.length > 0 ? 'Consistent on-time check-ins' : 'No attendance recorded'}
                 </p>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-3">
-                  <div className="bg-emerald-600 h-full rounded-full w-[98%]" />
+                  <div className="bg-emerald-600 h-full rounded-full" style={{ width: punctuality }} />
                 </div>
               </div>
 
@@ -94,13 +101,13 @@ export default function AttendancePage() {
                   Daily Average
                 </div>
                 <div className="text-3xl font-black text-teal-950 tracking-tight">
-                  8.2h
+                  {dailyAvg}h
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">
                   Standard shift is 8.0h/day
                 </p>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-3">
-                  <div className="bg-teal-600 h-full rounded-full w-full" />
+                  <div className="bg-teal-600 h-full rounded-full" style={{ width: `${Math.min(100, Math.round((Number(dailyAvg) / 8) * 100))}%` }} />
                 </div>
               </div>
 
@@ -109,13 +116,13 @@ export default function AttendancePage() {
                   Overtime Accrued
                 </div>
                 <div className="text-3xl font-black text-amber-950 tracking-tight">
-                  +1.5h
+                  +{overtime}h
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">
                   Eligible for comp-off conversion
                 </p>
                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-3">
-                  <div className="bg-amber-500 h-full rounded-full w-3/4" />
+                  <div className="bg-amber-500 h-full rounded-full" style={{ width: `${Math.min(100, Math.round((Number(overtime) / 5) * 100))}%` }} />
                 </div>
               </div>
             </div>
@@ -144,36 +151,48 @@ export default function AttendancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50 font-medium">
-                    {rows.map((row) => (
-                      <tr key={row.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="py-3 font-bold text-slate-900">
-                          {row.dateLabel}
-                        </td>
-                        <td className="py-3 text-slate-600 font-mono font-medium">
-                          {row.punchIn}
-                        </td>
-                        <td className="py-3 text-slate-600 font-mono font-medium">
-                          {row.punchOut}
-                        </td>
-                        <td className="py-3 font-bold text-slate-800">
-                          {row.netTime}
-                        </td>
-                        <td className="py-3 text-slate-500">
-                          Munich Tech Center (127.0.0.1)
-                        </td>
-                        <td className="py-3 text-right">
-                          {row.isToday ? (
-                            <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#4338ca] text-white">
-                              Active Shift
-                            </span>
-                          ) : (
-                            <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100">
-                              {row.statusTag}
-                            </span>
-                          )}
+                    {rows.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-slate-400">
+                          <Clock size={28} className="mx-auto mb-2 text-slate-300" />
+                          <p className="font-semibold text-slate-600 text-sm">No Attendance Records Found</p>
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            No clock-in telemetry recorded in Odoo for this period. Use the Home Dashboard punch button to clock in.
+                          </p>
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      rows.map((row) => (
+                        <tr key={row.id} className="hover:bg-slate-50/70 transition-colors">
+                          <td className="py-3 font-bold text-slate-900">
+                            {row.dateLabel}
+                          </td>
+                          <td className="py-3 text-slate-600 font-mono font-medium">
+                            {row.punchIn}
+                          </td>
+                          <td className="py-3 text-slate-600 font-mono font-medium">
+                            {row.punchOut}
+                          </td>
+                          <td className="py-3 font-bold text-slate-800">
+                            {row.netTime}
+                          </td>
+                          <td className="py-3 text-slate-500">
+                            Ahmedabad HQ (127.0.0.1)
+                          </td>
+                          <td className="py-3 text-right">
+                            {row.isToday ? (
+                              <span className="inline-flex items-center justify-center whitespace-nowrap text-[10px] font-bold px-3 py-0.5 rounded-full bg-[#4338ca] text-white">
+                                Active Shift
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center justify-center whitespace-nowrap text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                {row.statusTag}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

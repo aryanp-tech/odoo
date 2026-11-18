@@ -8,6 +8,7 @@ import TopNavbar from '../../components/layout/TopNavbar';
 import CreateTimesheetModal from '../../components/employee/CreateTimesheetModal';
 import TimesheetDetailsModal from '../../components/employee/TimesheetDetailsModal';
 import { getStoredSession } from '../../services/authService';
+import { callOdooKw } from '../../services/api/apiSlice';
 import {
   Clock,
   Plus,
@@ -21,6 +22,7 @@ import {
   Send,
   CheckCircle2,
   X,
+  RefreshCw,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -34,161 +36,67 @@ export default function TimesheetsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTimesheet, setSelectedTimesheet] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Available company projects for linking
-  const companyProjects = [
-    { id: 'p-1', name: 'Act of Love react native', taskCount: 142 },
-    { id: 'p-2', name: 'Anmol - Ecommerce Web/App', taskCount: 455 },
-    { id: 'p-3', name: 'Anmoltech - web', taskCount: 1 },
-    { id: 'p-4', name: 'Mharr.india ecommerce', taskCount: 2 },
-    { id: 'p-5', name: 'Mharr.india social media', taskCount: 87 },
-    { id: 'p-6', name: 'Omega Elevators', taskCount: 51 },
-    { id: 'p-7', name: 'Omega Task Management', taskCount: 55 },
-  ];
+  // Live company projects from Odoo project.project
+  const [companyProjects, setCompanyProjects] = useState([]);
 
-  // Daily Work History Timesheets matching Odoo Mockup (Image 2)
-  const [timesheetRecords, setTimesheetRecords] = useState(() => {
+  // Live timesheet records from Odoo account.analytic.line
+  const [timesheetRecords, setTimesheetRecords] = useState([]);
+
+  // Load real projects and real timesheets live from Odoo backend
+  const loadTimesheetData = async () => {
+    setIsLoading(true);
     try {
-      const saved = localStorage.getItem('portal_timesheets');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      // 1. Fetch real projects
+      const projs = await callOdooKw('project.project', 'search_read', [[]], {
+        fields: ['id', 'name', 'task_count'],
+        order: 'name asc',
+      });
+      if (Array.isArray(projs) && projs.length > 0) {
+        setCompanyProjects(projs.map((p) => ({
+          id: p.id,
+          name: p.name,
+          taskCount: p.task_count || 0,
+        })));
       }
-    } catch {
-      // ignore
-    }
-    return [
-      {
-        id: 'ts-1',
-        date: '18/06/2026',
-        employee: 'Aryan Patel',
-        project: 'Act of Love react native',
-        task: 'Create a Doc',
-        description: 'Responded to Jira tickets and provided updates. Worked on API architecture.',
-        duration: '02:00',
-        status: 'Pending Send',
-      },
-    {
-      id: 'ts-2',
-      date: '05/06/2026',
-      employee: 'Aryan Patel',
-      project: 'Act of Love react native',
-      task: 'Worked on Jira Tickets',
-      description: 'Worked on jira tickets AOL-1266, AOL-1268, resolved layout overflow issues.',
-      duration: '02:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-3',
-      date: '01/06/2026',
-      employee: 'Aryan Patel',
-      project: 'Act of Love react native',
-      task: 'Jira Tasks, Build Generation & QA Testing',
-      description: 'Worked on Jira tasks. Made changes to the Trending screen and generated staging builds.',
-      duration: '04:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-4',
-      date: '29/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Act of Love react native',
-      task: 'Worked on Jira tasks and provided task updates',
-      description: 'Worked on Jira tasks made some changes in Trending feed and fixed unit test suites.',
-      duration: '03:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-5',
-      date: '28/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Act of Love react native',
-      task: 'Jira Tasks, Build Generation & QA Testing',
-      description: 'Worked on Jira tasks and shared the updated build with QA team for release sign-off.',
-      duration: '04:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-6',
-      date: '21/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Anmol - Ecommerce Web/App',
-      task: 'Worked on Jira tasks and provided task updates',
-      description: 'Worked on Jira tasks • Checked Jira tasks and added checkout payment validation logic.',
-      duration: '02:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-7',
-      date: '20/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Omega Elevators',
-      task: 'Jira Tasks, Build Generation & QA Testing',
-      description: 'Worked on Jira tasks. Checked Jira tasks and added telemetry dispatch listeners.',
-      duration: '04:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-8',
-      date: '19/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Omega Elevators',
-      task: 'Worked on Jira tasks and provided task updates',
-      description: 'Worked on Jira tasks. Checked Jira tasks and added lift status realtime polling engine.',
-      duration: '08:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-9',
-      date: '18/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Mharr.india ecommerce',
-      task: 'Worked on Jira tasks and provided task updates',
-      description: 'Worked on Jira tasks. Worked on the Goods and Service catalog product taxonomy.',
-      duration: '08:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-10',
-      date: '15/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Act of Love react native',
-      task: 'Push Notification Verification for Multi-Language',
-      description: 'Worked on push notification functionality across the app and localized system alerts.',
-      duration: '08:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-11',
-      date: '14/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Act of Love react native',
-      task: 'Push Notification Verification for Multi-Language',
-      description: 'Worked on push notification functionality. Created test scenarios for background push.',
-      duration: '04:00',
-      status: 'Sent',
-    },
-    {
-      id: 'ts-12',
-      date: '13/05/2026',
-      employee: 'Aryan Patel',
-      project: 'Act of Love react native',
-      task: 'Worked on Jira tasks and provided task updates',
-      description: 'Worked on Jira tasks and provided task updates. Worked on user profile editing flow.',
-      duration: '04:00',
-      status: 'Sent',
-    },
-    ];
-  });
 
-  // Sync to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('portal_timesheets', JSON.stringify(timesheetRecords));
-    } catch {
-      // ignore
+      // 2. Fetch real timesheets from account.analytic.line
+      const lines = await callOdooKw('account.analytic.line', 'search_read', [[]], {
+        fields: ['id', 'name', 'unit_amount', 'date', 'employee_id', 'project_id', 'task_id'],
+        order: 'date desc',
+      });
+
+      if (Array.isArray(lines)) {
+        const formatted = lines.map((r) => {
+          const hours = Math.floor(r.unit_amount || 0);
+          const mins = Math.round(((r.unit_amount || 0) - hours) * 60);
+          const durationStr = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+          const dateFormatted = r.date ? r.date.split('-').reverse().join('/') : '';
+          return {
+            id: String(r.id),
+            date: dateFormatted,
+            employee: Array.isArray(r.employee_id) ? r.employee_id[1] : (user?.name || 'Aryan Patel'),
+            project: Array.isArray(r.project_id) ? r.project_id[1] : 'Internal',
+            task: Array.isArray(r.task_id) ? r.task_id[1] : 'Analysis & Sprint Work',
+            description: r.name || 'Worked on assigned sprint deliverable.',
+            duration: durationStr,
+            unit_amount: r.unit_amount,
+            status: 'Sent',
+          };
+        });
+        setTimesheetRecords(formatted);
+      }
+    } catch (err) {
+      console.warn('Failed to load live timesheets from Odoo:', err);
+    } finally {
+      setIsLoading(false);
     }
-  }, [timesheetRecords]);
+  };
+
+  useEffect(() => {
+    loadTimesheetData();
+  }, []);
 
   // Selected checkbox rows
   const [selectedRows, setSelectedRows] = useState([]);
@@ -207,7 +115,42 @@ export default function TimesheetsPage() {
     );
   };
 
-  const handleAddTimesheet = (newRec) => {
+  const handleAddTimesheet = async (newRec) => {
+    // 1. Write live to Odoo backend account.analytic.line
+    try {
+      const stored = getStoredSession();
+      const empId = stored.employee_id || 3;
+
+      // Find matching project id from companyProjects
+      const matchedProj = companyProjects.find(
+        (p) => p.name.toLowerCase() === (newRec.project || '').toLowerCase()
+      );
+      const projId = matchedProj ? matchedProj.id : (companyProjects[0]?.id || 1);
+
+      // Parse hours (e.g., "08:00" -> 8.0)
+      const parts = (newRec.duration || '08:00').split(':');
+      const floatHours = Number(parts[0] || 8) + (Number(parts[1] || 0) / 60);
+
+      // Format date YYYY-MM-DD
+      const dateParts = (newRec.date || '').split('/');
+      const isoDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : new Date().toISOString().split('T')[0];
+
+      const createdId = await callOdooKw('account.analytic.line', 'create', [
+        {
+          name: newRec.description || newRec.task || 'Daily timesheet',
+          unit_amount: floatHours,
+          date: isoDate,
+          employee_id: empId,
+          project_id: projId,
+        },
+      ]);
+
+      newRec.id = String(createdId);
+      toast.success('Timesheet saved to Odoo 14 backend!');
+    } catch (err) {
+      console.warn('Odoo timesheet write warning:', err);
+    }
+
     setTimesheetRecords((prev) => [newRec, ...prev]);
     setSelectedTimesheet(newRec);
     setIsDetailsModalOpen(true);

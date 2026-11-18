@@ -169,7 +169,7 @@ export default function TimesheetDetailsModal({
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Assigned to <span className="font-semibold text-slate-700">Reporting Manager (Amit Trivedi)</span> for attendance verification &amp; workday validation
+                    Assigned to <span className="font-semibold text-slate-700">Reporting Manager</span> for attendance verification &amp; workday validation
                   </p>
                 </div>
               </div>

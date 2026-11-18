@@ -12,9 +12,9 @@ import {
   Info,
 } from 'lucide-react';
 
-export default function LeavesCalendarView({ onRequestLeave }) {
-  // Calendar current view date (defaults to November 2026 matching user mockup)
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 10, 1)); // Month is 0-indexed: 10 = Nov
+export default function LeavesCalendarView({ leaves = [], onRequestLeave }) {
+  // Calendar current view date (defaults to current month/year)
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   // Filter toggles matching right panel in mockup:
@@ -29,85 +29,34 @@ export default function LeavesCalendarView({ onRequestLeave }) {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // Leaves & Holidays data matching the mockup exactly
-  const allEvents = [
-    {
-      id: 'evt-1',
-      dateStr: '2026-11-09',
-      dayNumber: 9,
-      type: 'casual',
-      title: 'Going to village',
-      duration: '1.00 days',
-      colorLine: '#eab308', // Amber/Yellow
-      tagBg: 'bg-amber-50',
-      textColor: 'text-amber-900',
-      borderColor: 'border-amber-400',
-      managerApproval: { name: 'Sarah Chen (Lead)', status: 'Approved' },
-      hrApproval: { name: 'HR Operations', status: 'Approved' },
-      notes: 'Family visit to ancestral village',
-    },
-    {
-      id: 'evt-2',
-      dateStr: '2026-11-12',
-      dayNumber: 12,
-      type: 'casual',
-      title: 'going home',
-      duration: '1.00 days',
-      colorLine: '#eab308', // Amber/Yellow
-      tagBg: 'bg-amber-50',
-      textColor: 'text-amber-900',
-      borderColor: 'border-amber-400',
-      managerApproval: { name: 'Sarah Chen (Lead)', status: 'Approved' },
-      hrApproval: { name: 'HR Operations', status: 'Pending HR Approval' },
-      notes: 'Travel transit day',
-    },
-    {
-      id: 'evt-3',
-      dateStr: '2026-11-13',
-      dayNumber: 13,
-      type: 'wfh',
-      title: 'Request WFM cause Go...',
-      fullTitle: 'Request WFH cause Going Out of Station',
-      duration: '1.00 days',
-      colorLine: '#9333ea', // Purple
-      tagBg: 'bg-purple-50',
-      textColor: 'text-purple-900',
-      borderColor: 'border-purple-400',
-      managerApproval: { name: 'Sarah Chen (Lead)', status: 'Approved' },
-      hrApproval: { name: 'HR Operations', status: 'Approved' },
-      notes: 'Remote workday with stable fiber connectivity',
-    },
-    {
-      id: 'evt-4',
-      dateStr: '2026-11-26',
-      dayNumber: 26,
-      type: 'holiday',
-      title: 'Thanksgiving Holiday',
-      duration: 'Official Holiday',
-      colorLine: '#10b981', // Emerald
-      tagBg: 'bg-emerald-50',
-      textColor: 'text-emerald-900',
-      borderColor: 'border-emerald-500',
-      managerApproval: { name: 'Automatic', status: 'Company Wide' },
-      hrApproval: { name: 'Corporate HR', status: 'Gazetted Holiday' },
-      notes: 'Latitude Techno Labs Global Office Holiday',
-    },
-    {
-      id: 'evt-5',
-      dateStr: '2026-11-27',
-      dayNumber: 27,
-      type: 'holiday',
-      title: 'Post-Thanksgiving Friday',
-      duration: 'Official Holiday',
-      colorLine: '#10b981', // Emerald
-      tagBg: 'bg-emerald-50',
-      textColor: 'text-emerald-900',
-      borderColor: 'border-emerald-500',
-      managerApproval: { name: 'Automatic', status: 'Company Wide' },
-      hrApproval: { name: 'Corporate HR', status: 'Gazetted Holiday' },
-      notes: 'Corporate bridge holiday',
-    },
-  ];
+  // Leaves dynamically calculated from live Odoo records
+  const allEvents = React.useMemo(() => {
+    if (Array.isArray(leaves) && leaves.length > 0) {
+      return leaves.map((lv) => {
+        const dt = lv.rawDateFrom ? new Date(lv.rawDateFrom) : new Date();
+        const dateStr = lv.rawDateFrom || new Date().toISOString().split('T')[0];
+        const dayNumber = dt.getDate();
+        const isSick = (lv.type || '').toLowerCase().includes('sick');
+        const isWfh = (lv.type || '').toLowerCase().includes('wfh') || (lv.type || '').toLowerCase().includes('remote');
+        return {
+          id: `evt-${lv.id}`,
+          dateStr,
+          dayNumber,
+          type: isSick ? 'sick' : isWfh ? 'wfh' : 'casual',
+          title: lv.title || lv.type || 'Time Off',
+          duration: `${lv.days} day(s)`,
+          colorLine: isSick ? '#ef4444' : isWfh ? '#9333ea' : '#eab308',
+          tagBg: isSick ? 'bg-rose-50' : isWfh ? 'bg-purple-50' : 'bg-amber-50',
+          textColor: isSick ? 'text-rose-900' : isWfh ? 'text-purple-900' : 'text-amber-900',
+          borderColor: isSick ? 'border-rose-400' : isWfh ? 'border-purple-400' : 'border-amber-400',
+          managerApproval: { name: 'Operations Lead', status: lv.status },
+          hrApproval: { name: 'HR Administrator', status: lv.status },
+          notes: lv.title || 'Live Odoo Leave Record',
+        };
+      });
+    }
+    return [];
+  }, [leaves]);
 
   // Filtered events
   const visibleEvents = allEvents.filter((evt) => filters[evt.type]);
