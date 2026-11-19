@@ -68,31 +68,51 @@ export default function TicketsPage() {
 
       if (Array.isArray(rawTickets)) {
         const formatted = rawTickets.map((t) => {
-          const dept = (t.topic || '').toLowerCase().includes('hr')
-            ? 'HR'
-            : (t.topic || '').toLowerCase().includes('it')
-            ? 'IT'
-            : (t.topic || '').toLowerCase().includes('devops')
-            ? 'DevOps'
-            : 'General';
+          const rawIssue = t.issue || '';
+          let subject = 'Support Ticket';
+          let dept = 'General';
+          let category = 'General Inquiry';
+          let priority = 'Medium';
 
-          const priority = 'Medium';
-          const status = t.state === 'done' || t.state === 'solve'
+          // Extract subject from <h3> if available
+          const h3Match = rawIssue.match(/<h3>(.*?)<\/h3>/i);
+          if (h3Match && h3Match[1]) {
+            subject = h3Match[1].replace(/<[^>]*>/g, '').trim();
+          } else {
+            subject = rawIssue.replace(/<[^>]*>/g, '').trim().slice(0, 60) || 'Support Ticket';
+          }
+
+          // Extract category & priority from metadata if available
+          const catMatch = rawIssue.match(/Category:<\/strong>\s*([^|<]+)/i);
+          if (catMatch && catMatch[1]) category = catMatch[1].trim();
+
+          const priMatch = rawIssue.match(/Priority:<\/strong>\s*([^|<]+)/i);
+          if (priMatch && priMatch[1]) priority = priMatch[1].trim();
+
+          const deptMatch = rawIssue.match(/Department:<\/strong>\s*([^|<]+)/i);
+          if (deptMatch && deptMatch[1]) {
+            dept = deptMatch[1].trim();
+          } else {
+            if (t.topic === 'it_related') dept = 'IT';
+            else if (t.topic === 'hr_related') dept = 'HR';
+            else if (t.topic === 'access_issue') dept = 'DevOps';
+            else dept = 'General';
+          }
+
+          const status = (t.state === 'done' || t.state === 'solve')
             ? 'Resolved'
-            : t.state === 'in_progress'
-            ? 'In Progress'
             : 'Open';
 
           const uName = Array.isArray(t.user_id) ? t.user_id[1] : (user?.name || 'Employee');
           const dt = t.create_date ? new Date(t.create_date.replace(' ', 'T') + 'Z').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Today';
 
           return {
-            id: `TICK-${t.id}`,
+            id: `TICK-${String(t.id).padStart(4, '0')}`,
             rawId: t.id,
             department: dept,
-            category: t.topic || 'General Inquiry',
+            category: category || t.topic || 'General Inquiry',
             priority,
-            subject: (t.issue || '').replace(/<[^>]*>/g, '').trim().slice(0, 60) || 'Support Ticket',
+            subject,
             description: t.issue || '<p>No description provided</p>',
             requester: uName,
             email: user?.email || '',
@@ -135,54 +155,53 @@ export default function TicketsPage() {
 
   const handleCreateTicket = async (ticketData) => {
     try {
-      const userEmp = getStoredSession();
-      const topicStr = `${ticketData.department} - ${ticketData.category}: ${ticketData.subject}`;
+      // Map department/category to Odoo's exact Selection field values
+      let odooTopic = 'general';
+      const dept = (ticketData.department || '').toLowerCase();
+      const cat = (ticketData.category || '').toLowerCase();
+      if (dept === 'it' || cat.includes('hardware') || cat.includes('laptop') || cat.includes('monitor')) {
+        odooTopic = 'it_related';
+      } else if (dept === 'hr' || cat.includes('payroll') || cat.includes('leave') || cat.includes('salary')) {
+        odooTopic = 'hr_related';
+      } else if (dept === 'devops' || cat.includes('access') || cat.includes('server') || cat.includes('ssh') || cat.includes('vpn')) {
+        odooTopic = 'access_issue';
+      }
+
+      // Store subject & metadata cleanly in issue HTML
+      const fullIssue = `<h3>${ticketData.subject}</h3><p><strong>Department:</strong> ${ticketData.department} | <strong>Category:</strong> ${ticketData.category} | <strong>Priority:</strong> ${ticketData.priority}</p><div>${ticketData.description}</div>`;
+
       const resId = await callOdooKw('employee.ticket', 'create', [{
-        topic: topicStr,
-        issue: ticketData.description,
-        user_id: userEmp?.id || 11,
-        state: 'in_progress',
+        topic: odooTopic,
+        issue: fullIssue,
+        state: 'submit',
       }]);
 
       toast.success(`Support Ticket #${resId} recorded in Odoo!`);
       await loadTickets();
     } catch (err) {
-      console.warn('Could not persist to Odoo employee.ticket, logging locally:', err);
-      const localId = `TICK-${Date.now().toString().slice(-4)}`;
-      setTickets((prev) => [{
-        id: localId,
-        rawId: Date.now(),
-        department: ticketData.department,
-        category: ticketData.category,
-        priority: ticketData.priority,
-        subject: ticketData.subject,
-        description: ticketData.description,
-        requester: userName,
-        email: user?.email || '',
-        date: 'Today',
-        status: 'In Progress',
-        attachments: ticketData.attachments || [],
-        activity: [
-          {
-            author: userName,
-            date: 'Just now',
-            message: 'Ticket recorded in helpdesk queue.',
-          },
-        ],
-      }, ...prev]);
-      toast.success(`Support Ticket logged successfully!`);
+      console.error('Failed to create ticket in Odoo:', err);
+      toast.error(err?.data?.message || err?.message || 'Failed to submit ticket');
     }
     setViewMode('list');
     setSearchParams({});
   };
 
   // Handle Status Change
-  const handleStatusChange = (ticketId, nextStatus) => {
+  const handleStatusChange = async (ticketId, nextStatus) => {
     setTickets((prev) =>
       prev.map((t) => (t.id === ticketId ? { ...t, status: nextStatus } : t))
     );
     if (selectedTicket && selectedTicket.id === ticketId) {
       setSelectedTicket((prev) => ({ ...prev, status: nextStatus }));
+    }
+    const matched = tickets.find((t) => t.id === ticketId);
+    if (matched && matched.rawId) {
+      try {
+        const odooState = nextStatus === 'Resolved' ? 'solve' : 'submit';
+        await callOdooKw('employee.ticket', 'write', [[matched.rawId], { state: odooState }]);
+      } catch (e) {
+        console.warn('Odoo ticket state update warning:', e);
+      }
     }
   };
 

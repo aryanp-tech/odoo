@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { loginUser } from '../../services/authService';
+import logoImg from '../../assets/images.png';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -65,19 +66,21 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#f4f7fb] text-slate-800 flex flex-col justify-between font-sans antialiased">
       {/* 1. Header Navigation Bar */}
-      <header className="h-16 bg-white border-b border-slate-200/80 px-6 sm:px-10 flex items-center justify-between shadow-2xs sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0284c7] via-[#2563eb] to-[#06b6d4] text-white flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
-            <Layers size={20} strokeWidth={2.2} />
-          </div>
-          <h1 className="text-sm font-black text-slate-900 tracking-tight leading-tight">
-            Latitude Techno Labs
-          </h1>
+      <header className="h-16 bg-[#0d1326] border-b border-[#17213d] px-6 sm:px-10 flex items-center justify-between shadow-xs sticky top-0 z-20">
+        <div className="flex items-center">
+          <img
+            src={logoImg}
+            alt="LatitudeTechnoLabs"
+            className="h-10 sm:h-11 w-auto max-w-[190px] object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-500">
-          <Shield size={14} className="text-indigo-600" />
-          <span className="font-semibold text-slate-600">Company Portal</span>
+        <div className="flex items-center gap-2 text-xs text-slate-300">
+          <Shield size={14} className="text-indigo-400" />
+          <span className="font-semibold text-slate-300">Company Portal</span>
         </div>
       </header>
 
@@ -197,7 +200,7 @@ export default function LoginPage() {
 
       {/* 3. Footer */}
       <footer className="h-12 bg-white border-t border-slate-200/80 px-6 flex items-center justify-center text-xs text-slate-400">
-        &copy; 2026 Latitude Techno Labs Pvt. Ltd. All rights reserved.
+        &copy; 2026 LatitudeTechnoLabs. All rights reserved.
       </footer>
     </div>
   );

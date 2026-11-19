@@ -26,9 +26,6 @@ export default function LeavesAndQuotasCard({ leaveQuotas = {}, onRequestLeave }
             <h3 className="text-xs font-bold text-slate-900 tracking-tight">
               Leaves &amp; WFH Balances
             </h3>
-            <p className="text-[10px] text-slate-400">
-              3 Casual • 3 Sick • 6 WFH Allotted
-            </p>
           </div>
         </div>
 

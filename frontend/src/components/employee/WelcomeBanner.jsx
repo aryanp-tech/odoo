@@ -115,10 +115,6 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
             <span className="text-xs font-semibold text-slate-700 bg-white/90 border border-indigo-100 px-2.5 py-0.5 rounded-md shadow-2xs">
               {user?.job_title || 'Software Engineer'}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-2.5 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-              Active
-            </span>
           </div>
 
           {/* Headline Greeting + Employee ID Opposite */}
@@ -191,7 +187,7 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
               </h3>
             </div>
 
-            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
               !isClockedIn
                 ? 'bg-slate-100 text-slate-600 border-slate-200'
                 : isBreak
@@ -201,7 +197,7 @@ export default function WelcomeBanner({ user = {}, attendance = {} }) {
               <span className={`w-1.5 h-1.5 rounded-full ${
                 !isClockedIn ? 'bg-slate-400' : isBreak ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500 animate-pulse'
               }`} />
-              <span>{!isClockedIn ? 'Inactive' : isBreak ? 'Break' : 'Active'}</span>
+              <span>{!isClockedIn ? 'Punched Out' : isBreak ? 'On Break' : 'Punched In'}</span>
             </span>
           </div>
 

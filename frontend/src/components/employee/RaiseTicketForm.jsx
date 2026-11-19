@@ -223,7 +223,7 @@ export default function RaiseTicketForm({
             <div className="text-left sm:text-right">
               <span className="text-[11px] font-semibold text-slate-400 block">Department</span>
               <span className="text-xs font-bold text-indigo-700">
-                {sessionUser?.department || 'Latitude Techno Labs'}
+                {sessionUser?.department || 'LatitudeTechnoLabs'}
               </span>
             </div>
           </div>

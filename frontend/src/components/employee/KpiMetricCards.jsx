@@ -10,7 +10,6 @@ export default function KpiMetricCards({
   leaveQuotas = {}, 
   timesheetsCount = 0, 
   timesheetsHours = 0, 
-  poll = {} 
 }) {
   const navigate = useNavigate();
 
@@ -19,7 +18,7 @@ export default function KpiMetricCards({
   const targetHours = Number(attendance.weeklyTarget || 40.0);
   const attendancePct = targetHours > 0 ? Math.min(100, Math.round((weeklyHours / targetHours) * 100)) : 0;
 
-  // 2. Leave Metrics (Every employee: 3 Casual, 3 Sick, 6 WFH - live from hr.leave.allocation & hr.leave)
+  // 2. Leave Metrics (Live from hr.leave.allocation & hr.leave)
   const casual = leaveQuotas.casual || leaveQuotas.vacation || { allotted: 3, used: 0, left: 3 };
   const sick = leaveQuotas.sick || { allotted: 3, used: 0, left: 3 };
   const wfh = leaveQuotas.wfh || { allotted: 6, used: 0, left: 6 };
@@ -33,11 +32,8 @@ export default function KpiMetricCards({
   const tsHours = Number(timesheetsHours || 0);
   const tsPct = tasksCount > 0 ? Math.min(100, tasksCount * 25) : 0;
 
-  // 4. Poll Metrics (Live from survey.survey)
-  const pollCount = poll && poll.id ? 1 : 0;
-
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Card 1: Attendance Report (Blue Theme) */}
       <div 
         onClick={() => navigate('/attendance')}
@@ -106,11 +102,11 @@ export default function KpiMetricCards({
             </span>
           </div>
 
-          {/* Progress / Status */}
+          {/* Progress / Status (Clean - No extra subtext) */}
           <div className="flex justify-between items-center text-[11px] text-slate-500 font-medium mt-1">
-            <span className="truncate">3 Casual • 3 Sick • 6 WFH</span>
+            <span>Available Balance</span>
             <span className="text-emerald-700 font-bold shrink-0">
-              {totalAllotted > 0 ? `${leavePct}% balance` : 'No allocations'}
+              {totalAllotted > 0 ? `${leavePct}% remaining` : 'No allocations'}
             </span>
           </div>
         </div>
@@ -164,48 +160,6 @@ export default function KpiMetricCards({
           <div 
             className="bg-[#f59e0b] h-full rounded-full transition-all duration-500" 
             style={{ width: `${tsPct}%` }} 
-          />
-        </div>
-      </div>
-
-      {/* Card 4: Pulse Polls (Purple Theme - 100% Dynamic from Odoo survey.survey) */}
-      <div 
-        onClick={() => navigate('/voting')}
-        className="bg-[#faf5ff] border border-[#e9d5ff] rounded-2xl p-5 shadow-xs hover:bg-[#f3e8ff]/80 hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between"
-      >
-        <div>
-          {/* Header Row */}
-          <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-7 h-7 rounded-lg bg-purple-200 text-purple-700 flex items-center justify-center shrink-0">
-              <Vote size={14} />
-            </div>
-            <div className="text-xs font-bold text-slate-800 uppercase tracking-wide">
-              Office Polls
-            </div>
-          </div>
-
-          {/* Value Display */}
-          <div className="flex items-baseline gap-1.5 my-2">
-            <span className="text-2xl font-black text-slate-900 tracking-tight">
-              {String(pollCount).padStart(2, '0')}
-            </span>
-            <span className="text-xs text-slate-600 font-medium">
-              {pollCount === 1 ? 'Active Ballot' : 'Active Ballots'}
-            </span>
-          </div>
-
-          {/* Progress / Status */}
-          <div className="flex justify-between items-center text-[11px] text-slate-500 font-medium mt-1">
-            <span className="truncate max-w-[130px]">{pollCount > 0 ? (poll.title || 'Live Poll') : 'No Active Polls'}</span>
-            <span className="text-purple-700 font-bold shrink-0">{pollCount > 0 ? 'Open' : 'None'}</span>
-          </div>
-        </div>
-
-        {/* Accent Line */}
-        <div className="w-full bg-purple-200/60 h-1.5 rounded-full overflow-hidden mt-3">
-          <div 
-            className="bg-[#8b5cf6] h-full rounded-full transition-all duration-500" 
-            style={{ width: `${pollCount > 0 ? 100 : 0}%` }} 
           />
         </div>
       </div>

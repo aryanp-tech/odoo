@@ -28,10 +28,10 @@ export default function QuickActionsCard({ onRequestLeave }) {
 
       {/* 2. 2x2 Clean Action Tiles */}
       <div className="grid grid-cols-2 gap-3 mt-4">
-        {/* Tile 1: Apply Leave */}
+        {/* Tile 1: Apply Leave (Navigates directly to Leaves Page) */}
         <button
           type="button"
-          onClick={onRequestLeave}
+          onClick={() => navigate('/leaves')}
           className="p-4 rounded-xl border border-purple-100/90 bg-white/90 hover:bg-white hover:border-purple-300 transition-all text-left cursor-pointer flex flex-col items-start gap-2 group shadow-2xs"
         >
           <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">

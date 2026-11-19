@@ -15,6 +15,7 @@ const EmployeeManagementPage = lazy(() => import('../pages/superadmin/EmployeeMa
 
 // Code-split pages for high performance and reduced initial bundle footprint
 const EmployeeDashboardPage = lazy(() => import('../pages/employee/EmployeeDashboardPage'));
+const EmployeesDirectoryPage = lazy(() => import('../pages/employee/EmployeesDirectoryPage'));
 const ProfilePage = lazy(() => import('../pages/employee/ProfilePage'));
 const AttendancePage = lazy(() => import('../pages/employee/AttendancePage'));
 const ProjectsPage = lazy(() => import('../pages/employee/ProjectsPage'));
@@ -62,6 +63,16 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/employees"
+          element={
+            <ProtectedRoute>
+              <EmployeesDirectoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/directory" element={<Navigate to="/employees" replace />} />
+        <Route path="/departments" element={<Navigate to="/employees" replace />} />
         <Route
           path="/profile"
           element={
@@ -130,13 +141,16 @@ export default function AppRoutes() {
         <Route path="/helpdesk" element={<Navigate to="/tickets" replace />} />
         <Route path="/infrastructure" element={<Navigate to="/tickets" replace />} />
         <Route
-          path="/voting"
+          path="/polls"
           element={
             <ProtectedRoute>
               <VotingPage />
             </ProtectedRoute>
           }
         />
+        <Route path="/voting" element={<Navigate to="/polls" replace />} />
+        <Route path="/announcements" element={<Navigate to="/polls" replace />} />
+        <Route path="/office-polls" element={<Navigate to="/polls" replace />} />
         <Route path="/settings" element={<Navigate to="/profile" replace />} />
 
         {/* Super Admin Management Routes */}

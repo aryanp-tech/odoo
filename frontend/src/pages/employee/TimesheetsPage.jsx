@@ -61,8 +61,13 @@ export default function TimesheetsPage() {
         })));
       }
 
-      // 2. Fetch real timesheets from account.analytic.line
-      const lines = await callOdooKw('account.analytic.line', 'search_read', [[]], {
+      // 2. Fetch real timesheets from account.analytic.line (filtered by employee for standard staff)
+      const stored = getStoredSession();
+      const empId = stored?.employee_id;
+      const isSuper = stored?.role === 'super_admin';
+      const domain = (!isSuper && empId) ? [[['employee_id', '=', empId]]] : [[]];
+
+      const lines = await callOdooKw('account.analytic.line', 'search_read', domain, {
         fields: ['id', 'name', 'unit_amount', 'date', 'employee_id', 'project_id', 'task_id'],
         order: 'date desc',
       });
